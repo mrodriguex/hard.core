@@ -1,0 +1,231 @@
+﻿using HARD.CORE.OBJ;
+using HARD.CORE.SER;
+using System;
+using System.Collections.Generic;
+using System.Web;
+using System.Web.UI.WebControls;
+using Telerik.Web.UI;
+
+public partial class frm_SeguridadAccion : System.Web.UI.Page
+{
+    private Usuario Usuario
+    {
+        get
+        {
+            if ((Usuario)Session["Usuario"] != null)
+            {
+                return (Usuario)Session["Usuario"];
+            }
+
+            return null;
+        }
+    }
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        try
+        {
+            HttpContext context = HttpContext.Current;
+            Generales.GetInstance().LimpiaCache(ref context);
+
+            string eventTarget = Request["__EVENTTARGET"]; // RadFloatingActionButton
+            if (!string.IsNullOrWhiteSpace(eventTarget) && eventTarget == btnActualizar.ClientID)
+                btnActualizar_Click(eventTarget, e);
+
+            if (!IsPostBack)
+            {
+                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Seguridad);
+
+                //if (!seguridad.Consultar)
+                //    Response.Redirect("NoAutorizado.aspx");
+
+                //rcbPerfil.DataValueField = "ClavePerfil";
+                //rcbPerfil.DataTextField = "Descripcion";
+                //rcbPerfil.DataSource = PerfilSER.GetInstance().ObtenerActivos();
+                //rcbPerfil.DataBind();
+
+                //btnActualizar.Enabled = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            raManager.Alert(ex.Message);
+        }
+    }
+
+    protected void rcbPerfil_SelectedIndexChanged(object sender, RadComboBoxSelectedIndexChangedEventArgs e)
+    {
+        rgSeguridadAccion.Rebind();
+        ConfigurarBtnActualizar();
+    }
+
+    protected void rcbAsignado_SelectedIndexChanged(object sender, RadComboBoxSelectedIndexChangedEventArgs e)
+    {
+        rgSeguridadAccion.Rebind();
+        ConfigurarBtnActualizar();
+    }
+
+    protected void rgSeguridadAccion_NeedDataSource(object sender, Telerik.Web.UI.GridNeedDataSourceEventArgs e)
+    {
+        int clavePerfil = rcbPerfil.SelectedValue == "" ? 0 : Convert.ToInt32(rcbPerfil.SelectedValue);
+        int valorAsignado = Convert.ToInt32(rcbAsignado.SelectedValue);
+
+        if (clavePerfil != 0)
+        {
+            if (valorAsignado != 0)
+            {
+                bool asignado = valorAsignado == 1;
+                rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil, asignado);
+            }
+            else
+            {
+                rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil);
+            }
+        }
+    }
+
+    protected void rgSeguridadAccion_ItemCreated(object sender, GridItemEventArgs e)
+    {
+        try
+        {
+            if (e.Item is GridDataItem)
+            {
+                GridDataItem item = (GridDataItem)e.Item;
+                CheckBox chkCrear = (CheckBox)item["Crear"].FindControl("chkCrear");
+                Boolean ConfigurarCrear = (Boolean)item.GetDataKeyValue("ConfigurarCrear");
+                chkCrear.Enabled = ConfigurarCrear;
+                chkCrear.Attributes.Add("onclick", "seleccionarConsultar('" + e.Item.ItemIndex + "')");
+
+                CheckBox chkEliminar = (CheckBox)item["Eliminar"].FindControl("chkEliminar");
+                Boolean ConfigurarEliminar = (Boolean)item.GetDataKeyValue("ConfigurarEliminar");
+                chkEliminar.Enabled = ConfigurarEliminar;
+                chkEliminar.Attributes.Add("onclick", "seleccionarConsultar('" + e.Item.ItemIndex + "')");
+
+                CheckBox chkEditar = (CheckBox)item["Editar"].FindControl("chkEditar");
+                Boolean ConfigurarModificar = (Boolean)item.GetDataKeyValue("ConfigurarEditar");
+                chkEditar.Enabled = ConfigurarModificar;
+                chkEditar.Attributes.Add("onclick", "seleccionarConsultar('" + e.Item.ItemIndex + "')");
+
+                CheckBox chkExportar = (CheckBox)item["Exportar"].FindControl("chkExportar");
+                Boolean ConfigurarExportar = (Boolean)item.GetDataKeyValue("ConfigurarExportar");
+                chkExportar.Enabled = ConfigurarExportar;
+                chkExportar.Attributes.Add("onclick", "seleccionarConsultar('" + e.Item.ItemIndex + "')");
+
+                CheckBox chkConsultar = (CheckBox)item["Consultar"].FindControl("chkConsultar");
+                Boolean ConfigurarConsultar = (Boolean)item.GetDataKeyValue("ConfigurarConsultar");
+                chkConsultar.Enabled = ConfigurarConsultar;
+            }
+        }
+        catch (Exception ex)
+        {
+            raManager.Alert(ex.Message);
+        }
+    }
+
+    protected void rgSeguridadAccion_ItemDataBound(object sender, GridItemEventArgs e)
+    {
+        ConfigurarBtnActualizar();
+
+        if (e.Item.ItemType == GridItemType.Item || e.Item.ItemType == GridItemType.AlternatingItem)
+        {
+            GridDataItem item = (GridDataItem)e.Item;
+
+            if (!Convert.ToBoolean(item.GetDataKeyValue("Asignado")))
+            {
+                item["Asignado"].BackColor = System.Drawing.Color.FromArgb(189, 225, 253);
+                item["Asignado"].ToolTip = "No asignado";
+            }
+            else
+            {
+                item["Asignado"].BackColor = System.Drawing.Color.FromArgb(155, 207, 168);
+                item["Asignado"].ToolTip = "Asignado";
+            }
+
+            item["Asignado"].Text = "";
+
+            if (!Convert.ToBoolean(item.GetDataKeyValue("ConfigurarConsultar")))
+            {
+                item["Consultar"].BackColor = System.Drawing.Color.WhiteSmoke;
+                item["Consultar"].FindControl("chkConsultar").Visible = false;
+            }
+
+            if (!Convert.ToBoolean(item.GetDataKeyValue("ConfigurarCrear")))
+            {
+                item["Crear"].BackColor = System.Drawing.Color.WhiteSmoke;
+                item["Crear"].FindControl("chkCrear").Visible = false;
+            }
+
+            if (!Convert.ToBoolean(item.GetDataKeyValue("ConfigurarEditar")))
+            {
+                item["Editar"].BackColor = System.Drawing.Color.WhiteSmoke;
+                item["Editar"].FindControl("chkEditar").Visible = false;
+            }
+
+            if (!Convert.ToBoolean(item.GetDataKeyValue("ConfigurarEliminar")))
+            {
+                item["Eliminar"].BackColor = System.Drawing.Color.WhiteSmoke;
+                item["Eliminar"].FindControl("chkEliminar").Visible = false;
+            }
+
+            if (!Convert.ToBoolean(item.GetDataKeyValue("ConfigurarExportar")))
+            {
+                item["Exportar"].BackColor = System.Drawing.Color.WhiteSmoke;
+                item["Exportar"].FindControl("chkExportar").Visible = false;
+            }
+
+            //if ((int)EnumEntidad.Seguridad == Convert.ToInt32(item.GetDataKeyValue("ClaveEntidad")) && Usuario.Perfil.ClavePerfil == Convert.ToInt32(rcbPerfil.SelectedValue))
+            //{
+            //    CheckBox chkConsultar = item["Consultar"].FindControl("chkConsultar") as CheckBox;
+            //    CheckBox chkEditar = item["Editar"].FindControl("chkEditar") as CheckBox;
+            //    chkConsultar.Enabled = false;
+            //    chkEditar.Enabled = false;
+            //}
+        }
+    }
+
+    protected void btnActualizar_Click(object sender, EventArgs e)
+    {
+        List<SeguridadAccion> listadoSeguridadAccion = new List<SeguridadAccion>();
+
+        foreach (GridDataItem item in rgSeguridadAccion.Items)
+        {
+            int claveEntidad = Convert.ToInt32(item.GetDataKeyValue("ClaveEntidad"));
+            int clavePerfil = Convert.ToInt32(rcbPerfil.SelectedValue);
+            int orden = Convert.ToInt32(item.GetDataKeyValue("Orden"));
+            string descripcion = Convert.ToString(item.GetDataKeyValue("Descripcion"));
+
+            CheckBox chkConsultar = (CheckBox)item["Consultar"].FindControl("chkConsultar");
+            CheckBox chkCrear = (CheckBox)item["Crear"].FindControl("chkCrear");
+            CheckBox chkEliminar = (CheckBox)item["Eliminar"].FindControl("chkEliminar"); // corregido
+            CheckBox chkEditar = (CheckBox)item["Editar"].FindControl("chkEditar");
+            CheckBox chkExportar = (CheckBox)item["Exportar"].FindControl("chkExportar");
+
+            var seguridadAccion = new SeguridadAccion(clavePerfil, claveEntidad, orden, descripcion,
+                                         chkConsultar.Checked, chkCrear.Checked,
+                                         chkEliminar.Checked, chkEditar.Checked,
+                                         chkExportar.Checked, EnumAccion.Actualizar);
+            seguridadAccion.ClaveUsuarioActualizacion = Usuario.ClaveUsuario;
+
+            listadoSeguridadAccion.Add(seguridadAccion);
+        }
+
+        if (SeguridadAccionSER.GetInstance().Actualizar(listadoSeguridadAccion))
+        {
+            raManager.Alert("La configuración del perfil " + rcbPerfil.Text.Trim() + " se ha actualizado exitosamente.");
+            raManager.ResponseScripts.Add("RecargarGrid()");
+        }
+        else
+            raManager.Alert("No fue posible actualizar la seguridad de acción de este perfil.");
+    }
+
+    private void ConfigurarBtnActualizar()
+    {
+        //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Seguridad);
+
+        //if (seguridad.Editar)
+        //{
+        //    btnActualizar.Enabled = Convert.ToInt32(rcbPerfil.SelectedValue) > 0;
+        //    btnActualizar.Enabled = rgSeguridadAccion.MasterTableView.Items.Count > 0;
+        //}
+    }
+}

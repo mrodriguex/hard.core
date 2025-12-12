@@ -1,0 +1,208 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="h-100">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Cryoinfra</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <link rel="icon" type="image/png" href="App_Resources/Imagenes/Sitio/CryoIcon.png" />
+    <script src="App_Scripts/Cryoinfra.js"></script>
+    <link href="App_Themes/Estilo_Cryoinfra.css" rel="stylesheet" />
+
+    <link href="App_Themes/Estilo_MasterPage.css" rel="stylesheet" />
+    <link rel="stylesheet" href="App_Resources/Bootstrap/css/bootstrap.min.css" />
+    <script src="App_Resources/Bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link href="App_Resources/Bootstrap/css/bootstrap-grid.css" rel="stylesheet" />
+    <link href="App_Resources/Fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="App_Resources/Fontawesome/css/regular.css" rel="stylesheet" />
+    <link href="App_Resources/Fontawesome/css/solid.css" rel="stylesheet" />
+    <link href="App_Resources/Fontawesome/css/all.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="App_Scripts/toastify.css" rel="stylesheet" />
+    <script src="App_Scripts/toastify.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body id="MasterBody" class="d-flex flex-column min-vh-100" runat="server">
+
+    <header id="header" class="header">
+        <div>
+            <i class='fa-solid fa-bars menu_toggle' id="header_toggle" ></i>
+            <div class="logo-box">
+
+            <img id="imgLogoCryo" src="App_Resources/Imagenes/Logotipos/CRYOINFRA.png" runat="server" class="img-fluid" style="width: 130px !important; position: absolute; bottom: 1px; left: 17px; transition: all 0.8s ease;" />
+             <img id="imgLogoEnergia" src="App_Resources/Imagenes/Logotipos/ENERGÍA INFRA.png" runat="server" class="img-fluid" style="width: 100px !important; position: absolute; bottom: 1px; left: 25px; transition: all 0.8s ease;" />
+             <img id="imgLogoNA" src="App_Resources/Imagenes/Logotipos/CRYOINFRA.png" runat="server" class="img-fluid" style="width: 130px !important; position: absolute; bottom: 1px; left: 17px; transition: all 0.8s ease;" />
+              <img id="imgLogoCryoinfraNorte" src="App_Resources/Imagenes/Logotipos/CRYO DEL NORTE.png" runat="server" class="img-fluid" style="width: 100px !important; position: absolute; bottom: 1px; left: 25px; transition: all 0.8s ease;" />
+              <img id="imgLogoTaxis" src="App_Resources/Imagenes/Logotipos/TAXIS AEREOS.png" runat="server" class="img-fluid" style="width: 77px !important; position: absolute; bottom: -9px; left: 33px; transition: all 0.8s ease;" />
+                </div>
+            <div style="width: 400px !important; position: absolute; bottom: 17px; left: 16%; transition: all 0.8s ease; color: white;">
+<%--                <asp:Label ID="lblFechaHora" runat="server" CssClass="light"></asp:Label>--%>
+
+            </div>
+
+        </div>
+
+        <div class="d-flex flex-row align-baseline">
+            <div>
+                <p class="mb-0 text-end fs-6 fw-bold" id="lblUsuario" runat="server"></p>
+                <p class="mb-0 text-end fs-6" id="lblContrato" runat="server"></p>
+            </div>
+
+            <div class="d-flex flex-row align-items-center">
+                <%--<div class="position-relative">
+                        <span id="circulo" runat="server" class="position-absolute  p-1 border border-light rounded-circle" style="background-color: var(--naranja-ei); top: 2px; right: 2px; z-index: 2;"></span>
+                    <i id="imgNotificaciones" runat="server" style="cursor: pointer; color: var(--azul-ei) !important;"></i>
+                </div>--%>
+                <div>
+                    <i id="imgInformacionUsuario" runat="server" class="ps-3 fa-solid fa-circle-user fa-2xl" style="cursor: pointer; color: white !important;"></i>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav h-100 p-3">
+            <div class="h-100 d-flex flex-column">
+
+                <div class="menu-container">
+                    <telerik:RadMenu ID="menu" runat="server" Width="100%" BorderColor="Thistle" EnableRoundedCorners="true" ClickToOpen="true" EnableShadows="true" Flow="Vertical" OnItemDataBound="menu_ItemDataBound"></telerik:RadMenu>
+                </div>
+
+
+
+            </div>
+        </nav>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="flex-grow-1">
+        <form id="MasterForm" runat="server" autocomplete="off" class="h-100">
+            <script type="text/javascript">
+                function mostrarDetalleNotificacion(claveNotificacion) {
+                    openRadWindow("pop_VerDetalleNotificacion.aspx?ClaveNotificacion=" + claveNotificacion, "DetalleNotificacion", 800, 600, true);
+                }
+            </script>
+
+            <telerik:RadScriptManager ID="RadScriptManager1" runat="server"></telerik:RadScriptManager>
+
+                        <div id="main" class="container">
+<%--                <telerik:RadToolTipManager ID="rttmNotificacion" runat="server" Width="400px" Height="250px" ShowEvent="OnClick" HideEvent="LeaveToolTip" ManualClose="false" RenderMode="Lightweight" RelativeTo="Element" Position="BottomCenter" Skin="Default" OffsetX="-200" CssClass="avatarPosition" Animation="Fade" ShowCallout="false" AutoCloseDelay="0" OnAjaxUpdate="rttmNotificacion_AjaxUpdate"></telerik:RadToolTipManager>--%>
+                <telerik:RadToolTipManager ID="rttmInformacionUsuario" runat="server" Width="400px" ShowEvent="OnClick" HideEvent="LeaveToolTip" ManualClose="false" RenderMode="Lightweight" RelativeTo="Element" Position="BottomCenter" Skin="Telerik" OffsetX="-200" CssClass="avatarPosition" Animation="Fade" ShowCallout="false" AutoCloseDelay="0" OnAjaxUpdate="rttmInformacionUsuario_AjaxUpdate"></telerik:RadToolTipManager>
+            </div>
+
+            <asp:ContentPlaceHolder ID="contenido" runat="server"></asp:ContentPlaceHolder>
+            <telerik:RadWindowManager RenderMode="Lightweight" ID="rwManager" runat="server" ReloadOnShow="true" ShowContentDuringLoad="false" Modal="true" CenterIfModal="true" Behaviors="Close, Reload" VisibleStatusbar="false" KeepInScreenBounds="true" />
+            <telerik:RadAjaxLoadingPanel ID="LoadingPanel" runat="server" />
+        </form>
+    </div>
+
+
+
+    <script type="text/javascript">
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const showNavbar = (toggleId, navId, bodyId, headerId) => {
+
+                const toggle = document.getElementById(toggleId),
+                    nav = document.getElementById(navId),
+                    bodypd = document.body,
+                    headerpd = document.getElementById(headerId);
+
+                if (!toggle || !nav) return;
+
+                const isMobile = () => window.innerWidth < 768;
+
+                // Expansión del contenido
+                const applyContentExpansion = () => {
+                    if (nav.classList.contains("oculto") || nav.classList.contains("no-show")) {
+                        bodypd.classList.add("expanded-content");
+                    } else {
+                        bodypd.classList.remove("expanded-content");
+                    }
+                };
+
+                // Ajuste visual según tamaño
+                const adjustContent = () => {
+
+                    if (isMobile()) {
+
+                        if (nav.classList.contains("oculto")) {
+                            nav.style.transform = "translateX(-100%)";
+                            nav.style.opacity = "0";
+                            nav.style.width = "0";            // ✅ desaparece totalmente
+                            nav.style.overflow = "hidden";    // ✅ oculta contenido interior
+                        } else {
+                            nav.style.transform = "translateX(0)";
+                            nav.style.opacity = "1";
+                            nav.style.width = "calc(var(--nav-width) + var(--nav-width-show))"; // ancho normal móvil
+                        }
+
+
+                    } else {
+                        nav.classList.remove("oculto");
+
+                        // ✅ DESKTOP: sidebar colapsado = solo íconos
+                        if (nav.classList.contains("no-show")) {
+                            nav.style.transform = "none";   // no desplazar
+                            nav.style.opacity = "1";         // siempre visible
+                            nav.style.width = "4rem";        // ✅ solo una parte visible
+
+                            nav.style.overflow = "hidden";   // ✅ oculta contenido interno
+                            nav.style.height = "100vh";     // ✅ fondo completo
+
+
+                        } else {
+                            nav.style.transform = "none";
+                            nav.style.opacity = "1";
+                            nav.style.width = "calc(var(--nav-width) + var(--nav-width-show))";
+                            nav.style.overflow = "visible";    // ✅ muestra hijos completos
+                            nav.style.height = "100vh";     // ✅ fondo completo al expandirse
+                        }
+                    }
+
+                    applyContentExpansion();
+                };
+
+                // Toggle en móvil y desktop
+                const handleToggle = () => {
+
+                    if (isMobile()) {
+                        nav.classList.toggle("oculto");
+
+                    } else {
+                        nav.classList.toggle("no-show"); // solo colapsar
+                    }
+
+                    adjustContent();
+                };
+
+                toggle.addEventListener("click", handleToggle);
+
+                adjustContent();
+                window.addEventListener("resize", adjustContent);
+            };
+
+            showNavbar('header_toggle', 'nav-bar', 'MasterBody', 'header');
+
+            const linkColor = document.querySelectorAll('.nav_link');
+            linkColor.forEach(l => l.addEventListener('click', function () {
+                linkColor.forEach(k => k.classList.remove('active'));
+                this.classList.add('active');
+            }));
+
+        });
+
+
+    </script>
+</body>
+</html>

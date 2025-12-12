@@ -1,0 +1,3 @@
+# Ignore ALL bin and obj folders in ALL projects
+**/bin/
+**/obj/

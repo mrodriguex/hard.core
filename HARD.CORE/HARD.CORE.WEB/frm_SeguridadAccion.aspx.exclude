@@ -1,0 +1,160 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="frm_SeguridadAccion.aspx.cs" Inherits="frm_SeguridadAccion" %>
+
+<%@ Register Assembly="Telerik.Web.UI" Namespace="Telerik.Web.UI" TagPrefix="telerik" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="contenido" runat="Server">
+
+    <telerik:RadAjaxManager ID="raManager" runat="server">
+        <AjaxSettings>
+            <telerik:AjaxSetting AjaxControlID="rcbPerfil">
+                <UpdatedControls>
+                    <telerik:AjaxUpdatedControl ControlID="rcbPerfil" LoadingPanelID="LoadingPanel" />
+                    <telerik:AjaxUpdatedControl ControlID="rgSeguridadAccion" LoadingPanelID="LoadingPanel" />
+                    <telerik:AjaxUpdatedControl ControlID="btnActualizar" />
+                </UpdatedControls>
+            </telerik:AjaxSetting>
+            <telerik:AjaxSetting AjaxControlID="rcbAsignado">
+                <UpdatedControls>
+                    <telerik:AjaxUpdatedControl ControlID="rgSeguridadAccion" LoadingPanelID="LoadingPanel" />
+                    <telerik:AjaxUpdatedControl ControlID="btnActualizar" />
+                </UpdatedControls>
+            </telerik:AjaxSetting>
+            <telerik:AjaxSetting AjaxControlID="rgSeguridadAccion">
+                <UpdatedControls>
+                    <telerik:AjaxUpdatedControl ControlID="rgSeguridadAccion" LoadingPanelID="LoadingPanel" />
+                    <telerik:AjaxUpdatedControl ControlID="btnActualizar" />
+                </UpdatedControls>
+            </telerik:AjaxSetting>
+            <telerik:AjaxSetting AjaxControlID="btnActualizar">
+                <UpdatedControls>
+                    <telerik:AjaxUpdatedControl ControlID="rgSeguridadAccion" UpdatePanelCssClass="" LoadingPanelID="LoadingPanel" />
+                </UpdatedControls>
+            </telerik:AjaxSetting>
+        </AjaxSettings>
+    </telerik:RadAjaxManager>
+    <telerik:RadScriptBlock ID="rsBlock" runat="server">
+        <script type="text/javascript">
+            function seleccionarConsultar(index) {
+                var rgSeguridadAccion = $find('<%= rgSeguridadAccion.ClientID%>');
+                var masterTable = rgSeguridadAccion.get_masterTableView();
+                var dataItem = masterTable.get_dataItems()[index];
+                var chkConsultar = dataItem.findElement("chkConsultar");
+                var chkCrear = dataItem.findElement("chkCrear");
+                var chkEditar = dataItem.findElement("chkEditar");
+                var chkEliminar = dataItem.findElement("chkEliminar");
+                var chkExportar = dataItem.findElement("chkExportar");
+
+                var chkCrearCheked = chkCrear != null ? chkCrear.checked : false;
+                var chkEditarCheked = chkEditar != null ? chkEditar.checked : false;
+                var chkEliminarCheked = chkEliminar != null ? chkEliminar.checked : false;
+                var chkExportarCheked = chkExportar != null ? chkExportar.checked : false;
+
+                if (chkCrearCheked || chkEditarCheked || chkEliminarCheked || chkExportarCheked) {
+                    chkConsultar.checked = true;
+                }
+            }
+
+            function OnClientActualizar(ev) {
+                var floatingButton = ev.get_id();
+                __doPostBack(floatingButton);
+            }
+
+            function RecargarGrid() {
+                $find("<%= rgSeguridadAccion.ClientID %>").get_masterTableView().rebind();
+            }
+
+            function GridResize() {
+                const bodyheight = $(window).height() - 300;
+                $find('<%= rgSeguridadAccion.ClientID%>').get_element().style.height = bodyheight + 'px';
+            }
+
+        </script>
+    </telerik:RadScriptBlock>
+
+    <div class="catalogo">
+        <div class="d-flex flex-row align-items-center pb-4">
+            <telerik:RadLabel ID="lblPerfil" AssociatedControlID="rcbPerfil" runat="server" Text="Perfil de usuario:" Width="124px" CssClass="d-inline-block"></telerik:RadLabel>
+            <telerik:RadComboBox ID="rcbPerfil" EmptyMessage="--Seleccionar--" runat="server" AppendDataBoundItems="true" MarkFirstMatch="true" Width="380px" MaxHeight="300px" Filter="Contains" AutoPostBack="true" OnSelectedIndexChanged="rcbPerfil_SelectedIndexChanged" CssClass="d-inline-block me-3 radComboBox" />
+            <telerik:RadComboBox ID="rcbAsignado" runat="server" MarkFirstMatch="true" Width="200px" MaxHeight="300px"
+                Filter="Contains" AutoPostBack="true" OnSelectedIndexChanged="rcbAsignado_SelectedIndexChanged" CssClass="d-inline-block radComboBox">
+                <Items>
+                    <telerik:RadComboBoxItem runat="server" Text="Todos" Value="0" />
+                    <telerik:RadComboBoxItem runat="server" Text="Asignado" Value="1" />
+                    <telerik:RadComboBoxItem runat="server" Text="No asignado" Value="2" />
+                </Items>
+            </telerik:RadComboBox>
+        </div>
+
+        <div class="contenido">
+            <input type="hidden" id="rowIndex" name="rowIndex" />
+            <telerik:RadGrid ID="rgSeguridadAccion" runat="server" AllowFilteringByColumn="True" AutoGenerateColumns="False" Culture="es-ES" FilterItemStyle-VerticalAlign="Middle" FilterItemStyle-HorizontalAlign="Center" OnNeedDataSource="rgSeguridadAccion_NeedDataSource" OnItemCreated="rgSeguridadAccion_ItemCreated" OnItemDataBound="rgSeguridadAccion_ItemDataBound">
+                <GroupingSettings CaseSensitive="False" />
+                <MasterTableView Width="100%"
+                    DataKeyNames="ClaveEntidad,ConfigurarCrear,ConfigurarEliminar,ConfigurarEditar,ConfigurarConsultar
+                    ,ConfigurarExportar,Asignado,Orden,Descripcion">
+                    <Columns>
+                        <telerik:GridBoundColumn DataField="Descripcion" HeaderText="Entidad" UniqueName="Descripcion" AutoPostBackOnFilter="True" CurrentFilterFunction="Contains" ShowFilterIcon="False" FilterControlWidth="90%">
+                            <HeaderStyle Width="50px" />
+                        </telerik:GridBoundColumn>
+
+                        <telerik:GridBoundColumn DataField="Asignado" HeaderText="Asignado" UniqueName="Asignado" AllowFiltering="false">
+                            <HeaderStyle Width="80px" />
+                        </telerik:GridBoundColumn>
+
+                        <telerik:GridTemplateColumn HeaderText="Crear" UniqueName="Crear" AllowFiltering="false">
+                            <HeaderStyle Width="90px" />
+                            <ItemTemplate>
+                                <asp:CheckBox runat="server" ID="chkCrear" Checked='<%#(bool)Eval("Crear") %>' />
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+
+                        <telerik:GridTemplateColumn DataField="Eliminar" HeaderText="Eliminar" UniqueName="Eliminar" AllowFiltering="false">
+                            <HeaderStyle Width="90px" />
+                            <ItemTemplate>
+                                <asp:CheckBox runat="server" ID="chkEliminar" Checked='<%#(bool)Eval("Eliminar") %>' />
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+
+                        <telerik:GridTemplateColumn HeaderText="Editar" UniqueName="Editar" AllowFiltering="false">
+                            <HeaderStyle Width="90px" />
+                            <ItemTemplate>
+                                <asp:CheckBox runat="server" ID="chkEditar" Checked='<%#(bool)Eval("Editar") %>' />
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+
+                        <telerik:GridTemplateColumn HeaderText="Consultar" UniqueName="Consultar" AllowFiltering="false">
+                            <HeaderStyle Width="90px" />
+                            <ItemTemplate>
+                                <asp:CheckBox runat="server" ID="chkConsultar" Checked='<%#(bool)Eval("Consultar") %>' />
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+
+                        <telerik:GridTemplateColumn DataField="Exportar" HeaderText="Exportar" UniqueName="Exportar" AllowFiltering="false">
+                            <HeaderStyle Width="90px" />
+                            <ItemTemplate>
+                                <asp:CheckBox runat="server" ID="chkExportar" Checked='<%#(bool)Eval("Exportar") %>' />
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+                    </Columns>
+                </MasterTableView>
+                <ClientSettings>
+                    <ClientEvents OnGridCreated="GridResize"></ClientEvents>
+                    <Selecting AllowRowSelect="false"></Selecting>
+                    <Scrolling AllowScroll="True" UseStaticHeaders="True" ScrollHeight="350px" />
+                </ClientSettings>
+
+                <HeaderStyle HorizontalAlign="Center" Font-Bold="True" Height="50px" Font-Size="Larger" BackColor="#26669E" ForeColor="White" />
+                <ItemStyle HorizontalAlign="Center" Height="50px" />
+                <AlternatingItemStyle HorizontalAlign="Center" Height="50px" BackColor="WhiteSmoke" />
+                <FilterItemStyle HorizontalAlign="Center" />
+            </telerik:RadGrid>
+        </div>
+        <telerik:RadFloatingActionButton runat="server" ID="btnActualizar" PositionMode="Fixed" Align="BottomEnd" Size="Medium" BackColor="#FF8300" Text="Actualizar configuración">
+            <AlignOffsetSettings X="18" Y="90" />
+            <ClientEvents OnClick="OnClientActualizar" />
+        </telerik:RadFloatingActionButton>
+    </div>
+
+    <telerik:RadWindowManager RenderMode="Lightweight" ID="rwManager" runat="server" ReloadOnShow="true" ShowContentDuringLoad="false" Modal="true" CenterIfModal="true" Behaviors="Close, Reload" VisibleStatusbar="false" KeepInScreenBounds="true" Style="z-index: 7000"></telerik:RadWindowManager>
+    <telerik:RadAjaxLoadingPanel ID="LoadingPanel" runat="server"></telerik:RadAjaxLoadingPanel>
+</asp:Content>
