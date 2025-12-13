@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+
+    environment {
+        DOTNET_ENV = 'PreProduction'
+        PUBLISH_DIR = 'publish'
+        DEPLOY_SERVER = 'manuel@10.8.0.15'
+        DEPLOY_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API/'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/mrodriguex/hard.core.git'
+            }
+        }
+
+        stage('Restore') {
+            steps {
+                sh 'dotnet restore'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'dotnet build --configuration Release'
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                sh '''
+                  dotnet publish \
+                  --configuration Release \
+                  --output ${PUBLISH_DIR}
+                '''
+            }
+        }
+
+        stage('Deploy to PreProd') {
+            steps {
+                sh '''
+                  rsync -avz --delete \
+                  ${PUBLISH_DIR}/ \
+                  ${DEPLOY_SERVER}:${DEPLOY_PATH}
+                '''
+            }
+        }
+
+        stage('Restart Service') {
+            steps {
+                sh '''
+                  ssh ${DEPLOY_SERVER} \
+                  "sudo systemctl restart HARD.CORE.API.service"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful 🚀'
+        }
+        failure {
+            echo 'Deployment failed ❌'
+        }
+    }
+}
