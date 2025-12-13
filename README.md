@@ -1,7 +1,10 @@
-# HARD.CORE - Enterprise Resource Planning Solution
+# HARD.CORE - Enterprise Resource Planning Solution (BASE SOURCE CODE)
+
+⚠️ **IMPORTANT**: This is **BASE SOURCE CODE** designed to serve as a foundation and template for generating new ERP projects. It is NOT a standalone, production-ready application.
 
 ## 📋 Table of Contents
 
+- [About This Base Project](#about-this-base-project)
 - [Project Overview](#project-overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
@@ -13,16 +16,45 @@
 - [Running the Application](#running-the-application)
 - [Configuration](#configuration)
 - [API Documentation](#api-documentation)
+- [Using as a Template](#using-as-a-template)
 - [Contributing](#contributing)
 - [License](#license)
 
 ---
 
+## 🎯 About This Base Project
+
+**HARD.CORE** is a comprehensive, reusable **BASE SOURCE CODE** for enterprise resource planning (ERP) systems built with modern .NET technologies. This project serves as a **template and foundation** for creating new ERP applications with similar requirements.
+
+### Purpose of This Base Code
+This codebase provides:
+- ✅ Proven, scalable multi-layered architecture
+- ✅ Pre-configured REST API infrastructure with JWT authentication
+- ✅ Business logic patterns and best practices
+- ✅ Database access layer implementation
+- ✅ Security and authorization frameworks
+- ✅ Configuration management templates
+- ✅ API versioning strategy
+- ✅ Folder structure and naming conventions
+
+### Intended Use
+- **Template for New Projects**: Clone and customize for your specific requirements
+- **Reference Implementation**: Study architecture, patterns, and best practices
+- **Starting Point**: Accelerate development by using proven structures and configurations
+- **Architectural Guidance**: Learn multi-tier architecture design with .NET
+
+### NOT Intended As
+- ❌ A standalone, production-ready ERP system
+- ❌ A plug-and-play solution without customization
+- ❌ A complete, feature-rich application out-of-the-box
+
+---
+
 ## 🎯 Project Overview
 
-**HARD.CORE** is a comprehensive enterprise resource planning (ERP) system built with modern .NET technologies. It features a multi-layered architecture with a RESTful API backend, business logic services, data access layer, and multiple frontend interfaces including ASP.NET Web Forms and a web-based dashboard.
+**HARD.CORE** is a comprehensive, modular **BASE SOURCE CODE** for enterprise resource planning (ERP) systems built with modern .NET technologies. It features a multi-layered architecture with a RESTful API backend, business logic services, data access layer, and multiple frontend interfaces including ASP.NET Web Forms and a web-based dashboard.
 
-The project is designed to manage:
+This base implementation includes patterns and structures for:
 - User authentication and authorization
 - Personnel and profiles management
 - Notifications and messaging systems
@@ -676,7 +708,199 @@ The API returns standard HTTP status codes:
 
 ---
 
-## 🔒 Security Features
+## � Using as a Template
+
+### Creating a New Project from This Base Code
+
+This section explains how to use HARD.CORE as a foundation for your own ERP or business application.
+
+### Step 1: Fork or Clone the Repository
+
+```bash
+# Clone the base repository
+git clone https://github.com/mrodriguex/hard.core.git my-new-project
+cd my-new-project
+
+# Or if forking, clone your fork:
+git clone https://github.com/YOUR_USERNAME/hard.core.git my-new-project
+```
+
+### Step 2: Rename Solution and Projects
+
+Update all solution and project names to match your application:
+
+```bash
+# Using Visual Studio
+# 1. Open HARD.CORE.sln
+# 2. In Solution Explorer, right-click the solution
+# 3. Select "Rename"
+# 4. Rename all projects following your naming convention
+```
+
+Or use command-line tools:
+```bash
+# Windows: Use Visual Studio's built-in rename functionality
+# Linux/Mac: Use find and replace scripts
+```
+
+**Projects to rename** (keeping the layered structure):
+- `HARD.CORE.API` → `YourApp.API`
+- `HARD.CORE.NEG` → `YourApp.NEG`
+- `HARD.CORE.SER` → `YourApp.SER`
+- `HARD.CORE.DAT` → `YourApp.DAT`
+- `HARD.CORE.OBJ` → `YourApp.OBJ`
+- `HARD.CORE.WEB` → `YourApp.WEB`
+
+### Step 3: Customize Business Logic
+
+Remove or modify business classes that don't apply to your application:
+
+**In HARD.CORE.NEG/**:
+- Keep essential classes: `AuthB.cs`, `UsuarioB.cs`, `PerfilB.cs`, `EmpresaB.cs`
+- Remove domain-specific classes (e.g., `EntregaB.cs`, `MotivoVacanteB.cs` if not needed)
+- Add your custom business logic classes
+
+**In HARD.CORE.SER/**:
+- Similarly, keep essential service implementations
+- Remove unnecessary service classes
+- Implement your business-specific services
+
+### Step 4: Update Data Models
+
+Modify `HARD.CORE.OBJ/` data models:
+- Remove entity classes you don't need
+- Create new entity classes for your domain
+- Update property names and relationships
+
+### Step 5: Extend API Controllers
+
+In `HARD.CORE.API/Controllers/`:
+- Keep or remove existing controllers based on functionality needs
+- Create new controllers for your domain entities
+- Follow the existing pattern (inherit from `BaseController`, use versioning)
+
+### Step 6: Update Configuration
+
+1. **Rename database**: Change `hardcore_db` to your database name in `appsettings.json`
+2. **Update JWT settings**: Generate new JWT keys
+3. **Configure CORS**: Update allowed origins for your frontend
+4. **Set connection strings**: Point to your database server
+
+### Step 7: Create Database Schema
+
+Option A - Using existing migrations as template:
+```bash
+cd YourApp.API
+dotnet ef database update
+```
+
+Option B - Create migrations for your models:
+```bash
+cd YourApp.DAT
+dotnet ef migrations add InitialCreate
+cd ../YourApp.API
+dotnet ef database update
+```
+
+### Step 8: Build and Test
+
+```bash
+cd YourApp/YourApp.sln
+dotnet build
+dotnet test
+dotnet run
+```
+
+### Step 9: Update Documentation
+
+- Update `README.md` with your project information
+- Update namespace references throughout
+- Document your custom additions
+- Update license if necessary
+
+### Best Practices for Templating
+
+1. **Maintain Layered Architecture**: Keep the 6-layer structure for scalability
+2. **Follow Naming Conventions**: Use consistent naming across projects
+3. **Preserve API Versioning**: Keep the V1/V2 controller structure for backward compatibility
+4. **Document Changes**: Update comments when modifying base functionality
+5. **Test Thoroughly**: Test each layer independently before integration
+6. **Version Control**: Use meaningful commit messages when modifying the base
+
+### Common Customizations
+
+#### Add a New Domain Module
+
+Example: Adding a **Contracts** module
+
+1. **Create Model** (`YourApp.OBJ`):
+   ```csharp
+   public class Contrato
+   {
+       public int Id { get; set; }
+       public string NumeroContrato { get; set; }
+       public DateTime FechaInicio { get; set; }
+       public DateTime FechaFin { get; set; }
+   }
+   ```
+
+2. **Create Business Logic** (`YourApp.NEG`):
+   ```csharp
+   public class ContratoB
+   {
+       public List<Contrato> ObtenerContratos() { }
+       public Contrato CrearContrato(Contrato contrato) { }
+       public bool ActualizarContrato(Contrato contrato) { }
+   }
+   ```
+
+3. **Create Service** (`YourApp.SER`):
+   ```csharp
+   public class ContratoSER
+   {
+       public List<Contrato> ObtenerContratos() { }
+   }
+   ```
+
+4. **Create API Controller** (`YourApp.API/Controllers/V1`):
+   ```csharp
+   [ApiController]
+   [Route("api/v1/[controller]")]
+   public class ContratoController : BaseController
+   {
+       [HttpGet]
+       public ActionResult<List<Contrato>> Get() { }
+   }
+   ```
+
+5. **Update Dependency Injection** in `Program.cs`:
+   ```csharp
+   services.AddScoped<ContratoB>();
+   services.AddScoped<ContratoSER>();
+   ```
+
+#### Modify Authentication
+
+The base includes JWT authentication. To customize:
+
+1. Update `AuthB.cs` for custom authentication logic
+2. Modify `AuthSER.cs` for authentication services
+3. Update `JwtAuthenticateHelper.cs` in API project for token generation
+
+#### Customize Database Connection
+
+Edit `appsettings.json`:
+```json
+{
+  "ConnectionStrings": {
+    "YourAppConnection": "Data Source=YOUR_SERVER;Initial Catalog=your_database;..."
+  }
+}
+```
+
+---
+
+## �🔒 Security Features
 
 ### Authentication
 - **JWT Bearer Tokens**: Token-based authentication
@@ -990,11 +1214,55 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 ## 📊 Project Statistics
 
 - **Total Projects**: 6 (API, NEG, SER, DAT, OBJ, WEB)
-- **Controllers**: 15+ API endpoints
-- **Business Classes**: 20+ business logic classes
-- **Service Classes**: 20+ service implementations
+- **Controllers**: 15+ API endpoints (Base template)
+- **Business Classes**: 20+ business logic classes (Reference implementation)
+- **Service Classes**: 20+ service implementations (Base structures)
 - **Target Frameworks**: .NET 8.0, .NET Framework 4.8, .NET Standard 2.0
 - **License**: GPL v3
+- **Type**: BASE SOURCE CODE - Template for generating new projects
+
+---
+
+## ⚠️ Important Notes for Users
+
+### This is BASE Code, Not a Finished Product
+
+- This codebase is **designed for customization**
+- Many features are **domain-specific examples** (recruitment, delivery management)
+- You will need to **replace or remove** modules that don't fit your use case
+- The provided data models are **templates for learning** not production data schemas
+- Database schema must be **tailored to your requirements**
+
+### Getting Started with This Base
+
+1. **Study the Architecture**: Understand the 6-layer pattern
+2. **Understand the Flow**: See how data flows through layers
+3. **Identify Reusable Components**: JWT auth, base controllers, etc.
+4. **Plan Your Customization**: List what to keep, remove, and add
+5. **Implement Your Domain**: Build your business-specific logic
+6. **Test Thoroughly**: Ensure all customizations work correctly
+
+### What's Already There (Ready to Use)
+
+✅ REST API structure with versioning
+✅ JWT authentication framework
+✅ Database connection setup
+✅ Dependency injection configuration
+✅ Error handling patterns
+✅ Base controller implementation
+✅ Swagger/OpenAPI documentation setup
+✅ CORS configuration
+✅ Logging infrastructure
+
+### What You Need to Customize
+
+- Domain entities and data models
+- Business logic for your specific domain
+- Service implementations
+- API controllers for your features
+- Database schema
+- Configuration values
+- External service integrations
 
 ---
 
@@ -1004,6 +1272,8 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 
 ---
 
+**Project Type**: BASE SOURCE CODE - ERP Template  
 **Last Updated**: December 12, 2025  
-**Maintained By**: Manuel Rodriguez  
+**Maintained By**: Manuel Rodriguez Camacho 
 **Repository**: https://github.com/mrodriguex/hard.core
+**Status**: ⚠️ Base Code for Customization (Not Production Ready as-is)
