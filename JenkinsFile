@@ -4,37 +4,49 @@ pipeline {
     environment {
         DOTNET_ENV = 'PreProduction'
         PUBLISH_DIR = 'publish'
-        DEPLOY_SERVER = 'manuel@10.8.0.15'
-        DEPLOY_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API/'
+        DEPLOY_SERVER = 'deployuser@PREPROD_SERVER_IP'
+        DEPLOY_PATH = '/var/www/mydotnetapp'
     }
 
     stages {
 
+        /* ================================
+           1️⃣ CHECKOUT (GitHub credentials)
+           ================================ */
         stage('Checkout') {
             steps {
                 checkout([
-            $class: 'GitSCM',
-            branches: [[name: '*/main']],
-            userRemoteConfigs: [[
-                url: 'git@github.com:mrodriguex/hard.core.git',
-                credentialsId: 'github-ssh'
-            ]]
-        ])
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'git@github.com:mrodriguex/hard.core.git',
+                        credentialsId: 'github-ssh'
+                    ]]
+                ])
             }
         }
 
+        /* ================================
+           2️⃣ RESTORE
+           ================================ */
         stage('Restore') {
             steps {
                 sh 'dotnet restore'
             }
         }
 
+        /* ================================
+           3️⃣ BUILD
+           ================================ */
         stage('Build') {
             steps {
                 sh 'dotnet build --configuration Release'
             }
         }
 
+        /* ================================
+           4️⃣ PUBLISH
+           ================================ */
         stage('Publish') {
             steps {
                 sh '''
@@ -45,22 +57,21 @@ pipeline {
             }
         }
 
+        /* ==========================================
+           5️⃣ DEPLOY (Preprod server credentials)
+           ========================================== */
         stage('Deploy to PreProd') {
             steps {
-                sh '''
-                  rsync -avz --delete \
-                  ${PUBLISH_DIR}/ \
-                  ${DEPLOY_SERVER}:${DEPLOY_PATH}
-                '''
-            }
-        }
+                sshagent(['preprod-ssh']) {
+                    sh '''
+                      rsync -avz --delete \
+                      ${PUBLISH_DIR}/ \
+                      ${DEPLOY_SERVER}:${DEPLOY_PATH}
 
-        stage('Restart Service') {
-            steps {
-                sh '''
-                  ssh ${DEPLOY_SERVER} \
-                  "sudo systemctl restart HARD.CORE.API.service"
-                '''
+                      ssh ${DEPLOY_SERVER} \
+                      "sudo systemctl restart mydotnetapp"
+                    '''
+                }
             }
         }
     }

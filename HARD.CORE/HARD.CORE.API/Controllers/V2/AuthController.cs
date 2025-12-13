@@ -45,7 +45,7 @@ namespace HARD.CORE.API.Controllers.V2
             var webResult = new WebResultModel<string>();
             webResult.Success = false;
             webResult.Message = "Error de autenticación";
-
+            // This is a little change from V1 where we used to return 401 Unauthorized on failed login attempts.|
             try
             {
                 Usuario usuario = _usuarioB.Obtener(claveUsuario: login.Username);
