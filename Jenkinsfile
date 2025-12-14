@@ -2,64 +2,35 @@ pipeline {
     agent any
     triggers { githubPush() }
     
-    environment {
-        DEPLOY_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API'
-    }
-    
     stages {
-        stage('Prepare Deployment') {
+        stage('Build & Deploy') {
             steps {
+                git url: 'https://github.com/mrodriguex/hard.core.git', 
+                     credentialsId: 'github-token',
+                     branch: 'main'
+                
+                sh 'dotnet publish -c Release -o ./publish --runtime linux-x64'
+                
                 sshagent(['deployment_key']) {
-                    script {
-                        // Verificar si el directorio existe remotamente
-                        def dirExists = sh(
-                            script: """
-                                ssh manuel@192.168.122.138 "
-                                    if [ -d '${DEPLOY_PATH}' ]; then
-                                        echo 'EXISTS'
-                                    else
-                                        echo 'NOT_EXISTS'
-                                    fi
-                                "
-                            """,
-                            returnStdout: true
-                        ).trim()
-                        
-                        if (dirExists == 'NOT_EXISTS') {
-                            echo "Creando directorio ${DEPLOY_PATH}..."
-                            sh """
-                                ssh manuel@192.168.122.138 "
-                                    sudo mkdir -p ${DEPLOY_PATH}
-                                    sudo chown -R manuel:manuel ${DEPLOY_PATH}
-                                    echo 'Directorio creado'
-                                "
-                            """
-                        }
-                    }
-                }
-            }
-        }
-        
-        stage('Deploy Application') {
-            steps {
-                sshagent(['deployment_key']) {
-                    sh """
-                        # Stop service
-                        ssh manuel@192.168.122.138 "sudo systemctl stop HARD.CORE.API 2>/dev/null || echo 'Service not running'"
-                        
-                        # Deploy with rsync (create directories automatically)
-                        rsync -avz --delete --rsync-path="sudo rsync" \
-                            ./publish/ \
-                            manuel@192.168.122.138:${DEPLOY_PATH}/
-                        
-                        # Fix permissions and start
+                    sh '''
+                        # SOLUCIÓN: Crear directorios como usuario normal (sin sudo)
                         ssh manuel@192.168.122.138 "
-                            sudo chown -R manuel:manuel ${DEPLOY_PATH}
-                            sudo chmod -R 755 ${DEPLOY_PATH}
+                            mkdir -p /home/manuel/www/services/HARD.CORE/HARD.CORE.API
+                            echo 'Directorio creado (sin sudo)'
+                        "
+                        
+                        # Parar servicio (esto SÍ necesita sudo, pero debería funcionar con nuestra configuración)
+                        ssh manuel@192.168.122.138 "sudo systemctl stop HARD.CORE.API || echo 'Service not running'"
+                        
+                        # Sincronizar archivos
+                        rsync -avz --delete ./publish/ manuel@192.168.122.138:/home/manuel/www/services/HARD.CORE/HARD.CORE.API/
+                        
+                        # Iniciar servicio
+                        ssh manuel@192.168.122.138 "
                             sudo systemctl daemon-reload
                             sudo systemctl start HARD.CORE.API
                         "
-                    """
+                    '''
                 }
             }
         }
