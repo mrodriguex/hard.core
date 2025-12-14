@@ -3,80 +3,65 @@ pipeline {
     triggers { githubPush() }
     
     environment {
-        SERVER = '192.168.122.138'
-        USER = 'manuel'
-        APP_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API'
-        SERVICE = 'HARD.CORE.API'
+        DEPLOY_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API'
     }
     
     stages {
-        stage('Get Code') {
+        stage('Prepare Deployment') {
             steps {
-                git url: 'https://github.com/mrodriguex/hard.core.git', 
-                     credentialsId: 'github-token',
-                     branch: 'main'
+                sshagent(['deployment_key']) {
+                    script {
+                        // Verificar si el directorio existe remotamente
+                        def dirExists = sh(
+                            script: """
+                                ssh manuel@192.168.122.138 "
+                                    if [ -d '${DEPLOY_PATH}' ]; then
+                                        echo 'EXISTS'
+                                    else
+                                        echo 'NOT_EXISTS'
+                                    fi
+                                "
+                            """,
+                            returnStdout: true
+                        ).trim()
+                        
+                        if (dirExists == 'NOT_EXISTS') {
+                            echo "Creando directorio ${DEPLOY_PATH}..."
+                            sh """
+                                ssh manuel@192.168.122.138 "
+                                    sudo mkdir -p ${DEPLOY_PATH}
+                                    sudo chown -R manuel:manuel ${DEPLOY_PATH}
+                                    echo 'Directorio creado'
+                                "
+                            """
+                        }
+                    }
+                }
             }
         }
         
-        stage('Build .NET 8') {
-            steps {
-                sh '''
-                    CSPROJ=$(find . -name "*.csproj" | head -1)
-                    dotnet publish "$CSPROJ" -c Release -o ./publish --runtime linux-x64
-                '''
-            }
-        }
-        
-        stage('Deploy') {
+        stage('Deploy Application') {
             steps {
                 sshagent(['deployment_key']) {
                     sh """
                         # Stop service
-                        ssh ${USER}@${SERVER} "sudo systemctl stop ${SERVICE}"
+                        ssh manuel@192.168.122.138 "sudo systemctl stop HARD.CORE.API 2>/dev/null || echo 'Service not running'"
                         
-                        # Deploy files
-                        rsync -avz --delete ./publish/ ${USER}@${SERVER}:${APP_PATH}/
+                        # Deploy with rsync (create directories automatically)
+                        rsync -avz --delete --rsync-path="sudo rsync" \
+                            ./publish/ \
+                            manuel@192.168.122.138:${DEPLOY_PATH}/
                         
-                        # Restart service
-                        ssh ${USER}@${SERVER} "
-                            sudo chown -R ${USER}:${USER} ${APP_PATH}
+                        # Fix permissions and start
+                        ssh manuel@192.168.122.138 "
+                            sudo chown -R manuel:manuel ${DEPLOY_PATH}
+                            sudo chmod -R 755 ${DEPLOY_PATH}
                             sudo systemctl daemon-reload
-                            sudo systemctl start ${SERVICE}
-                            echo 'Service status:'
-                            sudo systemctl status ${SERVICE} --no-pager | head -3
+                            sudo systemctl start HARD.CORE.API
                         "
                     """
                 }
             }
-        }
-        
-        stage('Verify') {
-            steps {
-                sshagent(['deployment_key']) {
-                    sh """
-                        ssh ${USER}@${SERVER} "
-                            if systemctl is-active ${SERVICE} >/dev/null; then
-                                echo '✅ ${SERVICE} is running'
-                                echo '📁 Files in ${APP_PATH}:'
-                                ls -la ${APP_PATH}/ | grep -E '(.dll|appsettings)' | head -5
-                            else
-                                echo '❌ ${SERVICE} failed to start'
-                                sudo journalctl -u ${SERVICE} -n 20 --no-pager
-                                exit 1
-                            fi
-                        "
-                    """
-                }
-            }
-        }
-    }
-    
-    post {
-        success {
-            echo '✅ .NET 8 API deployed successfully!'
-        }
-        failure {
-            echo '❌ Deployment failed'
         }
     }
 }
