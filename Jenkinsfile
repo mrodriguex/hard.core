@@ -49,8 +49,7 @@ pipeline {
                             echo "Creando directorio ${DEPLOY_PATH}..."
                             sh """
                                 ssh manuel@192.168.122.138 "
-                                    sudo mkdir -p ${DEPLOY_PATH}
-                                    sudo chown -R manuel:manuel ${DEPLOY_PATH}
+                                    mkdir -p ${DEPLOY_PATH}                                    
                                     echo 'Directorio creado'
                                 "
                             """
