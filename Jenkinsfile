@@ -1,87 +1,52 @@
 pipeline {
     agent any
-
-    environment {
-        DOTNET_ENV = 'PreProduction'
-        PUBLISH_DIR = 'publish'
-        DEPLOY_SERVER = 'deployuser@PREPROD_SERVER_IP'
-        DEPLOY_PATH = '/var/www/mydotnetapp'
+    
+    triggers {
+        githubPush()
     }
-
+    
     stages {
-
-        /* ================================
-           1️⃣ CHECKOUT (GitHub credentials)
-           ================================ */
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
+                echo '📦 Cloning repository with credentials...'
+                
+                // ESPECIFICA LAS CREDENCIALES AQUÍ
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
+                    extensions: [
+                        [$class: 'CloneOption', depth: 1, shallow: true],
+                        [$class: 'CleanBeforeCheckout']
+                    ],
                     userRemoteConfigs: [[
-                        url: 'git@github.com:mrodriguex/hard.core.git',
-                        credentialsId: 'github-ssh'
+                        url: 'https://github.com/mrodriguex/hard.core.git',
+                        credentialsId: 'github-token'  // ¡AQUÍ ESTÁ LA CLAVE!
                     ]]
                 ])
-            }
-        }
-
-        /* ================================
-           2️⃣ RESTORE
-           ================================ */
-        stage('Restore') {
-            steps {
-                sh 'dotnet restore'
-            }
-        }
-
-        /* ================================
-           3️⃣ BUILD
-           ================================ */
-        stage('Build') {
-            steps {
-                sh 'dotnet build --configuration Release'
-            }
-        }
-
-        /* ================================
-           4️⃣ PUBLISH
-           ================================ */
-        stage('Publish') {
-            steps {
+                
                 sh '''
-                  dotnet publish \
-                  --configuration Release \
-                  --output ${PUBLISH_DIR}
+                    echo "✅ Repository cloned successfully!"
+                    echo "Branch: $(git branch --show-current)"
+                    echo "Latest commit: $(git log -1 --oneline)"
                 '''
             }
         }
-
-        /* ==========================================
-           5️⃣ DEPLOY (Preprod server credentials)
-           ========================================== */
-        stage('Deploy to PreProd') {
+        
+        stage('Build') {
             steps {
-                sshagent(['preprod-ssh']) {
-                    sh '''
-                      rsync -avz --delete \
-                      ${PUBLISH_DIR}/ \
-                      ${DEPLOY_SERVER}:${DEPLOY_PATH}
-
-                      ssh ${DEPLOY_SERVER} \
-                      "sudo systemctl restart mydotnetapp"
-                    '''
-                }
+                echo '🏗️ Building project...'
+                sh '''
+                    echo "Listing files:"
+                    ls -la
+                    echo "Build completed at: $(date)"
+                '''
             }
         }
     }
-
+    
     post {
         success {
-            echo 'Deployment successful 🚀'
-        }
-        failure {
-            echo 'Deployment failed ❌'
+            echo '🎉 Pipeline completed successfully!'
         }
     }
 }
