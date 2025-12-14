@@ -5,7 +5,7 @@ pipeline {
     environment {
         SERVER = '192.168.122.138'
         USER = 'manuel'
-        APP_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API'
+        DEPLOY_PATH = '/home/manuel/www/services/HARD.CORE/HARD.CORE.API'
         SERVICE = 'HARD.CORE.API'
     }
     
@@ -68,11 +68,11 @@ pipeline {
                         ssh ${USER}@${SERVER} "sudo systemctl stop ${SERVICE}"
                         
                         # Deploy files
-                        rsync -avz --delete ./publish/ ${USER}@${SERVER}:${APP_PATH}/
+                        rsync -avz --delete ./publish/ ${USER}@${SERVER}:${DEPLOY_PATH}/
                         
                         # Restart service
                         ssh ${USER}@${SERVER} "
-                            sudo chown -R ${USER}:${USER} ${APP_PATH}
+                            sudo chown -R ${USER}:${USER} ${DEPLOY_PATH}
                             sudo systemctl daemon-reload
                             sudo systemctl start ${SERVICE}
                             echo 'Service status:'
@@ -90,8 +90,8 @@ pipeline {
                         ssh ${USER}@${SERVER} "
                             if systemctl is-active ${SERVICE} >/dev/null; then
                                 echo '✅ ${SERVICE} is running'
-                                echo '📁 Files in ${APP_PATH}:'
-                                ls -la ${APP_PATH}/ | grep -E '(.dll|appsettings)' | head -5
+                                echo '📁 Files in ${DEPLOY_PATH}:'
+                                ls -la ${DEPLOY_PATH}/ | grep -E '(.dll|appsettings)' | head -5
                             else
                                 echo '❌ ${SERVICE} failed to start'
                                 sudo journalctl -u ${SERVICE} -n 20 --no-pager
