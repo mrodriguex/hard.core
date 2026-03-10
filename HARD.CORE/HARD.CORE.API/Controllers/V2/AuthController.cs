@@ -68,7 +68,7 @@ namespace HARD.CORE.API.Controllers.V2
                 {
                     webResult.Errors.Add("Usuario bloqueado");
                 }
-                else if (!_usuarioB.AuthenticateUser(usuario.IdUsuario, login.Password))
+                else if (!_usuarioB.AuthenticateUser(usuario.Id, login.Password))
                 {
                     webResult.Errors.Add("Credenciales son incorrectas");
                 }

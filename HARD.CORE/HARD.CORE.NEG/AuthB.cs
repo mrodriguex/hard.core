@@ -27,7 +27,7 @@ namespace HARD.CORE.NEG
             if (!string.IsNullOrEmpty(usuario.ClaveUsuario) && username.ToLower() == usuario.ClaveUsuario.ToLower())
             {
                 // Validar credenciales contra la base de datos
-                success = _usuarioB.AuthenticateUser(usuario.IdUsuario, password);
+                success = _usuarioB.AuthenticateUser(usuario.Id, password);
             }
             return (success);
         }

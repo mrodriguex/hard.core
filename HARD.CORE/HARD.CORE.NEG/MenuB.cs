@@ -123,7 +123,7 @@ namespace HARD.CORE.NEG
         public List<Menu> GetMenusByUser(int idUsuario, int idPerfil)
         {
             Usuario usuario = _usuarioDA.GetById(idUsuario);
-            List<Menu> menus = usuario.Perfiles.Where(p => p.IdPerfil == idPerfil)
+            List<Menu> menus = usuario.Perfiles.Where(p => p.Id == idPerfil)
                 .SelectMany(p => p.Menus)
                 .ToList();
             return menus;

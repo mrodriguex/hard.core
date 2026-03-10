@@ -31,7 +31,7 @@ namespace HARD.CORE.NEG
 
         public bool Update(Empresa entity)
         {
-            Empresa EmpresaModificacion = _EmpresaDA.GetById(entity.IdEmpresa);
+            Empresa EmpresaModificacion = _EmpresaDA.GetById(entity.Id);
             EmpresaModificacion.Nombre = entity.Nombre;
             EmpresaModificacion.Abreviatura = entity.Abreviatura;
             EmpresaModificacion.Activo = entity.Activo;

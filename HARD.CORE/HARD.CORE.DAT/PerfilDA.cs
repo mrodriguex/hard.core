@@ -30,7 +30,7 @@ namespace HARD.CORE.DAT
         {
             var perfil = _context.Perfiles
                 .Include(p => p.Menus)
-                .FirstOrDefault(p => p.IdPerfil == id);
+                .FirstOrDefault(p => p.Id == id);
             return perfil;
         }
 
@@ -39,7 +39,7 @@ namespace HARD.CORE.DAT
             var perfiles = _context.Perfiles
                 .Where(p => (!pagedFilter.Filters.Activo.HasValue || p.Activo == pagedFilter.Filters.Activo.Value)
                             && (string.IsNullOrEmpty(pagedFilter.Filters.Nombre) || p.Nombre.Contains(pagedFilter.Filters.Nombre)))
-                .OrderBy(p => p.IdPerfil)
+                .OrderBy(p => p.Id)
                 .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
                 .Take(pagedFilter.PageSize)
                 .ToList();
@@ -54,7 +54,7 @@ namespace HARD.CORE.DAT
                 foreach (var menu in entity.Menus) { _context.Attach(menu); }
                 _context.Perfiles.Add(entity);
                 _context.SaveChanges();
-                return entity.IdPerfil;
+                return entity.Id;
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                var perfil = _context.Perfiles.FirstOrDefault(p => p.IdPerfil == id);
+                var perfil = _context.Perfiles.FirstOrDefault(p => p.Id == id);
                 if (perfil != null)
                 {
                     foreach (var menu in perfil.Menus) { _context.Attach(menu); }

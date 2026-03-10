@@ -6,8 +6,6 @@ namespace HARD.CORE.OBJ
 {
     public class Empresa : Base
     {
-        public int IdEmpresa => Id;
-
         public List<Usuario> Usuarios { get; set; } = new();
 
         public string RFC { get; set; }

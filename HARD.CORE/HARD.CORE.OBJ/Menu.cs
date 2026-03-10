@@ -6,8 +6,6 @@ namespace HARD.CORE.OBJ
     {
         private int? _claveMenuPadre;
         
-        public int IdMenu => Id;
-
         public List<Perfil> Perfiles { get; set; } = new();
         
         public string Imagen { get; set; }

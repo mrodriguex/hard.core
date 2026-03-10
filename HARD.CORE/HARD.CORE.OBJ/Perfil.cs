@@ -6,8 +6,6 @@ namespace HARD.CORE.OBJ
     public class Perfil : Base
     {
 
-        public int IdPerfil => Id;
-
         public List<Usuario> Usuarios { get; set; } = new();       
 
         public List<Menu> Menus { get; set; } = new();

@@ -6,7 +6,6 @@ namespace HARD.CORE.OBJ
 {
     public class Producto: Base
     {
-        public int IdProducto => Id;
 
     }
 }

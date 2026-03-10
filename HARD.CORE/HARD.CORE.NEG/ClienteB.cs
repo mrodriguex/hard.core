@@ -27,7 +27,7 @@ namespace HARD.CORE.NEG
 
         public bool Update(Cliente entity)
         {
-            Cliente clienteModificacion = _clienteDA.GetById(entity.IdCliente);
+            Cliente clienteModificacion = _clienteDA.GetById(entity.Id);
             clienteModificacion.Nombre = entity.Nombre;
             clienteModificacion.Abreviatura = entity.Abreviatura;
             clienteModificacion.Activo = entity.Activo;

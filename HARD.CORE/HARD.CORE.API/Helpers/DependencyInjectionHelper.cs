@@ -34,7 +34,7 @@ public static class DependencyInjection
         // Register services DA
         services.AddScoped<IRepositoryBase<Usuario, BaseFilter, int>, UsuarioDA>();
         services.AddScoped<IRepositoryBase<Perfil, BaseFilter, int>, PerfilDA>();
-        services.AddScoped<IRepositoryBase<Empresa, BaseFilter, int>, EmpresaDA>();
+        services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
         services.AddScoped<IRepositoryBase<Menu, BaseFilter, int>, MenuDA>();
         services.AddScoped<IRepositoryBase<Empresa, BaseFilter, int>, EmpresaDA>();
         services.AddScoped<IRepositoryBase<Menu, BaseFilter, int>, MenuDA>();
@@ -43,7 +43,8 @@ public static class DependencyInjection
         services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
 
         // Register services B
-        services.AddScoped<ICryptographer, Cryptographer>();
+        services.AddScoped<ICryptographer, Cryptographer>();        
+        services.AddScoped<IClienteB, ClienteB>();
         services.AddScoped<IEmpresaB, EmpresaB>();
         services.AddScoped<IMenuB, MenuB>();
         services.AddScoped<IPerfilB, PerfilB>();

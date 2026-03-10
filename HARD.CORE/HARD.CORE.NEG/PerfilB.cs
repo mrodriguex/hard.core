@@ -95,7 +95,7 @@ namespace HARD.CORE.NEG
                 return false;
             }
 
-            var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.IdPerfil == idPerfil);
+            var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.Id == idPerfil);
             if (existingPerfil != null)
             {
                 return false;
@@ -113,7 +113,7 @@ namespace HARD.CORE.NEG
             {
                 return false;
             }
-            var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.IdPerfil == idPerfil);
+            var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.Id == idPerfil);
             if (existingPerfil == null)
             {
                 return false;

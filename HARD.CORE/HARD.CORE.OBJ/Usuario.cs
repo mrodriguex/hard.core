@@ -4,7 +4,6 @@ namespace HARD.CORE.OBJ
 {
     public class Usuario : Base
     {
-        public int IdUsuario => Id;
 
         private string _claveUsuario;
         private string _nombre;

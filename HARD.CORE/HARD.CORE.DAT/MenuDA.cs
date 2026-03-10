@@ -30,7 +30,7 @@ namespace HARD.CORE.DAT
             var menus = _context.Menus
                 .Where(m => (!pagedFilter.Filters.Activo.HasValue || m.Activo == pagedFilter.Filters.Activo.Value)
                     && (string.IsNullOrEmpty(pagedFilter.Filters.Nombre) || m.Nombre.Contains(pagedFilter.Filters.Nombre)))
-                .OrderBy(m => m.IdMenu)
+                .OrderBy(m => m.Id)
                 .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
                 .Take(pagedFilter.PageSize)
                 .ToList();
@@ -44,7 +44,7 @@ namespace HARD.CORE.DAT
             {
                 _context.Menus.Add(entity);
                 _context.SaveChanges();
-                return entity.IdMenu;
+                return entity.Id;
             }
             catch (Exception ex)
             {

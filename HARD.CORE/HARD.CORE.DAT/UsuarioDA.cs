@@ -32,7 +32,7 @@ namespace HARD.CORE.DAT
                 .Include(u => u.Empresas)
                 .Include(u => u.Perfiles)
                 .ThenInclude(p => p.Menus)
-                .FirstOrDefault(u => u.IdUsuario == id);
+                .FirstOrDefault(u => u.Id == id);
             return usuario;
         }
 
@@ -42,7 +42,7 @@ namespace HARD.CORE.DAT
                 .Where(u => (!pagedFilter.Filters.Activo.HasValue || u.Estatus ==
                             pagedFilter.Filters.Activo.Value)
                             && (string.IsNullOrEmpty(pagedFilter.Filters.Nombre) || u.ClaveUsuario.Contains(pagedFilter.Filters.Nombre)))
-                .OrderBy(u => u.IdUsuario)
+                .OrderBy(u => u.Id)
                 .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
                 .Take(pagedFilter.PageSize)
                 .ToList();
@@ -58,7 +58,7 @@ namespace HARD.CORE.DAT
                 foreach (var empresa in entity.Empresas) { _context.Attach(empresa); }
                 _context.Usuarios.Add(entity);
                 _context.SaveChanges();
-                return entity.IdUsuario;
+                return entity.Id;
             }
             catch (Exception ex)
             {
@@ -89,7 +89,7 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                var usuario = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == id);
+                var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
                 if (usuario != null)
                 {
                     foreach (var perfil in usuario.Perfiles) { _context.Attach(perfil); }

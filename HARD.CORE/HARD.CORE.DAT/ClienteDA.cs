@@ -33,7 +33,7 @@ namespace HARD.CORE.DAT
                 query = query.Where(c => c.Activo == pagedFilter.Filters.Activo.Value);
             }
             var clientes = query
-                .OrderBy(c => c.IdCliente)
+                .OrderBy(c => c.Id)
                 .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
                 .Take(pagedFilter.PageSize)
                 .ToList();
@@ -44,7 +44,7 @@ namespace HARD.CORE.DAT
 
         public Cliente GetById(int id)
         {
-            var cliente = _context.Clientes.FirstOrDefault(c => c.IdCliente == id);
+            var cliente = _context.Clientes.FirstOrDefault(c => c.Id == id);
             return cliente;
         }
 
@@ -55,7 +55,7 @@ namespace HARD.CORE.DAT
                 entity.FechaCreacion = DateTime.Now;
                 _context.Clientes.Add(entity);
                 _context.SaveChanges();
-                return entity.IdCliente;
+                return entity.Id;
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                var cliente = _context.Clientes.FirstOrDefault(c => c.IdCliente == id);
+                var cliente = _context.Clientes.FirstOrDefault(c => c.Id == id);
                 if (cliente == null)
                 {
                     return false;

@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HARD.CORE.API.Controllers.V1
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")] // Version in the URL path
@@ -199,9 +199,18 @@ namespace HARD.CORE.API.Controllers.V1
         {
             var webResult = new WebResultModel<bool>();
             try
-            {
+            {               
                 Usuario usuario = _usuarioB.GetByUsername(login.Username);
-                webResult.Data = _usuarioB.AuthenticateUser(usuario.IdUsuario, login.Password);
+                bool isAuthenticated = _usuarioB.AuthenticateUser(usuario.Id, login.Password);
+                if (!isAuthenticated)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "Usuario o contraseña incorrectos.";
+                    webResult.Success = false;
+                    return Ok(webResult);
+                }
+
+                webResult.Data = true;
                 webResult.Message = "Autenticación realizada exitosamente.";
                 webResult.Success = true;
             }

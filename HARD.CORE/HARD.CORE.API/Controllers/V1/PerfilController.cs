@@ -52,7 +52,7 @@ namespace HARD.CORE.API.Controllers.V1
             var webResult = new WebResultModel<Perfil>();
             try
             {
-                webResult.Data = (Perfil)_perfilB.GetById(idPerfil);
+                webResult.Data = _perfilB.GetById(idPerfil);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -78,7 +78,7 @@ namespace HARD.CORE.API.Controllers.V1
                 {
                     PageIndex = 1,
                     PageSize = int.MaxValue,
-                    Filters = new BaseFilter()
+                    Filters = new BaseFilter { Activo = activo }
                 };
                 webResult.Data = _perfilB.GetAll(pagedFilter).ToList();
                 webResult.Message = "Información obtenida exitosamente.";

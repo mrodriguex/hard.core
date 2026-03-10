@@ -5,8 +5,6 @@ namespace HARD.CORE.OBJ
     public class BaseFilter
     {
 
-        public int? Id { get; set; }
-
         public int? IdMaster { get; set; }
 
         public int? IdDetail { get; set; }

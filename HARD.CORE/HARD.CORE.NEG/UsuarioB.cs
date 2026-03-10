@@ -57,7 +57,7 @@ namespace HARD.CORE.NEG
         /// <param name="usuario">The user to update.</param>
         public bool Update(Usuario usuario)
         {
-            Usuario usuarioModificacion = _usuarioDA.GetById(usuario.IdUsuario);
+            Usuario usuarioModificacion = _usuarioDA.GetById(usuario.Id);
             usuarioModificacion.Nombre = usuario.Nombre;
             usuarioModificacion.ApellidoPaterno = usuario.ApellidoPaterno;
             usuarioModificacion.ApellidoMaterno = usuario.ApellidoMaterno;
@@ -175,7 +175,7 @@ namespace HARD.CORE.NEG
         public bool UpdatePassword(Usuario usuario)
         {
             string hash = _cryptographer.CreateHash(algorithmName: "SHA512CryptoServiceProvider", plainText: usuario.Contrasena);
-            Usuario usuarioModificacion = _usuarioDA.GetById(usuario.IdUsuario);
+            Usuario usuarioModificacion = _usuarioDA.GetById(usuario.Id);
             usuarioModificacion.Contrasena = hash;
             usuarioModificacion.CambioContrasena = false;
             return _usuarioDA.Update(usuarioModificacion);

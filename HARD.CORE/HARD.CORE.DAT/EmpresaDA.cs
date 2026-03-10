@@ -29,7 +29,7 @@ namespace HARD.CORE.DAT
 
         public Empresa GetById(int id)
         {
-            var empresa = _context.Empresas.FirstOrDefault(e => e.IdEmpresa == id);
+            var empresa = _context.Empresas.FirstOrDefault(e => e.Id == id);
             return empresa;
         }
 
@@ -41,7 +41,7 @@ namespace HARD.CORE.DAT
                 query = query.Where(e => e.Activo == pagedFilter.Filters.Activo.Value);
             }
             var empresas = query
-                .OrderBy(e => e.IdEmpresa)
+                .OrderBy(e => e.Id)
                 .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
                 .Take(pagedFilter.PageSize)
                 .ToList();
@@ -56,7 +56,7 @@ namespace HARD.CORE.DAT
                 entity.FechaCreacion = DateTime.Now;
                 _context.Empresas.Add(entity);
                 _context.SaveChanges();
-                return entity.IdEmpresa;
+                return entity.Id;
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                var empresa = _context.Empresas.FirstOrDefault(e => e.IdEmpresa == id);
+                var empresa = _context.Empresas.FirstOrDefault(e => e.Id == id);
                 if (empresa == null)
                 {
                     return false;
@@ -101,7 +101,7 @@ namespace HARD.CORE.DAT
             }
         }
 
-        #region Cambio_en_Basee
+        #region Cambio_en_Base
         #endregion
 
     }
