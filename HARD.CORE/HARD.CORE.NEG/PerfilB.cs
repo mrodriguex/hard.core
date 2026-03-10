@@ -1,54 +1,44 @@
-﻿using HARD.CORE.DAT;
-using HARD.CORE.DAT.Interfaces;
-using HARD.CORE.NEG.Interfaces;
+﻿using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.OBJ;
-using Microsoft.Extensions.Configuration;
+using HARD.CORE.NEG.Interfaces;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 
 namespace HARD.CORE.NEG
 {
     public class PerfilB : IPerfilB
     {
 
-        IPerfilDA _perfilDA;
+        IRepositoryBase<Perfil, BaseFilter, int> _perfilDA;
+        IRepositoryBase<Usuario, BaseFilter, int> _usuarioDA;
 
-        public PerfilB(IPerfilDA perfilDA)
+        public PerfilB(IRepositoryBase<Perfil, BaseFilter, int> perfilDA, IRepositoryBase<Usuario, BaseFilter, int> usuarioDA)
         {
             _perfilDA = perfilDA;
+            _usuarioDA = usuarioDA;
         }
 
         /// <summary>
         /// Obtains a profile by its unique key.
         /// </summary>
-        /// <param name="clavePerfil">The unique key identifying the profile.</param>
+        /// <param name="idPerfil">The unique key identifying the profile.</param>
         /// <returns>The profile associated with the provided key.</returns>
-        public Perfil Obtener(int clavePerfil)
+        public Perfil GetById(int idPerfil)
         {
-            return _perfilDA.Obtener(clavePerfil: clavePerfil);
+            return _perfilDA.GetById(idPerfil);
         }
 
 
-       /// <summary>
-       /// Obtains all profiles.
-       /// </summary>
-       /// <param name="estatus">
-       /// The status to filter profiles.
-       /// </param>
-       /// <param name="claveUsuario">
-       /// The unique key identifying the user.
-       /// </param>
-       /// <returns>A list of profiles matching the specified criteria.</returns>
-        public List<Perfil> ObtenerTodos(bool? estatus = null, string? claveUsuario = null)
+        /// <summary>
+        /// Obtains all profiles.
+        /// </summary>
+        /// <param name="pagedFilter">
+        /// The filter and pagination information to apply.
+        /// </param>
+        /// <returns>A list of profiles matching the specified criteria.</returns>
+        public IEnumerable<Perfil> GetAll(PagedFilter<BaseFilter> pagedFilter)
         {
-            if (string.IsNullOrEmpty(claveUsuario))
-            {
-                return _perfilDA.ObtenerTodos(estatus: estatus);
-            }
-            else
-            {
-                return _perfilDA.ObtenerPerfilesUsuario(claveUsuario: claveUsuario);
-            }
+            return _perfilDA.GetAll(pagedFilter).ToList();
         }
 
         /// <summary>
@@ -56,9 +46,9 @@ namespace HARD.CORE.NEG
         /// </summary>
         /// <param name="perfil">The profile to insert.</param>
         /// <returns>The unique key of the inserted profile.</returns>
-        public int Insertar(Perfil perfil)
+        public int Add(Perfil perfil)
         {
-            return _perfilDA.Insertar(perfil: perfil);
+            return _perfilDA.Add(perfil);
         }
 
         /// <summary>
@@ -66,29 +56,70 @@ namespace HARD.CORE.NEG
         /// </summary>
         /// <param name="perfil">The profile to update.</param>
         /// <returns>True if the update was successful; otherwise, false.</returns>
-        public bool Actualizar(Perfil perfil)
+        public bool Update(Perfil perfil)
         {
-            return _perfilDA.Actualizar(perfil: perfil);
+            return _perfilDA.Update(perfil);
+        }
+
+        /// <summary>
+        /// Deletes a profile by its unique key.
+        /// </summary>
+        /// <param name="idPerfil">The unique key identifying the profile.</param>
+        /// <returns>True if the deletion was successful; otherwise, false.</returns>
+        public bool Delete(int idPerfil)
+        {
+            return _perfilDA.Delete(idPerfil);
         }
 
         /// <summary>
         /// Obtains the profiles associated with a specific user.
         /// </summary>
-        /// <param name="claveUsuario">The unique key identifying the user.</param>
+        /// <param name="idUsuario">The unique key identifying the user.</param>
         /// <returns>A list of profiles associated with the provided user key.</returns>
-        public List<Perfil> ObtenerPerfilesUsuario(string claveUsuario)
+        public List<Perfil> GetUserProfiles(int idUsuario)
         {
-            return _perfilDA.ObtenerPerfilesUsuario(claveUsuario: claveUsuario);
+            var user = _usuarioDA.GetById(idUsuario);
+            if (user == null)
+            {
+                return new List<Perfil>();
+            }
+            return user.Perfiles.ToList();
         }
 
-        /// <summary>
-        /// Configures the menu for a given profile.
-        /// </summary>
-        /// <param name="perfil">The profile for which the menu is to be configured.</param>
-        /// <returns>True if the configuration was successful; otherwise, false.</returns>
-        bool IPerfilB.ConfigurarMenu_Perfil(Perfil perfil)
+        public bool AssignProfileToUser(int idUsuario, int idPerfil)
         {
-            return _perfilDA.ConfigurarMenu_Perfil(perfil: perfil);
+            Usuario usuario = _usuarioDA.GetById(idUsuario);
+            Perfil perfil = _perfilDA.GetById(idPerfil);
+            if (usuario == null || perfil == null)
+            {
+                return false;
+            }
+
+            var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.IdPerfil == idPerfil);
+            if (existingPerfil != null)
+            {
+                return false;
+            }
+
+            usuario.Perfiles.Add(perfil);
+            return _usuarioDA.Update(usuario);
+        }
+
+        public bool RemoveProfileFromUser(int idUsuario, int idPerfil)
+        {
+            Usuario usuario = _usuarioDA.GetById(idUsuario);
+            Perfil perfil = _perfilDA.GetById(idPerfil);
+            if (usuario == null || perfil == null)
+            {
+                return false;
+            }
+            var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.IdPerfil == idPerfil);
+            if (existingPerfil == null)
+            {
+                return false;
+            }
+            usuario.Perfiles.Remove(existingPerfil);
+            return _usuarioDA.Update(usuario);
         }
     }
 }

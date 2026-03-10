@@ -118,13 +118,13 @@ public partial class MasterPage : System.Web.UI.MasterPage
             {
                 //lblTituloMaster.InnerText = nombreMenuActivo.ToUpper();
                 Usuario usuario = (Usuario)Session["Usuario"];
-                string claveUsuario = usuario.ClaveUsuario;
-                int clavePerfil = usuario.PerfilActivo.ClavePerfil;
+                int idUsuario = usuario.ClaveUsuario;
+                int idPerfil = usuario.PerfilActivo.IdPerfil;
 
                 List<Menu> menuUsuario = null;
 
                 if (Session["Menu"] == null)
-                    menuUsuario = MenuSER.GetInstance().ObtenerMenu_Usuario(claveUsuario, clavePerfil);
+                    menuUsuario = MenuSER.GetInstance().ObtenerMenu_Usuario(claveUsuario, idPerfil);
                 else
                     menuUsuario = (List<Menu>)Session["Menu"];
 
@@ -164,7 +164,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
         UpdateToolTipInformacionUsuario(e.Value, e.UpdatePanel);
     }
 
-    private void UpdateToolTipNotificacion(string claveUsuario, UpdatePanel panel)
+    private void UpdateToolTipNotificacion(int idUsuario, UpdatePanel panel)
     {
         Control notifiacionUsuario = Page.LoadControl("wuc_Notificaciones.ascx");
         notifiacionUsuario.ID = "Notificaciones1";
@@ -173,7 +173,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
         panel.ContentTemplateContainer.Controls.Add(notifiacionUsuario);
     }
 
-    private void UpdateToolTipInformacionUsuario(string claveUsuario, UpdatePanel panel)
+    private void UpdateToolTipInformacionUsuario(int idUsuario, UpdatePanel panel)
     {
         Control informacionUsuario = Page.LoadControl("wuc_InformacionUsuario.ascx");
         informacionUsuario.ID = "InformacionUsuario1";

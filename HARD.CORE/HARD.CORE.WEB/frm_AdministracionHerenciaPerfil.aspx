@@ -223,7 +223,7 @@
                             CurrentFilterFunction="EqualTo" ShowFilterIcon="false" AutoPostBackOnFilter="true" DataFormatString="{0:dd/MM/yyyy}" AllowFiltering="false">
                             <HeaderStyle Width="140px" />
                         </telerik:GridDateTimeColumn>
-                        <telerik:GridDateTimeColumn DataField="FechaUltimaActualizacion" HeaderText="Fecha de modificación" UniqueName="FechaUltimoMovimiento" FilterControlWidth="114px"
+                        <telerik:GridDateTimeColumn DataField="FechaModificacion" HeaderText="Fecha de modificación" UniqueName="FechaUltimoMovimiento" FilterControlWidth="114px"
                             CurrentFilterFunction="EqualTo" ShowFilterIcon="false" AutoPostBackOnFilter="true" DataFormatString="{0:dd/MM/yyyy}" AllowFiltering="false">
                             <HeaderStyle Width="140px" />
                         </telerik:GridDateTimeColumn>

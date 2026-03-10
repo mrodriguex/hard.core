@@ -19,7 +19,7 @@ public partial class frm_AdministracionPerfiles : System.Web.UI.Page
             if (!IsPostBack)
             {
                 //Usuario usuario = Session["Usuario"] as Usuario;
-                ////Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(usuario.Perfil.ClavePerfil, (int)EnumEntidad.Perfil);
+                ////Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(usuario.Perfil.IdPerfil, (int)EnumEntidad.Perfil);
 
                 //if (!seguridad.Consultar)
                 //    Response.Redirect("NoAutorizado.aspx");
@@ -69,8 +69,8 @@ public partial class frm_AdministracionPerfiles : System.Web.UI.Page
             {
                 GridDataItem item = (GridDataItem)e.Item;
                 ImageButton vistaPreviaMenu = (ImageButton)item.FindControl("vistaPreviaMenu");
-                string clavePerfil = item.GetDataKeyValue("ClavePerfil").ToString();
-                rttPerfiles.TargetControls.Add(vistaPreviaMenu.ClientID, clavePerfil, true);
+                string idPerfil = item.GetDataKeyValue("IdPerfil").ToString();
+                rttPerfiles.TargetControls.Add(vistaPreviaMenu.ClientID, idPerfil, true);
             }
         }
         catch (Exception ex)
@@ -86,7 +86,7 @@ public partial class frm_AdministracionPerfiles : System.Web.UI.Page
             if (e.Item.ItemType == GridItemType.FilteringItem)
             {
                 GridFilteringItem item = (GridFilteringItem)e.Item;
-                RadNumericTextBox txtNumeroEmpleado = (RadNumericTextBox)item["ClavePerfil"].Controls[0];
+                RadNumericTextBox txtNumeroEmpleado = (RadNumericTextBox)item["IdPerfil"].Controls[0];
                 TextBox txtDescripcion = (TextBox)item["Descripcion"].Controls[0];
 
                 txtNumeroEmpleado.MaxLength = 10;

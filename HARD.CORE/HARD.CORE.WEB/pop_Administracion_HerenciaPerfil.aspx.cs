@@ -75,7 +75,7 @@ public partial class pop_Administracion_HerenciaPerfil : System.Web.UI.Page
 
 
             Usuario usuario = (Usuario)Session["Usuario"];
-            string claveUsuarioHereda = hdnClaveUsuario.Value.ToString();
+            int idUsuarioHereda = hdnClaveUsuario.Value.ToString();
             DateTime fechaInicial = (DateTime)dpFechaInicial.SelectedDate.Value.Date == DateTime.Now.Date ? DateTime.Now : Convert.ToDateTime(dpFechaInicial.SelectedDate.Value.ToString("dd/MM/yyyy"));
             DateTime fechaFinal = (DateTime)dpFechaFinal.SelectedDate.Value.AddDays(1).AddSeconds(-1);
 

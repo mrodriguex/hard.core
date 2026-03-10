@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Azure;
 using HARD.CORE.API.Controllers.Base;
 using HARD.CORE.API.Helpers;
 using HARD.CORE.API.Models.V1;
@@ -29,13 +30,37 @@ namespace HARD.CORE.API.Controllers.V1
             _menuB = menuB;
         }
 
-        [HttpGet("ObtenerTodos")]
-        public IActionResult ObtenerTodos([FromQuery] bool? claveEstatus = null)
+        [HttpGet("GetById")]
+        public IActionResult GetById([FromQuery, Required] int idMenu)
+        {
+            var webResult = new WebResultModel<Menu>();
+            try
+            {
+                webResult.Data = _menuB.GetById(idMenu);
+                webResult.Message = "Información del menú obtenida exitosamente.";
+                webResult.Success = true;
+            }
+            catch (Exception ex)
+            {
+                webResult.Message = "Error al obtener la información del menú.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return Ok(webResult);
+        }
+
+        [HttpGet("GetAll")]
+        public IActionResult GetAll([FromQuery] bool? activo = null)
         {
             var webResult = new WebResultModel<List<Menu>>();
             try
             {
-                webResult.Data = _menuB.ObtenerTodos(claveEstatus: claveEstatus);
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Filters = new BaseFilter { Activo = activo }
+                };
+                webResult.Data = _menuB.GetAll(pagedFilter).ToList();
                 webResult.Message = "Información del menú del usuario obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -49,14 +74,13 @@ namespace HARD.CORE.API.Controllers.V1
         }
 
         // Obtener menú de usuario
-        [HttpGet("ObtenerMenu_Usuario")]
-        public IActionResult ObtenerMenu_Usuario([FromQuery, Required] string claveUsuario, [FromQuery, Required] int clavePerfil)
+        [HttpGet("GetMenusByUser")]
+        public IActionResult GetMenusByUser([FromQuery, Required] int idUsuario, [FromQuery, Required] int idPerfil)
         {
             var webResult = new WebResultModel<List<Menu>>();
             try
             {
-                string decodedClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                webResult.Data = _menuB.ObtenerMenu_Usuario(claveUsuario: decodedClaveUsuario, clavePerfil: clavePerfil);
+                webResult.Data = _menuB.GetMenusByUser(idUsuario, idPerfil);
                 webResult.Message = "Información del menú del usuario obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -69,13 +93,13 @@ namespace HARD.CORE.API.Controllers.V1
         }
 
         // Obtener menú de perfil
-        [HttpGet("ObtenerMenu_Perfil")]
-        public IActionResult ObtenerMenu_Perfil([FromQuery, Required] int clavePerfil)
+        [HttpGet("GetMenusByProfile")]
+        public IActionResult GetMenusByProfile([FromQuery, Required] int idPerfil)
         {
             var webResult = new WebResultModel<List<Menu>>();
             try
             {
-                webResult.Data = _menuB.ObtenerMenu_Perfil(clavePerfil);
+                webResult.Data = _menuB.GetMenusByProfile(idPerfil);
                 webResult.Message = "Información del menú del perfil obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -87,23 +111,5 @@ namespace HARD.CORE.API.Controllers.V1
             return Ok(webResult);
         }
 
-        // Configurar menú de perfil
-        [HttpPost("ConfigurarMenu_Perfil")]
-        public IActionResult ConfigurarMenu_Perfil([FromBody] Perfil perfil)
-        {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                webResult.Data = _menuB.ConfigurarMenu_Perfil(perfil.ClavePerfil, perfil.Menus);
-                webResult.Message = "Configuración del menú por perfil realizada exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar la configuración del menú por perfil.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
     }
 }

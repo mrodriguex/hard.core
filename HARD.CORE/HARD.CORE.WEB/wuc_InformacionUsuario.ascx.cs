@@ -4,7 +4,7 @@ using System.Web;
 
 public partial class wuc_InformacionUsuario : System.Web.UI.UserControl, IToolTipInformacionUsuario
 {
-    public string ClaveUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
     protected void Page_Load(object sender, EventArgs e)
     {

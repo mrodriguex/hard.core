@@ -71,7 +71,7 @@ namespace CRY.PCC.SER
             return httpClientManager.GetWebResult<Encuesta>("api/Encuesta/ObtenerEncuesta", $"claveEncuesta={claveEncuesta}");
         }
 
-        public int ObtieneEstatusUsuario(string claveUsuario)
+        public int ObtieneEstatusUsuario(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
@@ -90,7 +90,7 @@ namespace CRY.PCC.SER
             return httpClientManager.GetWebResult<Pregunta>("api/Encuesta/ObtenerPregunta", $"clavePregunta={clavePregunta}");
         }
 
-        public void InsertaRespuestas(Encuesta encuesta, string comentario, string claveUsuario)
+        public void InsertaRespuestas(Encuesta encuesta, string comentario, int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);

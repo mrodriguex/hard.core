@@ -1,210 +1,106 @@
 ﻿using HARD.CORE.OBJ;
-using HARD.CORE.OBJ.Configuration;
 
 using Microsoft.Extensions.Configuration;
 
 using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
-using System.Security.AccessControl;
+using System.Linq;
+
+using HARD.CORE.DAT.Interfaces;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace HARD.CORE.DAT
 {
-    public class ClienteDA
+    public class ClienteDA : IRepositoryBase<Cliente, BaseFilter, int>
     {
 
-        #region " Singleton "
+        private readonly HardCoreDbContext _context;
+        private readonly ILogger<ClienteDA> _logger;
 
-        private static ClienteDA instance = null;
-
-        private static object mutex = new object();
-
-        private ClienteDA()
+        public ClienteDA(HardCoreDbContext context, ILogger<ClienteDA> logger)
         {
+            _context = context;
+            _logger = logger;
         }
 
-        public static ClienteDA GetInstance()
+        #region Public
+        public IEnumerable<Cliente> GetAll(PagedFilter<BaseFilter> pagedFilter)
         {
-
-            if (instance == null)
+            var query = _context.Clientes.AsQueryable();
+            if (pagedFilter.Filters?.Activo.HasValue == true)
             {
-                lock ((mutex))
+                query = query.Where(c => c.Activo == pagedFilter.Filters.Activo.Value);
+            }
+            var clientes = query
+                .OrderBy(c => c.IdCliente)
+                .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
+                .Take(pagedFilter.PageSize)
+                .ToList();
+
+            return clientes.AsEnumerable();
+
+        }
+
+        public Cliente GetById(int id)
+        {
+            var cliente = _context.Clientes.FirstOrDefault(c => c.IdCliente == id);
+            return cliente;
+        }
+
+        public int Add(Cliente entity)
+        {
+            try
+            {
+                entity.FechaCreacion = DateTime.Now;
+                _context.Clientes.Add(entity);
+                _context.SaveChanges();
+                return entity.IdCliente;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al agregar el cliente");
+                throw;
+            }
+        }
+
+        public bool Update(Cliente entity)
+        {
+            try
+            {
+                entity.FechaModificacion = DateTime.Now;
+                _context.Clientes.Update(entity);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar el cliente");
+                throw;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            try
+            {
+                var cliente = _context.Clientes.FirstOrDefault(c => c.IdCliente == id);
+                if (cliente == null)
                 {
-                    instance = new ClienteDA();
+                    return false;
                 }
+                _context.Clientes.Remove(cliente);
+                _context.SaveChanges();
+                return true;
             }
-
-            return instance;
-
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar el cliente");
+                throw;
+            }
         }
 
         #endregion
 
-        #region Private
-        private DataTable ObtenerClientesBD(int ClaveCliente = 0)
-        {
-            DataTable dataTable = new DataTable();
-
-            string sqlConn = Config.Configuration.GetConnectionString("SqlConn_HARDCORE");
-            SqlConnection connection = new SqlConnection(sqlConn);
-
-            try
-            {
-                connection.Open();
-                string queryName = "Cliente_ObtenerClientesJDE";
-
-                SqlCommand cmd = new SqlCommand(queryName, connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ClaveCliente", ClaveCliente);
-                IDataReader reader = cmd.ExecuteReader();
-                dataTable.Load(reader);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                connection.Close();
-            }
-
-            return (DataTable)Convert.ChangeType(dataTable, typeof(DataTable));
-
-        }
-        private Cliente ObtenerClienteObj(int ClaveCliente = 0)
-        {
-            DataTable dtCliente = ObtenerClientesBD(ClaveCliente);
-            DataRow dr = dtCliente.Rows[0];
-            Cliente cliente = new Cliente(
-                  (int)dr["ClaveCliente"]
-                , dr["RFC"].ToString()
-                , dr["RazonSocial"].ToString()
-                , 0
-            );
-
-            return cliente;
-        }
-        private DataTable ObtenerClientesDB()
-        {
-            DataTable dataTable = new DataTable();
-
-            string sqlConn = Config.Configuration.GetConnectionString("SqlConn_HARDCORE");
-            SqlConnection connection = new SqlConnection(sqlConn);
-
-            try
-            {
-                connection.Open();
-                string queryName = "Cliente_ObtenerClientes";
-
-                SqlCommand cmd = new SqlCommand(queryName, connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-                IDataReader reader = cmd.ExecuteReader();
-                dataTable.Load(reader);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                connection.Close();
-            }
-
-            return (DataTable)Convert.ChangeType(dataTable, typeof(DataTable));
-        }
-        private DataTable ObtenerNoRegistradosDB()
-        {
-            DataTable dataTable = new DataTable();
-
-            string sqlConn = Config.Configuration.GetConnectionString("SqlConn_HARDCORE");
-            SqlConnection connection = new SqlConnection(sqlConn);
-
-            try
-            {
-                connection.Open();
-                string queryName = "Cliente_ObtenerNoRegistrados";
-
-                SqlCommand cmd = new SqlCommand(queryName, connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-                IDataReader reader = cmd.ExecuteReader();
-                dataTable.Load(reader);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                connection.Close();
-            }
-
-            return (DataTable)Convert.ChangeType(dataTable, typeof(DataTable));
-        }
-        private DataTable ObtenerClientesHijosJDEDB(int ClaveClientePadre = 0)
-        {
-            DataTable dataTable = new DataTable();
-
-            string sqlConn = Config.Configuration.GetConnectionString("SqlConn_HARDCORE");
-            SqlConnection connection = new SqlConnection(sqlConn);
-
-            try
-            {
-                connection.Open();
-                string queryName = "Cliente_ObtenerClientesHijosJDE";
-
-                SqlCommand cmd = new SqlCommand(queryName, connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ClaveClientePadre", ClaveClientePadre);
-                IDataReader reader = cmd.ExecuteReader();
-                dataTable.Load(reader);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                connection.Close();
-            }
-
-            return (DataTable)Convert.ChangeType(dataTable, typeof(DataTable));
-        }
-        #endregion
-
-        #region Obtener
-        public DataTable ObtenerTodos()
-        {
-            return ObtenerClientesBD();
-        }
-        public Cliente ObtenerCliente(int ClaveCliente)
-        {
-            return ObtenerClienteObj(ClaveCliente);
-        }
-        public DataTable ObtenerClientes()
-        {
-            return ObtenerClientesDB();
-        }
-        public DataTable ObtenerNoRegistrados()
-        {
-            return ObtenerNoRegistradosDB();
-        }
-        public DataTable ObtenerClientesHijosJDE(int ClaveClientePadre)
-        {
-            return ObtenerClientesHijosJDEDB(ClaveClientePadre);
-        }
-        public Cliente ObtenerClientesHijosObj(int ClaveCliente)
-        {
-            DataTable dtCliente = ObtenerClientesHijosJDE(ClaveCliente);
-            DataRow dr = dtCliente.Rows[0];
-            Cliente cliente = new Cliente(
-                  (int)dr["ClaveCliente"]
-                , dr["RFC"].ToString()
-                , dr["RazonSocial"].ToString()
-                , (int)dr["ClaveClientePadre"]
-            );
-
-            return cliente;
-        }
-        #endregion
     }
 }

@@ -82,7 +82,7 @@ public partial class frm_AdministracionUsuarios : System.Web.UI.Page
         if (e.Item.Text == "Desbloquear usuario")
         {
             int rowIndex = int.Parse(Request.Form["rowIndex"]);
-            string claveUsuario = (string)rgUsuarios.Items[rowIndex].GetDataKeyValue("ClaveUsuario");
+            int idUsuario = (string)rgUsuarios.Items[rowIndex].GetDataKeyValue("ClaveUsuario");
             bool Result = UsuarioSER.GetInstance().Desbloquea(claveUsuario);
         }
         rgUsuarios.Rebind();

@@ -54,7 +54,7 @@ public partial class frm_AdministracionHerenciaPerfil : System.Web.UI.Page
                 int rowIndex = int.Parse(Request.Form["rowIndex"]);
                 int claveHerenciaPerfil = (int)rgHerenciaPerfil.Items[rowIndex].GetDataKeyValue("ClaveHerenciaPerfil");
                 int claveEstatus = (int)rgHerenciaPerfil.Items[rowIndex].GetDataKeyValue("ClaveEstatus");
-                string claveUsuarioHereda = rgHerenciaPerfil.Items[rowIndex].GetDataKeyValue("ClaveUsuarioHeredado").ToString();
+                int idUsuarioHereda = rgHerenciaPerfil.Items[rowIndex].GetDataKeyValue("ClaveUsuarioHeredado").ToString();
                 DateTime fechaInicial = (DateTime)rgHerenciaPerfil.Items[rowIndex].GetDataKeyValue("FechaInicial");
                 DateTime fechaFinal = (DateTime)rgHerenciaPerfil.Items[rowIndex].GetDataKeyValue("FechaFinal");
 

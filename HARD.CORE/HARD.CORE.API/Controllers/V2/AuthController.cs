@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
-
+using HARD.CORE.API.Controllers.Base;
+using HARD.CORE.API.Helpers;
 using HARD.CORE.API.Models.V1;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
@@ -19,12 +20,21 @@ namespace HARD.CORE.API.Controllers.V2
     [AllowAnonymous]
     [ApiController]
     [ApiVersion("2.0")]
-    [Route("api/v{version:apiVersion}/[controller]")] // Version in the URL path
-    public class AuthController : ControllerBase
+    [Route("api/v{version:apiVersion}/[controller]")] // Version in the URL path 
+    public class AuthController : BaseController
     {
         private readonly IConfiguration _config;
         private readonly IUsuarioB _usuarioB;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthController"/> class.
+        /// </summary>
+        /// <param name="config">
+        /// The configuration settings for the application.
+        /// </param>
+        /// <param name="usuarioB">
+        /// The user business logic layer.
+        /// </param>
         public AuthController(IConfiguration config, IUsuarioB usuarioB)
         {
             _config = config;
@@ -48,7 +58,7 @@ namespace HARD.CORE.API.Controllers.V2
 
             try
             {
-                Usuario usuario = _usuarioB.Obtener(claveUsuario: login.Username);
+                Usuario usuario = _usuarioB.GetByUsername(login.Username);
 
                 if (string.IsNullOrEmpty(usuario.ClaveUsuario))
                 {
@@ -58,13 +68,16 @@ namespace HARD.CORE.API.Controllers.V2
                 {
                     webResult.Errors.Add("Usuario bloqueado");
                 }
-                else if (!_usuarioB.AutenticarUsuario(claveUsuario: login.Username, password: login.Password))
+                else if (!_usuarioB.AuthenticateUser(usuario.IdUsuario, login.Password))
                 {
                     webResult.Errors.Add("Credenciales son incorrectas");
                 }
                 else
                 {
-                    webResult.Data = GenerateJwtToken(login.Username);
+                    int tokenDuration = 60; //Default value
+                    int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
+                    var jwtPrivKey = _config["Jwt:Key"] ?? "";
+                    webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(login.Username, tokenDuration, jwtPrivKey);
                     webResult.Success = true;
                     webResult.Message = "Inicio de sesión exitoso";
                 }
@@ -73,32 +86,8 @@ namespace HARD.CORE.API.Controllers.V2
             {
                 webResult.Errors.Add(ex.Message);
             }
+
             return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Generates a JSON Web Token (JWT) for the specified user.
-        /// </summary>
-        /// <param name="username"></param>
-        /// <returns></returns>
-        private string GenerateJwtToken(string username)
-        {
-            var claims = new[]
-            {
-            new Claim(ClaimTypes.Name, username)
-        };
-
-            int tokenDuration = 60; //Default value
-            int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(tokenDuration),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
     }

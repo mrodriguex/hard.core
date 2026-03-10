@@ -180,10 +180,10 @@
 
             <script type="text/javascript">
 
-                var clavePerfil = 0
+                var idPerfil = 0
 
                 $(document).ready(function () {
-                    clavePerfil = queryString("ClavePerfil");
+                    idPerfil = queryString("IdPerfil");
                 });
 
                 function validaRequeridos(sender, args) {
@@ -192,7 +192,7 @@
                     var valor = NombrePerfil.get_value();
 
                     var mensaje = "¿Está seguro de ingresar el nuevo perfil: \"" + valor + "\"?";
-                    if (clavePerfil > 0) {
+                    if (idPerfil > 0) {
                         mensaje = "Se encuentra seguro de actualizar perfil de usuario:  \"" + valor + "\"?";
                     }
 

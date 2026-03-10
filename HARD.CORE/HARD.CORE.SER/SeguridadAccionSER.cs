@@ -34,20 +34,20 @@ namespace HARD.CORE.SER
 
         #endregion
 
-        //public Seguridad Obtener(int clavePerfil, int claveEntidad)
+        //public Seguridad Obtener(int idPerfil, int claveEntidad)
         //{
-        //    string encodedClavePerfil = Uri.EscapeDataString(clavePerfil.ToString());
+        //    string encodedIdPerfil = Uri.EscapeDataString(idPerfil.ToString());
         //    string encodedClaveEntidad = Uri.EscapeDataString(claveEntidad.ToString());
         //    HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-        //    return httpClientManager.GetWebResult<Seguridad>(endPoint: "api/v1/SeguridadAccion/Obtener", query: $"clavePerfil={encodedClavePerfil}&claveEntidad={encodedClaveEntidad}");
+        //    return httpClientManager.GetWebResult<Seguridad>(endPoint: "api/v1/SeguridadAccion/Obtener", query: $"idPerfil={encodedIdPerfil}&claveEntidad={encodedClaveEntidad}");
         //}
 
-        public List<SeguridadAccion> ObtenerPorPerfil(int clavePerfil, bool? asignado = null)
+        public List<SeguridadAccion> ObtenerPorPerfil(int idPerfil, bool? asignado = null)
         {
-            string encodedClavePerfil = Uri.EscapeDataString(clavePerfil.ToString());
+            string encodedIdPerfil = Uri.EscapeDataString(idPerfil.ToString());
             string encodedAsignado = Uri.EscapeDataString(asignado.ToString());
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-            return httpClientManager.GetWebResult<List<SeguridadAccion>>(endPoint: "api/v1/SeguridadAccion/ObtenerPorPerfil", query: $"clavePerfil={encodedClavePerfil}");
+            return httpClientManager.GetWebResult<List<SeguridadAccion>>(endPoint: "api/v1/SeguridadAccion/ObtenerPorPerfil", query: $"idPerfil={encodedIdPerfil}");
         }
 
         public bool Actualizar(List<SeguridadAccion> listadoSeguridadAccion)

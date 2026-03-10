@@ -35,17 +35,17 @@ namespace HARD.CORE.SER
 
         #endregion
 
-        public List<Menu> ObtenerMenu_Usuario(string claveUsuario,int clavePerfil)
+        public List<Menu> ObtenerMenu_Usuario(int idUsuario,int idPerfil)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-            return httpClientManager.GetWebResult<List<Menu>>(endPoint: "api/v1/Menu/ObtenerMenu_Usuario", $"claveUsuario={encodedClaveUsuario}&clavePerfil={clavePerfil}");
+            return httpClientManager.GetWebResult<List<Menu>>(endPoint: "api/v1/Menu/ObtenerMenu_Usuario", $"claveUsuario={encodedClaveUsuario}&idPerfil={idPerfil}");
         }
 
-        public List<Menu> ObtenerMenu_Perfil(int clavePerfil)
+        public List<Menu> ObtenerMenu_Perfil(int idPerfil)
         {
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-            var result = httpClientManager.GetWebResult<List<Menu>>(endPoint: "api/v1/Menu/ObtenerMenu_Perfil", $"clavePerfil={clavePerfil}");
+            var result = httpClientManager.GetWebResult<List<Menu>>(endPoint: "api/v1/Menu/ObtenerMenu_Perfil", $"idPerfil={idPerfil}");
             foreach (var item in result)
             {
                 if (item.ClaveMenuPadre == 0)
@@ -57,11 +57,11 @@ namespace HARD.CORE.SER
             return result;
         }
 
-        public bool ConfigurarMenu_Perfil(int clavePerfil, List<Menu> menus)
+        public bool ConfigurarMenu_Perfil(int idPerfil, List<Menu> menus)
         {
             Perfil perfil = new Perfil();
             perfil.Menus = menus;
-            perfil.ClavePerfil = clavePerfil;
+            perfil.IdPerfil = idPerfil;
 
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
             return httpClientManager.PostWebResult<bool>(perfil, "api/v1/Menu/ConfigurarMenu_Perfil");

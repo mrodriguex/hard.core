@@ -30,7 +30,7 @@ public partial class frm_Administracion_Avisos : System.Web.UI.Page
 
             if (!IsPostBack)
             {
-                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.PerfilActivo.ClavePerfil, (int)Entidad.Aviso);
+                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.PerfilActivo.IdPerfil, (int)Entidad.Aviso);
 
                 //if (!seguridad.Consultar)
                 //    Response.Redirect("NoAutorizado.aspx");
@@ -58,7 +58,7 @@ public partial class frm_Administracion_Avisos : System.Web.UI.Page
 
         if (dataItem != null)
         {
-            //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Aviso);
+            //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.IdPerfil, (int)EnumEntidad.Aviso);
             RadButton btnEditar = dataItem.FindControl("btnEditar") as RadButton;
             RadButton btnBorrar = dataItem.FindControl("btnBorrar") as RadButton;
 
@@ -114,7 +114,7 @@ public partial class frm_Administracion_Avisos : System.Web.UI.Page
         Aviso aviso = new Aviso();
         Telerik.Web.UI.RadButton btn = (Telerik.Web.UI.RadButton)sender;
         GridDataItem item = (GridDataItem)btn.NamingContainer;
-        aviso.ClaveUsuarioActualizacion = usuario.ClaveUsuario;
+        aviso.IdUsuarioModificacion = usuario.ClaveUsuario;
         string claveAviso = item.GetDataKeyValue("ClaveAviso").ToString();
         string RutaImagen = item.GetDataKeyValue("rutaImagen").ToString();
 

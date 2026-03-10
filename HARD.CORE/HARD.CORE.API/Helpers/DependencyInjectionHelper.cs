@@ -2,6 +2,8 @@ using HARD.CORE.DAT;
 using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG;
 using HARD.CORE.NEG.Interfaces;
+using HARD.CORE.OBJ;
+using Microsoft.EntityFrameworkCore;
 
 public static class DependencyInjection
 {
@@ -22,57 +24,30 @@ public static class DependencyInjection
         // Register configuration
         services.AddSingleton<IConfiguration>(configuration);
 
+        // Register DbContext
+        services.AddDbContext<HardCoreDbContext>(options =>
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("HARD.CORE.DAT")
+            ));
+
         // Register services DA
-        services.AddScoped<ILdapAuthentication, LdapAuthentication>();
-        services.AddScoped<IUsuarioDA, UsuarioDA>();
-        services.AddScoped<ICorreoDA, CorreoDA>();
-        services.AddScoped<ISugerenciaDA, SugerenciaDA>();
-        services.AddScoped<IPerfilDA, PerfilDA>();
-        services.AddScoped<IEmpresaDA, EmpresaDA>();
-        services.AddScoped<IMenuDA, MenuDA>();
-        services.AddScoped<IArchivosDA, ArchivosDA>();
-        services.AddScoped<IArchivosDescargasDA, ArchivosDescargasDA>();
-        services.AddScoped<IAvisoDA, AvisoDA>();
-        services.AddScoped<IBitacoraEventosDA, BitacoraEventosDA>();
-        services.AddScoped<IEmpresaDA, EmpresaDA>();
-        services.AddScoped<INivelMinimoEstudiosDA, NivelMinimoEstudiosDA>();
-        services.AddScoped<ILdapAuthentication, LdapAuthentication>();
-        services.AddScoped<IMenuDA, MenuDA>();
-        services.AddScoped<IMotivoVacanteDA, MotivoVacanteDA>();
-        services.AddScoped<INivelInglesDA, NivelInglesDA>();
-        services.AddScoped<INotificacionDA, NotificacionDA>();
-        services.AddScoped<IPerfilDA, PerfilDA>();
-        services.AddScoped<IRutasDA, RutasDA>();
-        services.AddScoped<ISugerenciaDA, SugerenciaDA>();
-        services.AddScoped<IUsuarioDA, UsuarioDA>();
-        services.AddScoped<ISeguridadAccionDA, SeguridadAccionDA>();
-        services.AddScoped<IFlujoAutorizacionDA, FlujoAutorizacionDA>();
-        services.AddScoped<ITipoCorreoDA, TipoCorreoDA>();
-        services.AddScoped<ICorreoVariableDA, CorreoVariableDA>();
-        services.AddScoped<IHerenciaPerfilDA, HerenciaPerfilDA>();
+        services.AddScoped<IRepositoryBase<Usuario, BaseFilter, int>, UsuarioDA>();
+        services.AddScoped<IRepositoryBase<Perfil, BaseFilter, int>, PerfilDA>();
+        services.AddScoped<IRepositoryBase<Empresa, BaseFilter, int>, EmpresaDA>();
+        services.AddScoped<IRepositoryBase<Menu, BaseFilter, int>, MenuDA>();
+        services.AddScoped<IRepositoryBase<Empresa, BaseFilter, int>, EmpresaDA>();
+        services.AddScoped<IRepositoryBase<Menu, BaseFilter, int>, MenuDA>();
+        services.AddScoped<IRepositoryBase<Perfil, BaseFilter, int>, PerfilDA>();
+        services.AddScoped<IRepositoryBase<Usuario, BaseFilter, int>, UsuarioDA>();
+        services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
 
         // Register services B
-        services.AddScoped<IArchivoB, ArchivoB>();
-        services.AddScoped<IAvisoB, AvisoB>();
-        services.AddScoped<IBitacoraB, BitacoraB>();
-        services.AddScoped<ICorreoB, CorreoB>();
         services.AddScoped<ICryptographer, Cryptographer>();
         services.AddScoped<IEmpresaB, EmpresaB>();
         services.AddScoped<IMenuB, MenuB>();
-        services.AddScoped<IBitacoraEventosB, BitacoraEventosB>();
-        services.AddScoped<IAvisoB, AvisoB>();
-        services.AddScoped<INivelMinimoEstudiosB, NivelMinimoEstudiosB>();
-        services.AddScoped<IMotivoVacanteB, MotivoVacanteB>();
-        services.AddScoped<INivelInglesB, NivelInglesB>();
-        services.AddScoped<INotificacionB, NotificacionB>();
         services.AddScoped<IPerfilB, PerfilB>();
-        services.AddScoped<ISugerenciaB, SugerenciaB>();
         services.AddScoped<IUsuarioB, UsuarioB>();
-        services.AddScoped<ISeguridadAccionB, SeguridadAccionB>();
-        services.AddScoped<IFlujoAutorizacionB, FlujoAutorizacionB>();
-        services.AddScoped<ITipoCorreoB, TipoCorreoB>();
-        services.AddScoped<ICorreoVariableB, CorreoVariableB>();
-        services.AddScoped<IHerenciaPerfilB, HerenciaPerfilB>();
 
         return services;
     }

@@ -40,15 +40,15 @@ namespace HARD.CORE.API.Controllers.V1
         /// <summary>
         /// Obtains a company by its unique key.
         /// </summary>
-        /// <param name="claveEmpresa">The unique key identifying the company.</param>
+        /// <param name="idEmpresa">The unique key identifying the company.</param>
         /// <returns>The company associated with the provided key.</returns>
-        [HttpGet("Obtener")]
-        public IActionResult Obtener([FromQuery, Required] int claveEmpresa)
+        [HttpGet("GetById")]
+        public IActionResult GetById([FromQuery, Required] int idEmpresa)
         {
             var webResult = new WebResultModel<Empresa>();
             try
             {
-                webResult.Data = (Empresa)_empresaB.Obtener(claveEmpresa);
+                webResult.Data = _empresaB.GetById(idEmpresa);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -63,7 +63,7 @@ namespace HARD.CORE.API.Controllers.V1
         /// <summary>
         /// Obtains all companies.
         /// </summary>
-        /// <param name="clavePerfil">
+        /// <param name="idPerfil">
         /// The unique key identifying the profile.
         /// </param>
         /// <param name="claveUsuario">
@@ -75,13 +75,21 @@ namespace HARD.CORE.API.Controllers.V1
         /// <returns>
         /// A list of companies matching the specified criteria.
         /// </returns>
-        [HttpGet("ObtenerTodos")]
-        public IActionResult ObtenerTodos([FromQuery] int? clavePerfil = null, [FromQuery] string? claveUsuario = null)
+        [HttpGet("GetAll")]
+        public IActionResult GetAll([FromQuery] int? idPerfil = null, [FromQuery] int? idUsuario = null)
         {
             var webResult = new WebResultModel<List<Empresa>>();
             try
             {
-                webResult.Data = _empresaB.ObtenerTodos(clavePerfil: clavePerfil, claveUsuario: claveUsuario);
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    Filters = new BaseFilter
+                    {
+                        IdMaster = idUsuario,
+                        IdDetail = idPerfil
+                    }
+                };
+                webResult.Data = _empresaB.GetAll(pagedFilter).ToList();
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -96,28 +104,63 @@ namespace HARD.CORE.API.Controllers.V1
         /// <summary>
         /// Obtains all companies assigned to a user.
         /// </summary>
-        /// <param name="clavePerfil">
-        /// The unique key identifying the profile.
-        /// </param>
-        /// <param name="claveUsuario">
+        /// <param name="idUsuario">
         /// The unique key identifying the user.
         /// </param>
         /// <returns>
         /// A list of companies assigned to the user.
         /// </returns>
-        [HttpGet("ObtenerAsignado")]
-        public IActionResult ObtenerAsignado([FromQuery, Required] int clavePerfil, [FromQuery, Required] string claveUsuario)
+        [HttpGet("GetCompaniesByUser")]
+        public IActionResult GetCompaniesByUser([FromQuery, Required] int idUsuario)
         {
             var webResult = new WebResultModel<List<Empresa>>();
             try
             {
-                webResult.Data = _empresaB.ObtenerEmpresasUsuario(claveUsuario: claveUsuario);
+                webResult.Data = _empresaB.GetCompaniesByUser(idUsuario: idUsuario);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
             catch (Exception ex)
             {
                 webResult.Message = "Error al obtener la información.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return Ok(webResult);
+        }
+
+        [HttpPost("Add")]
+        public IActionResult Add([FromBody] Empresa empresa)
+        {
+            var webResult = new WebResultModel<int>();
+            try
+            {
+                empresa.IdUsuarioCreacion = IdUsuario;
+                webResult.Data = _empresaB.Add(empresa);
+                webResult.Message = "Empresa agregada exitosamente.";
+                webResult.Success = true;
+            }
+            catch (Exception ex)
+            {
+                webResult.Message = "Error al agregar la empresa.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return Ok(webResult);
+        }
+
+        [HttpPut("Update")]
+        public IActionResult Update([FromBody] Empresa empresa)
+        {
+            var webResult = new WebResultModel<bool>();
+            try
+            {
+                empresa.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _empresaB.Update(empresa);
+                webResult.Message = "Empresa actualizada exitosamente.";
+                webResult.Success = true;
+            }
+            catch (Exception ex)
+            {
+                webResult.Message = "Error al actualizar la empresa.";
                 webResult.Errors.Add(ex.Message);
             }
             return Ok(webResult);

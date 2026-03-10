@@ -1,12 +1,8 @@
 using Asp.Versioning;
 using HARD.CORE.API.Helpers;
-using HARD.CORE.API.Models.V1;
-using HARD.CORE.NEG;
-using HARD.CORE.NEG.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using System.ComponentModel.DataAnnotations;
 namespace HARD.CORE.API.Controllers.Base
 {
     [Authorize]
@@ -20,12 +16,12 @@ namespace HARD.CORE.API.Controllers.Base
         /// <summary>
         /// Gets the unique key identifying the user from the JWT token.
         /// </summary>
-        public string ClaveUsuario
+        public int IdUsuario
         {
             get
             {
                 string? token = Request.Headers["Authorization"];
-                return JwtAuthenticateHelper.GetUsernameFromToken(token ?? "");
+                return int.Parse(JwtAuthenticateHelper.GetUsernameFromToken(token ?? ""));
             }
         }
 

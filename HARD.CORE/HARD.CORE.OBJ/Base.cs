@@ -23,9 +23,9 @@ namespace HARD.CORE.OBJ
 
         public DateTime FechaModificacion { get; set; } = DateTime.UtcNow;
 
-        public int UsuarioIdCreacion { get; set; }
+        public int IdUsuarioCreacion { get; set; }
 
-        public int UsuarioIdModificacion { get; set; }
+        public int IdUsuarioModificacion { get; set; }
 
         public int Orden { get; set; }
 

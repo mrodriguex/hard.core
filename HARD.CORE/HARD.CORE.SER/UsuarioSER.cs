@@ -32,7 +32,7 @@ namespace HARD.CORE.SER
 
         #endregion
 
-        public Usuario Obtener(string claveUsuario)
+        public Usuario Obtener(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
@@ -95,7 +95,7 @@ namespace HARD.CORE.SER
         //    return httpClientManager.GetWebResult<DataTable>(endPoint: "api/v1/Usuario/ObtenerNoRegistradosDirectorioActivo");
         //}
 
-        public bool Desbloquea(string claveUsuario)
+        public bool Desbloquea(int idUsuario)
         {
 
             Usuario usuario = new Usuario();
@@ -106,7 +106,7 @@ namespace HARD.CORE.SER
             return result;
         }
 
-        public bool AutenticarUsuario(string claveUsuario, string password)
+        public bool AutenticarUsuario(int idUsuario, string password)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             Login login = new Login();
@@ -121,7 +121,7 @@ namespace HARD.CORE.SER
             return result;
         }
 
-        //public bool PuedeCambiarContrasena(string claveUsuario)
+        //public bool PuedeCambiarContrasena(int idUsuario)
         //{
         //    string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
         //    HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl);
@@ -129,7 +129,7 @@ namespace HARD.CORE.SER
         //    return result;
         //}
 
-        public bool ExisteUsuario(string claveUsuario)
+        public bool ExisteUsuario(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl);
@@ -137,7 +137,7 @@ namespace HARD.CORE.SER
             return result;
         }
 
-        //public DataTable ObtenerCorreosCambioContrasena(string claveUsuario)
+        //public DataTable ObtenerCorreosCambioContrasena(int idUsuario)
         //{
         //    string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
         //    HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl);
@@ -145,7 +145,7 @@ namespace HARD.CORE.SER
         //    return result;
         //}
 
-        public void RegistrarActividad(string claveUsuario, int tipoRegistro)
+        public void RegistrarActividad(int idUsuario, int tipoRegistro)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
@@ -160,7 +160,7 @@ namespace HARD.CORE.SER
         //    return result;
         //}
 
-        //public void ActualizaIntento(string claveUsuario)
+        //public void ActualizaIntento(int idUsuario)
         //{
         //    string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
         //    HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
@@ -168,7 +168,7 @@ namespace HARD.CORE.SER
         //    return;
         //}
 
-        //public void EnviarCambioContrasena(string claveUsuario, int? claveContacto)
+        //public void EnviarCambioContrasena(int idUsuario, int? claveContacto)
         //{
         //    string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
         //    HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl);
@@ -207,9 +207,9 @@ namespace HARD.CORE.SER
             return;
         }
 
-        public bool ActualizaContrasena(string claveUsuario, string contrasena)
+        public bool ActualizaContrasena(int idUsuario, string contrasena)
         {
-            string claveUsuarioEncoded = Uri.EscapeDataString(claveUsuario);
+            int idUsuarioEncoded = Uri.EscapeDataString(claveUsuario);
             string contrasenaEncoded = Uri.EscapeDataString(contrasena);
             Login login = new Login();
             login.Username = claveUsuario;
@@ -226,7 +226,7 @@ namespace HARD.CORE.SER
             return result;
         }
 
-        public DataTable ObtenerDetalleActividad(string claveUsuario)
+        public DataTable ObtenerDetalleActividad(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
@@ -234,7 +234,7 @@ namespace HARD.CORE.SER
             return result;
         }
 
-        public bool EnviarAvisoCambioContrasena(string claveUsuario)
+        public bool EnviarAvisoCambioContrasena(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);

@@ -1,0 +1,132 @@
+{
+  "info": {
+    "_postman_id": "hardcore-api-collection",
+    "name": "HARD.CORE.API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection for testing all endpoints in HARD.CORE.API"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"your_username\",\n  \"password\": \"your_password\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - GetById",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/GetById?idUsuario=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "GetById"],
+          "query": [
+            { "key": "idUsuario", "value": "1" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - GetAll",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/GetAll",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "GetAll"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cliente - GetAll",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/GetAll",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Cliente", "GetAll"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cliente - GetById",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/GetById?idCliente=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Cliente", "GetById"],
+          "query": [
+            { "key": "idCliente", "value": "1" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empresa - GetById",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/GetById?idEmpresa=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Empresa", "GetById"],
+          "query": [
+            { "key": "idEmpresa", "value": "1" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empresa - GetAll",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/GetAll",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Empresa", "GetAll"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "jwtToken", "value": "" }
+  ]
+}

@@ -3,6 +3,7 @@ using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HARD.CORE.NEG
 {
@@ -12,8 +13,9 @@ namespace HARD.CORE.NEG
     public class MenuB : IMenuB
     {
 
-        IMenuDA _menuDA;
-        IUsuarioB _usuarioB;
+        IRepositoryBase<Menu, BaseFilter, int> _menuDA;
+        IRepositoryBase<Perfil, BaseFilter, int> _perfilDA;
+        IRepositoryBase<Usuario, BaseFilter, int> _usuarioDA;
 
         /// <summary>
         /// Constructor de la clase MenuB
@@ -21,142 +23,127 @@ namespace HARD.CORE.NEG
         /// <param name="menuDA">
         /// Interfaz para el acceso a datos del menú
         /// </param>
-        /// <param name="usuarioB">
+        /// <param name="perfilDA">
+        /// Interfaz para el acceso a datos del perfil
+        /// </param>
+        /// <param name="usuarioDA">
         /// Interfaz para el acceso a datos del usuario
         /// </param>
-        public MenuB(IMenuDA menuDA, IUsuarioB usuarioB)
+        public MenuB(IRepositoryBase<Menu, BaseFilter, int> menuDA,
+        IRepositoryBase<Perfil, BaseFilter, int> perfilDA,
+        IRepositoryBase<Usuario, BaseFilter, int> usuarioDA)
         {
             _menuDA = menuDA;
-            _usuarioB = usuarioB;
+            _perfilDA = perfilDA;
+            _usuarioDA = usuarioDA;
+        }
+
+        /// <summary>
+        /// Obtiene un menú específico.
+        /// </summary>
+        /// <param name="id">
+        /// Clave del menú
+        /// </param>
+        /// <returns>
+        /// Menú específico
+        /// </returns>
+        public Menu GetById(int id)
+        {
+            return _menuDA.GetById(id);
+        }
+
+        /// <summary>
+        /// Obtiene todos los menús.
+        /// </summary>
+        /// <param name="pagedFilter">
+        /// Filtro paginadodo para la consulta de menús
+        /// </param>
+        /// <returns>
+        /// Lista de menús
+        /// </returns>
+        public IEnumerable<Menu> GetAll(PagedFilter<BaseFilter> pagedFilter)
+        {
+            return _menuDA.GetAll(pagedFilter);
+        }
+
+        /// <summary>
+        /// Inserta un nuevo menú.
+        /// </summary>
+        /// <param name="menu">
+        /// Menú a insertar
+        /// </param>
+        /// <returns>
+        /// Clave del menú insertado
+        /// </returns>
+        public int Add(Menu menu)
+        {
+            return _menuDA.Add(menu);
+        }
+
+        /// <summary>
+        /// Actualiza un menú existente.
+        /// </summary>
+        /// <param name="menu">
+        /// Menú a actualizar
+        /// </param>
+        /// <returns>
+        /// Verdadero si la actualización fue exitosa, falso en caso contrario
+        /// </returns>
+        public bool Update(Menu menu)
+        {
+            return _menuDA.Update(menu);
+        }
+
+        /// <summary>
+        /// Elimina un menú por su clave única.
+        /// </summary>
+        /// <param name="id">
+        /// Clave del menú a eliminar
+        /// </param>
+        /// <returns>
+        /// Verdadero si la eliminación fue exitosa, falso en caso contrario
+        /// </returns>
+        public bool Delete(int id)
+        {
+            return _menuDA.Delete(id);
         }
 
         /// <summary>
         /// Obtiene el menú para un usuario específico.
         /// </summary>
-        /// <param name="claveUsuario">
+        /// <param name="idUsuario">
         /// Clave del usuario
         /// </param>
-        /// <param name="clavePerfil">
+        /// <param name="idPerfil">
         /// Clave del perfil
         /// </param>
         /// <returns>
         /// Lista de menús para el usuario
         /// </returns>
-        public List<Menu> ObtenerMenu_Usuario(string claveUsuario, int clavePerfil)
+        public List<Menu> GetMenusByUser(int idUsuario, int idPerfil)
         {
-            List<Menu> menusInicial = _menuDA.ObtenerMenu_Usuario(claveUsuario, clavePerfil);
-            List<Menu> menus = new List<Menu>();
-            Usuario usuario = _usuarioB.Obtener(claveUsuario);
-
-            /// Si el usuario está activo, se filtran los menús
-            if (usuario.esActive)
-            {
-                /// Se excluyen los menús que comienzan con "cambio de contra" para los usuarios de red (ActiveDirectory)                
-                menus = menusInicial.FindAll(m => !m.Nombre.ToLower().StartsWith("cambio de contra"));
-            }
-            else
-            {
-                /// Si el usuario no es de ActiveDirectory, se muestran todos los menús
-                menus = menusInicial;
-            }
-
+            Usuario usuario = _usuarioDA.GetById(idUsuario);
+            List<Menu> menus = usuario.Perfiles.Where(p => p.IdPerfil == idPerfil)
+                .SelectMany(p => p.Menus)
+                .ToList();
             return menus;
         }
 
         /// <summary>
         /// Obtiene el menú para un perfil específico.
         /// </summary>
-        /// <param name="clavePerfil">
+        /// <param name="idPerfil">
         /// Clave del perfil
         /// </param>
         /// <returns>
         /// Lista de menús para el perfil
         /// </returns>
-        public List<Menu> ObtenerMenu_Perfil(int clavePerfil)
+        public List<Menu> GetMenusByProfile(int idPerfil)
         {
-            if (clavePerfil > 0)
-            {
-                return _menuDA.ObtenerMenu_Perfil(clavePerfil);
-            }
-            else
-            {
-                return _menuDA.ObtenerTodos(estatus: true);
-            }
+            Perfil perfil = _perfilDA.GetById(idPerfil);
+            List<Menu> menus = perfil.Menus.ToList();
+            return menus;
         }
-
-        /// <summary>
-        /// Configura el menú para un perfil específico.
-        /// </summary>
-        /// <param name="clavePerfil">
-        /// Clave del perfil
-        /// </param>
-        /// <param name="menus">
-        /// Lista de menús a configurar
-        /// </param>
-        /// <returns>
-        /// Verdadero si la configuración fue exitosa, falso en caso contrario
-        /// </returns>
-        public bool ConfigurarMenu_Perfil(int clavePerfil, List<Menu> menus)
-        {
-            return _menuDA.ConfigurarMenu_Perfil(clavePerfil, menus);
-        }
-
-        /// <summary>
-        /// Obtiene un menú específico.
-        /// </summary>
-        /// <param name="claveMenu">
-        /// Clave del menú
-        /// </param>
-        /// <returns>
-        /// Menú específico
-        /// </returns>
-        public Menu Obtener(int claveMenu)
-        {
-            return _menuDA.Obtener(claveMenu);
-        }
-
-        /// <summary>
-        /// Obtiene todos los menús.
-        /// </summary>
-        /// <param name="claveEstatus">
-        /// Clave del estatus
-        /// </param>
-        /// <returns>
-        /// Lista de menús
-        /// </returns>
-        public List<Menu> ObtenerTodos(bool? claveEstatus = null)
-        {
-            return _menuDA.ObtenerTodos(claveEstatus);
-        }
-
-        /// <summary>
-        /// Inserta un nuevo menú.
-        /// </summary>
-        /// <param name="Menu">
-        /// Menú a insertar
-        /// </param>
-        /// <returns>
-        /// Clave del menú insertado
-        /// </returns>
-        public int Insertar(Menu Menu)
-        {
-            return _menuDA.Insertar(Menu);
-        }
-
-        /// <summary>
-        /// Actualiza un menú existente.
-        /// </summary>
-        /// <param name="Menu">
-        /// Menú a actualizar
-        /// </param>
-        /// <returns>
-        /// Verdadero si la actualización fue exitosa, falso en caso contrario
-        /// </returns>
-        public bool Actualizar(Menu Menu)
-        {
-            return _menuDA.Actualizar(Menu);
-        }
-
     }
 
 }

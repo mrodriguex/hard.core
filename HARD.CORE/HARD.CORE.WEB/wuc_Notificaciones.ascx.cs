@@ -6,7 +6,7 @@ using System.Web;
 
 public partial class wuc_Notificaciones : System.Web.UI.UserControl, IToolTipNotificacionUsuario
 {
-    public string ClaveUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
     private Usuario Usuario
     {

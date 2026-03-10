@@ -32,7 +32,7 @@ public partial class frm_AdministracionCarrusel : System.Web.UI.Page
 
             if (!IsPostBack)
             {
-                //    Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Aviso);
+                //    Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.IdPerfil, (int)EnumEntidad.Aviso);
 
                 //    if (!seguridad.Consultar)
                 //        Response.Redirect("NoAutorizado.aspx");
@@ -91,7 +91,7 @@ public partial class frm_AdministracionCarrusel : System.Web.UI.Page
 
         //if (dataItem != null)
         //{
-        //    Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Aviso);
+        //    Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.IdPerfil, (int)EnumEntidad.Aviso);
         //    RadButton btnEditar = dataItem.FindControl("btnEditar") as RadButton;
         //    RadButton btnBorrar = dataItem.FindControl("btnBorrar") as RadButton;
 
@@ -147,7 +147,7 @@ public partial class frm_AdministracionCarrusel : System.Web.UI.Page
         //Aviso aviso = new Aviso();
         Telerik.Web.UI.RadButton btn = (Telerik.Web.UI.RadButton)sender;
         GridDataItem item = (GridDataItem)btn.NamingContainer;
-        //aviso.ClaveUsuarioActualizacion = usuario.ClaveUsuario;
+        //aviso.IdUsuarioModificacion = usuario.ClaveUsuario;
         string claveAviso = item.GetDataKeyValue("ClaveAviso").ToString();
 
         //aviso.ClaveAviso = Convert.ToInt32(claveAviso);

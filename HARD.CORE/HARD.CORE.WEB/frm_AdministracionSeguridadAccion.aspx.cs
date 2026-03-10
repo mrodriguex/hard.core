@@ -26,30 +26,30 @@ public partial class frm_AdministracionSeguridadAccion : System.Web.UI.Page
     protected void rgSeguridadAccion_NeedDataSource(object sender, Telerik.Web.UI.GridNeedDataSourceEventArgs e)
     {
         rgSeguridadAccion.DataSource = new List<SeguridadAccion>();
-        int clavePerfil = rcbPerfil.SelectedValue == "" ? 0 : Convert.ToInt32(rcbPerfil.SelectedValue);
+        int idPerfil = rcbPerfil.SelectedValue == "" ? 0 : Convert.ToInt32(rcbPerfil.SelectedValue);
         //int valorAsignado = Convert.ToInt32(rcbAsignado.SelectedValue);
 
-        if (clavePerfil != 0)
+        if (idPerfil != 0)
         {
             int[] clavesExcluir = { 15, 16, 17, 18 };
 
             rgSeguridadAccion.DataSource =
                 SeguridadAccionSER.GetInstance()
-                .ObtenerPorPerfil(clavePerfil)
+                .ObtenerPorPerfil(idPerfil)
                 .Where(x => !clavesExcluir.Contains(x.ClaveMenu))
                 .ToList();
 
       
-            //rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil);
+            //rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(idPerfil);
 
             //if (valorAsignado != 0)
             //{
             //    bool asignado = valorAsignado == 1;
-            //    rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil);
+            //    rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(idPerfil);
             //}
             //else
             //{
-            //    rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil);
+            //    rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(idPerfil);
             //}
         }
 
@@ -58,7 +58,7 @@ public partial class frm_AdministracionSeguridadAccion : System.Web.UI.Page
 
     private void CargaComboPerfiles()
     {
-        rcbPerfil.DataValueField = "ClavePerfil";
+        rcbPerfil.DataValueField = "IdPerfil";
         rcbPerfil.DataTextField = "Descripcion";
         rcbPerfil.DataSource = PerfilSER.GetInstance().ObtenerPerfiles();
         rcbPerfil.DataBind();
@@ -269,7 +269,7 @@ public partial class frm_AdministracionSeguridadAccion : System.Web.UI.Page
             SeguridadAccion seguridadAccion = new SeguridadAccion
             {
                 ClaveSeguridadAccion = 0,
-                ClavePerfil = Convert.ToInt32(rcbPerfil.SelectedValue.ToString()),
+                IdPerfil = Convert.ToInt32(rcbPerfil.SelectedValue.ToString()),
 
 
                 ClaveMenu = Convert.ToInt32(claveMenu),

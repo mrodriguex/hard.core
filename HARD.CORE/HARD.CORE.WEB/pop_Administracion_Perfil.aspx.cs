@@ -24,9 +24,9 @@ public partial class pop_Administracion_Perfil : System.Web.UI.Page
 
                 Session.Remove("MenuPerfil");
 
-                int clavePerfil = int.Parse(Request.QueryString["ClavePerfil"]);
+                int idPerfil = int.Parse(Request.QueryString["IdPerfil"]);
 
-                if (clavePerfil == 0)
+                if (idPerfil == 0)
                 {
                     cbEstatus.Checked = true;
                     btnGuardar.Text = "Guardar perfil";
@@ -35,9 +35,9 @@ public partial class pop_Administracion_Perfil : System.Web.UI.Page
                 }
                 else
                 {
-                    menu = MenuSER.GetInstance().ObtenerMenu_Perfil(clavePerfil);
+                    menu = MenuSER.GetInstance().ObtenerMenu_Perfil(idPerfil);
                     cargarMenuAsigndo(menu);
-                    Perfil perfil = PerfilSER.GetInstance().ObtenerPerfil(clavePerfil);
+                    Perfil perfil = PerfilSER.GetInstance().ObtenerPerfil(idPerfil);
 
                     if (perfil != null)
                     {
@@ -175,18 +175,18 @@ public partial class pop_Administracion_Perfil : System.Web.UI.Page
 
             Usuario usuario = (Usuario)Session["Usuario"];
 
-            int clavePerfil = int.Parse(Request.QueryString["ClavePerfil"]);
+            int idPerfil = int.Parse(Request.QueryString["IdPerfil"]);
 
-            if (clavePerfil != 0)
+            if (idPerfil != 0)
             {
-                Perfil perfil = PerfilSER.GetInstance().ObtenerPerfil(clavePerfil);
+                Perfil perfil = PerfilSER.GetInstance().ObtenerPerfil(idPerfil);
                 perfil.Estatus = cbEstatus.Checked;
                 perfil.Descripcion = txtDescripcion.Text;
                 perfil.Menus = menus;
 
                 PerfilSER.GetInstance().ActualizarPerfil(perfil);
-                MenuSER.GetInstance().ConfigurarMenu_Perfil(perfil.ClavePerfil, perfil.Menus);
-                raManager.Alert("Se ha actualizado el perfil con clave : " + perfil.ClavePerfil);
+                MenuSER.GetInstance().ConfigurarMenu_Perfil(perfil.IdPerfil, perfil.Menus);
+                raManager.Alert("Se ha actualizado el perfil con clave : " + perfil.IdPerfil);
             }
             else
             {

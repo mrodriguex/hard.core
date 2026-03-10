@@ -34,7 +34,7 @@ public partial class pop_Administracion_Usuarios : System.Web.UI.Page
                 Session["UsuarioEdicion"] = new Usuario();
             }
 
-            string claveUsuario = Request.QueryString["ClaveUsuario"];
+            int idUsuario = Request.QueryString["ClaveUsuario"];
 
             if (!string.IsNullOrEmpty(claveUsuario))
             {
@@ -87,7 +87,7 @@ public partial class pop_Administracion_Usuarios : System.Web.UI.Page
             btnDirectorioActivo.Enabled = false;
             rlbPerfilesAdd.DataSource = UsuarioEdicion.Perfiles;
             rlbPerfilesAdd.DataTextField = "Descripcion";
-            rlbPerfilesAdd.DataValueField = "ClavePerfil";
+            rlbPerfilesAdd.DataValueField = "IdPerfil";
             rlbPerfilesAdd.DataBind();
             txtClave.Text = UsuarioEdicion.ClaveUsuario;
             txtNombreUsuario.Text = UsuarioEdicion.Nombre;
@@ -131,9 +131,9 @@ public partial class pop_Administracion_Usuarios : System.Web.UI.Page
 
         try
         {
-            rlbPerfiles.DataSource = PerfilSER.GetInstance().ObtenerPerfiles().Where(x => !UsuarioEdicion.Perfiles.Select(y => y.ClavePerfil).Contains(x.ClavePerfil));
+            rlbPerfiles.DataSource = PerfilSER.GetInstance().ObtenerPerfiles().Where(x => !UsuarioEdicion.Perfiles.Select(y => y.IdPerfil).Contains(x.IdPerfil));
             rlbPerfiles.DataTextField = "Descripcion";
-            rlbPerfiles.DataValueField = "ClavePerfil";
+            rlbPerfiles.DataValueField = "IdPerfil";
             rlbPerfiles.DataBind();
 
         }
@@ -149,7 +149,7 @@ public partial class pop_Administracion_Usuarios : System.Web.UI.Page
 
         try
         {
-            //string claveUsuario = Request.QueryString["ClaveUsuario"];
+            //int idUsuario = Request.QueryString["ClaveUsuario"];
             //DataTable dtUsuarioPerfil = UsuarioB.GetInstance().ObtenerPerfilesUsuario(claveUsuario);
             //DataView dvPerfiles = new DataView(dtUsuarioPerfil, "Agregado = " + agregado, "", DataViewRowState.CurrentRows);
             //return dvPerfiles;
@@ -286,7 +286,7 @@ public partial class pop_Administracion_Usuarios : System.Web.UI.Page
 
             rlbPerfilesAdd.Items.ToList().ForEach(dataitem => perfiles.Add(new Perfil()
             {
-                ClavePerfil = int.Parse(dataitem.Value)
+                IdPerfil = int.Parse(dataitem.Value)
             }));
            
 

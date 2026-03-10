@@ -1,29 +1,20 @@
-﻿namespace HARD.CORE.OBJ
+﻿using System.Collections.Generic;
+
+namespace HARD.CORE.OBJ
 {
-    public class Menu
+    public class Menu : Base
     {
         private int? _claveMenuPadre;
+        
+        public int IdMenu => Id;
 
-        public int ClaveMenu { get; set; }
-        public string Nombre { get; set; }
+        public List<Perfil> Perfiles { get; set; } = new();
+        
         public string Imagen { get; set; }
+        
         public string Ruta { get; set; }
+        
         public int? ClaveMenuPadre { get { return (_claveMenuPadre); } set { _claveMenuPadre = value == 0 ? null : value; } }
-        public int Orden { get; set; }
-        public bool PerteneceAPerfil { get; set; }
-
-        public Menu() { }
-
-        public Menu(int claveMenu, string nombre, string imagen, string ruta, int? claveMenuPadre = null, int orden = 0, bool perteneceAPerfil = false)
-        {
-            ClaveMenu = claveMenu;
-            Nombre = nombre;
-            Ruta = ruta;
-            Imagen = imagen;
-            ClaveMenuPadre = (claveMenuPadre == 0 ? null : claveMenuPadre);
-            Orden = orden;
-            PerteneceAPerfil = perteneceAPerfil;
-        }
 
     }
 }

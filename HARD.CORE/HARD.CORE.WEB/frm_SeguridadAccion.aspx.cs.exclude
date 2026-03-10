@@ -34,12 +34,12 @@ public partial class frm_SeguridadAccion : System.Web.UI.Page
 
             if (!IsPostBack)
             {
-                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Seguridad);
+                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.IdPerfil, (int)EnumEntidad.Seguridad);
 
                 //if (!seguridad.Consultar)
                 //    Response.Redirect("NoAutorizado.aspx");
 
-                //rcbPerfil.DataValueField = "ClavePerfil";
+                //rcbPerfil.DataValueField = "IdPerfil";
                 //rcbPerfil.DataTextField = "Descripcion";
                 //rcbPerfil.DataSource = PerfilSER.GetInstance().ObtenerActivos();
                 //rcbPerfil.DataBind();
@@ -67,19 +67,19 @@ public partial class frm_SeguridadAccion : System.Web.UI.Page
 
     protected void rgSeguridadAccion_NeedDataSource(object sender, Telerik.Web.UI.GridNeedDataSourceEventArgs e)
     {
-        int clavePerfil = rcbPerfil.SelectedValue == "" ? 0 : Convert.ToInt32(rcbPerfil.SelectedValue);
+        int idPerfil = rcbPerfil.SelectedValue == "" ? 0 : Convert.ToInt32(rcbPerfil.SelectedValue);
         int valorAsignado = Convert.ToInt32(rcbAsignado.SelectedValue);
 
-        if (clavePerfil != 0)
+        if (idPerfil != 0)
         {
             if (valorAsignado != 0)
             {
                 bool asignado = valorAsignado == 1;
-                rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil, asignado);
+                rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(idPerfil, asignado);
             }
             else
             {
-                rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(clavePerfil);
+                rgSeguridadAccion.DataSource = SeguridadAccionSER.GetInstance().ObtenerPorPerfil(idPerfil);
             }
         }
     }
@@ -173,7 +173,7 @@ public partial class frm_SeguridadAccion : System.Web.UI.Page
                 item["Exportar"].FindControl("chkExportar").Visible = false;
             }
 
-            //if ((int)EnumEntidad.Seguridad == Convert.ToInt32(item.GetDataKeyValue("ClaveEntidad")) && Usuario.Perfil.ClavePerfil == Convert.ToInt32(rcbPerfil.SelectedValue))
+            //if ((int)EnumEntidad.Seguridad == Convert.ToInt32(item.GetDataKeyValue("ClaveEntidad")) && Usuario.Perfil.IdPerfil == Convert.ToInt32(rcbPerfil.SelectedValue))
             //{
             //    CheckBox chkConsultar = item["Consultar"].FindControl("chkConsultar") as CheckBox;
             //    CheckBox chkEditar = item["Editar"].FindControl("chkEditar") as CheckBox;
@@ -190,7 +190,7 @@ public partial class frm_SeguridadAccion : System.Web.UI.Page
         foreach (GridDataItem item in rgSeguridadAccion.Items)
         {
             int claveEntidad = Convert.ToInt32(item.GetDataKeyValue("ClaveEntidad"));
-            int clavePerfil = Convert.ToInt32(rcbPerfil.SelectedValue);
+            int idPerfil = Convert.ToInt32(rcbPerfil.SelectedValue);
             int orden = Convert.ToInt32(item.GetDataKeyValue("Orden"));
             string descripcion = Convert.ToString(item.GetDataKeyValue("Descripcion"));
 
@@ -200,11 +200,11 @@ public partial class frm_SeguridadAccion : System.Web.UI.Page
             CheckBox chkEditar = (CheckBox)item["Editar"].FindControl("chkEditar");
             CheckBox chkExportar = (CheckBox)item["Exportar"].FindControl("chkExportar");
 
-            var seguridadAccion = new SeguridadAccion(clavePerfil, claveEntidad, orden, descripcion,
+            var seguridadAccion = new SeguridadAccion(idPerfil, claveEntidad, orden, descripcion,
                                          chkConsultar.Checked, chkCrear.Checked,
                                          chkEliminar.Checked, chkEditar.Checked,
                                          chkExportar.Checked, EnumAccion.Actualizar);
-            seguridadAccion.ClaveUsuarioActualizacion = Usuario.ClaveUsuario;
+            seguridadAccion.IdUsuarioModificacion = Usuario.ClaveUsuario;
 
             listadoSeguridadAccion.Add(seguridadAccion);
         }
@@ -220,7 +220,7 @@ public partial class frm_SeguridadAccion : System.Web.UI.Page
 
     private void ConfigurarBtnActualizar()
     {
-        //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.ClavePerfil, (int)EnumEntidad.Seguridad);
+        //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(Usuario.Perfil.IdPerfil, (int)EnumEntidad.Seguridad);
 
         //if (seguridad.Editar)
         //{

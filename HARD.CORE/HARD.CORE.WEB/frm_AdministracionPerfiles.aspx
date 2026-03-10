@@ -44,7 +44,7 @@
         </style>
         <script type="text/javascript">
             function nuevo() {
-                openRadWindow("pop_Administracion_Perfil.aspx?ClavePerfil=0", "AsignacionMenu", 880, 780, true)
+                openRadWindow("pop_Administracion_Perfil.aspx?IdPerfil=0", "AsignacionMenu", 880, 780, true)
             }
 
             function refreshGrid() {
@@ -82,11 +82,11 @@
                 var rgPerfiles = $find('<%= rgPerfiles.ClientID%>');
                 var dataItem = rgPerfiles.get_masterTableView().get_dataItems()[rowIndex];
 
-                var clavePerfil = dataItem.getDataKeyValue("ClavePerfil");
+                var idPerfil = dataItem.getDataKeyValue("IdPerfil");
                 var menu = $find("<%= rmPerfiles.ClientID%>");
 
                 if (args.get_item().get_text() == "Edición") {
-                    openRadWindow('pop_Administracion_Perfil.aspx?ClavePerfil=' + clavePerfil, "AsignacionMenu", 880, 780, true);
+                    openRadWindow('pop_Administracion_Perfil.aspx?IdPerfil=' + idPerfil, "AsignacionMenu", 880, 780, true);
                 }
                 return false;
             }
@@ -132,14 +132,14 @@
 
                 <GroupingSettings CaseSensitive="False" />
 
-                <MasterTableView DataKeyNames="ClavePerfil" ClientDataKeyNames="ClavePerfil">
+                <MasterTableView DataKeyNames="IdPerfil" ClientDataKeyNames="IdPerfil">
                     <RowIndicatorColumn Visible="False">
                     </RowIndicatorColumn>
                     <ExpandCollapseColumn Created="True">
                     </ExpandCollapseColumn>
                     <Columns>
 
-                        <telerik:GridNumericColumn DataField="ClavePerfil" HeaderText="Clave perfil" UniqueName="ClavePerfil" DecimalDigits="0" ReadOnly="True" FilterControlWidth="80px" AutoPostBackOnFilter="True" CurrentFilterFunction="EqualTo" ShowFilterIcon="False" AllowFiltering="true">
+                        <telerik:GridNumericColumn DataField="IdPerfil" HeaderText="Clave perfil" UniqueName="IdPerfil" DecimalDigits="0" ReadOnly="True" FilterControlWidth="80px" AutoPostBackOnFilter="True" CurrentFilterFunction="EqualTo" ShowFilterIcon="False" AllowFiltering="true">
                             <HeaderStyle Width="120px" />
                         </telerik:GridNumericColumn>
 

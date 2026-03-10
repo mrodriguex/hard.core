@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HARD.CORE.API.Helpers
@@ -45,7 +46,7 @@ namespace HARD.CORE.API.Helpers
         /// <returns>The username extracted from the token, or an error message.</returns>
         public static string GetUsernameFromToken(string authHeader)
         {
-            string claveUsuario = "";
+            int? idUsuario = null;
             try
             {
                 if (authHeader != null && authHeader.StartsWith("Bearer "))
@@ -57,14 +58,14 @@ namespace HARD.CORE.API.Helpers
 
                     // Extract username from claims
                     var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-                    claveUsuario = usernameClaim != null ? usernameClaim.Value : "";
+                    idUsuario = usernameClaim != null ? int.Parse(usernameClaim.Value) : (int?)null;
                 }
             }
             catch
             {
                 Console.WriteLine("Error occurred while parsing JWT token.");
             }
-            return claveUsuario;
+            return idUsuario.HasValue ? idUsuario.Value.ToString() : "";
         }
 
     }

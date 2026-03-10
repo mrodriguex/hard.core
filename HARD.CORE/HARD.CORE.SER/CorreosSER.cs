@@ -40,12 +40,12 @@ namespace CRY.PCC.SER
             return httpClientManager.GetWebResult<List<Correo>>(endPoint: "api/v1/Correo/ObtenerTodos");
         }
 
-        public List<Correo> ObtenerPorPerfil(int clavePerfil, bool? asignado = null)
+        public List<Correo> ObtenerPorPerfil(int idPerfil, bool? asignado = null)
         {
-            string encodedClavePerfil = Uri.EscapeDataString(clavePerfil.ToString());
+            string encodedIdPerfil = Uri.EscapeDataString(idPerfil.ToString());
             string encodedAsignado = Uri.EscapeDataString(asignado.ToString());
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-            return httpClientManager.GetWebResult<List<Correo>>(endPoint: "api/v1/SeguridadAccion/ObtenerPorPerfil", query: $"clavePerfil={encodedClavePerfil}");
+            return httpClientManager.GetWebResult<List<Correo>>(endPoint: "api/v1/SeguridadAccion/ObtenerPorPerfil", query: $"idPerfil={encodedIdPerfil}");
         }
 
         public Correo Obtener(int claveCorreo)

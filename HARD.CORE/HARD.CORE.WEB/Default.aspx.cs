@@ -54,7 +54,7 @@ public partial class _Default : System.Web.UI.Page
 
                 if (Request.QueryString["SessionExpired"] != null)
                 {
-                    string claveUsuario = Encryption.GetInstance().DecryptQS(Request.QueryString["SessionExpired"]);
+                    int idUsuario = Encryption.GetInstance().DecryptQS(Request.QueryString["SessionExpired"]);
                     UsuarioSER.GetInstance().RegistrarActividad(claveUsuario, 2);
                 }
 
@@ -87,7 +87,7 @@ public partial class _Default : System.Web.UI.Page
         txtIncorrecto.InnerText = "";
         try
         {
-            string claveUsuario = Request.Form["txtUsuario"].Trim();
+            int idUsuario = Request.Form["txtUsuario"].Trim();
             string password = Request.Form["txtPassword"].ToString().Trim();
             Login login = new Login() { Username = claveUsuario, Password = password };
             var token = AuthSER.GetInstance().Login(login: login);
@@ -154,7 +154,7 @@ public partial class _Default : System.Web.UI.Page
     {    
         string EmpresaSeleccionado = rcbEmpresa.SelectedValue;
         Usuario.EmpresaActivo.ClaveEmpresa = Convert.ToInt32(EmpresaSeleccionado); ;
-        List<HARD.CORE.OBJ.Menu> menu = MenuSER.GetInstance().ObtenerMenu_Usuario(Usuario.ClaveUsuario, Usuario.PerfilActivo.ClavePerfil);
+        List<HARD.CORE.OBJ.Menu> menu = MenuSER.GetInstance().ObtenerMenu_Usuario(Usuario.ClaveUsuario, Usuario.PerfilActivo.IdPerfil);
         HARD.CORE.OBJ.Menu paginaInicio = menu[0];
         Response.Redirect(paginaInicio.Ruta + "?nombre=" + paginaInicio.Nombre, false);
     }
@@ -190,28 +190,28 @@ public partial class _Default : System.Web.UI.Page
 
     private void CargaComboPerfiles()
     {
-        rcbPerfil.DataValueField = "ClavePerfil";
+        rcbPerfil.DataValueField = "IdPerfil";
         rcbPerfil.DataTextField = "Descripcion";
         rcbPerfil.DataSource = PerfilSER.GetInstance().ObtenerActivos(Usuario.ClaveUsuario);
         rcbPerfil.DataBind();
     }
 
-    public void CargarComboEmpresa(string ClaveUsuario,int ClavePerfil)
+    public void CargarComboEmpresa(int IdUsuario,int IdPerfil)
     {
         rcbEmpresa.DataValueField = "ClaveEmpresa";
         rcbEmpresa.DataTextField = "Descripcion";
-        rcbEmpresa.DataSource = EmpresaSER.GetInstance().ObtenerActivos(ClaveUsuario,ClavePerfil);
+        rcbEmpresa.DataSource = EmpresaSER.GetInstance().ObtenerActivos(ClaveUsuario,IdPerfil);
         rcbEmpresa.DataBind();
     }
 
     protected void rcbPerfil_SelectedIndexChanged(object sender, Telerik.Web.UI.RadComboBoxSelectedIndexChangedEventArgs e)
     {
         string PerflSeleccionado = rcbPerfil.SelectedValue;
-        Usuario.PerfilActivo.ClavePerfil = Convert.ToInt32(PerflSeleccionado);
+        Usuario.PerfilActivo.IdPerfil = Convert.ToInt32(PerflSeleccionado);
 
-        if (Usuario.ClaveUsuario != null & Usuario.PerfilActivo.ClavePerfil != 0)
+        if (Usuario.ClaveUsuario != null & Usuario.PerfilActivo.IdPerfil != 0)
         {
-            CargarComboEmpresa(Usuario.ClaveUsuario, Usuario.PerfilActivo.ClavePerfil);
+            CargarComboEmpresa(Usuario.ClaveUsuario, Usuario.PerfilActivo.IdPerfil);
         }
     }
 }

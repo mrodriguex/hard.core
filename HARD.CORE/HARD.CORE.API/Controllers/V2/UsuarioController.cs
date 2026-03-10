@@ -19,7 +19,7 @@ namespace HARD.CORE.API.Controllers.V2
     /// <summary>
     /// Controller for user management.
     /// </summary>  
-    public class UsuarioController : BaseController
+   public class UsuarioController : BaseController
     {
 
         private readonly IConfiguration _config;
@@ -39,19 +39,18 @@ namespace HARD.CORE.API.Controllers.V2
         /// <summary>
         /// Gets user information by user key.
         /// </summary>
-        /// <param name="claveUsuario">The unique identifier of the user.</param>
+        /// <param name="idUsuario">The unique identifier of the user.</param>
         /// <returns>
         ///     The user information if found; otherwise, an error message.
         /// </returns>
-        [HttpGet("Obtener")]
+        [HttpGet("GetById")]
         [AllowAnonymous]
-        public IActionResult Obtener([FromQuery, Required] string claveUsuario)
+        public IActionResult GetById([FromQuery, Required] int idUsuario)
         {
             var webResult = new WebResultModel<Usuario>();
             try
             {
-                string decodedClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                webResult.Data = _usuarioB.Obtener(decodedClaveUsuario);
+                webResult.Data = _usuarioB.GetById(idUsuario);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -66,180 +65,30 @@ namespace HARD.CORE.API.Controllers.V2
         /// <summary>
         /// Gets all users.
         /// </summary>   
-        /// <param name="estatus">The status filter for users.</param>
+        /// <param name="activo">The status filter for users.</param>
         /// <returns>
         ///     A list of all users if found; otherwise, an error message.
         /// </returns>
-        [HttpGet("ObtenerTodos")]
-        public IActionResult ObtenerTodos([FromQuery] bool? estatus = null)
+        [HttpGet("GetAll")]
+        public IActionResult GetAll([FromQuery] bool? activo = null)
         {
             var webResult = new WebResultModel<List<Usuario>>();
             try
             {
-                webResult.Data = _usuarioB.ObtenerTodos();
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    Filters = new BaseFilter
+                    {
+                        Activo = activo
+                    }
+                };
+                webResult.Data = _usuarioB.GetAll(pagedFilter).ToList();
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
             catch (Exception ex)
             {
                 webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Gets all users from the Active Directory.
-        /// </summary>
-        /// <returns>
-        ///     A list of users from the Active Directory if found; otherwise, an error message.
-        /// </returns>  
-        [HttpGet("ObtenerUsuariosDirectorioActivo")]
-        public IActionResult ObtenerUsuariosDirectorioActivo()
-        {
-            var webResult = new WebResultModel<List<Usuario>>();
-            try
-            {
-                webResult.Data = _usuarioB.ObtenerUsuariosDirectorioActivo();
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Gets a user from the Active Directory by user key.
-        /// </summary>
-        /// <param name="claveUsuario">The unique identifier of the user.</param>
-        /// <returns>
-        ///     The user information if found; otherwise, an error message.
-        /// </returns>
-        [HttpGet("ObtenerUsuarioDirectorioActivo")]
-        public IActionResult ObtenerUsuarioDirectorioActivo([FromQuery, Required] string claveUsuario)
-        {
-            var webResult = new WebResultModel<Usuario>();
-            try
-            {
-                string decodedClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                webResult.Data = (Usuario)_usuarioB.ObtenerUsuarioDirectorioActivo(decodedClaveUsuario);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Gets a suggested user from the Active Directory based on the provided names.
-        /// </summary>
-        /// <param name="apellidoPaterno">The last name of the user.</param>
-        /// <param name="apellidoMaterno">The mother's last name of the user.</param>
-        /// <param name="nombres">The first name of the user.</param>
-        /// <returns>
-        ///     The suggested user information if found; otherwise, an error message.
-        /// </returns>
-        [HttpGet("ObtenerUsuarioSugerido")]
-        public IActionResult ObtenerUsuarioSugerido([FromQuery, Required] string apellidoPaterno, [FromQuery, Required] string apellidoMaterno, [FromQuery, Required] string nombres)
-        {
-            var webResult = new WebResultModel<string>();
-            try
-            {
-                string decodedApellidoPaterno = Uri.UnescapeDataString(apellidoPaterno);
-                string decodedApellidoMaterno = Uri.UnescapeDataString(apellidoMaterno);
-                string decodedNombres = Uri.UnescapeDataString(nombres);
-                webResult.Data = _usuarioB.ObtenerUsuarioSugerido(apellidoPaterno: decodedApellidoPaterno, apellidoMaterno: decodedApellidoMaterno, nombres: decodedNombres);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Gets the activity information for users.
-        /// </summary>
-        /// <returns>
-        ///     The activity information if found; otherwise, an error message.
-        /// </returns>
-        [HttpGet("ObtenerActividad")]
-        public IActionResult ObtenerActividad(string? claveUsuario = null, DateTime? fechaInicial = null, DateTime? fechaFinal = null)
-        {
-            var webResult = new WebResultModel<List<BitacoraAcessos>>();
-            try
-            {
-                webResult.Data = _usuarioB.ObtenerActividad(claveUsuario: claveUsuario, fechaInicial: fechaInicial, fechaFinal: fechaFinal);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Gets the detailed activity information for a user.
-        /// </summary>
-        /// <param name="claveUsuario">The unique identifier of the user.</param>
-        /// <returns>
-        ///     The detailed activity information if found; otherwise, an error message.
-        /// </returns>
-        [HttpGet("ObtenerDetalleActividad")]
-        public IActionResult ObtenerDetalleActividad([FromQuery, Required] string? claveUsuario = null, DateTime? fechaInicial = null, DateTime? fechaFinal = null)
-        {
-            var webResult = new WebResultModel<List<BitacoraAcessos>>();
-            try
-            {
-                string decodedClaveUsuario = Uri.UnescapeDataString(claveUsuario??string.Empty);
-                webResult.Data = _usuarioB.ObtenerActividad(claveUsuario: claveUsuario, fechaInicial: fechaInicial, fechaFinal: fechaFinal);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Gets the password change eligibility for a user.
-        /// </summary>
-        /// <param name="claveUsuario">The unique identifier of the user.</param>
-        /// <returns>
-        ///     True if the user can change their password; otherwise, false.
-        /// </returns>
-        [AllowAnonymous]
-        [HttpGet("PuedeCambiarContrasena")]
-        public IActionResult PuedeCambiarContrasena([FromQuery, Required] string claveUsuario)
-        {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                string decodeClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                webResult.Data = _usuarioB.PuedeCambiarContrasena(claveUsuario);
-                webResult.Message = "Validación realizada exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al validar si el usuario puede cambiar la contraseña.";
                 webResult.Errors.Add(ex.Message);
             }
             return Ok(webResult);
@@ -255,25 +104,22 @@ namespace HARD.CORE.API.Controllers.V2
         /// True if the user exists; otherwise, false.
         /// </returns>
         [AllowAnonymous]
-        [HttpGet("ExisteUsuario")]
-        public IActionResult ExisteUsuario([FromQuery, Required] string claveUsuario)
+        [HttpGet("Exists")]
+        public IActionResult Exists([FromQuery, Required] int idUsuario)
         {
             var webResult = new WebResultModel<bool>();
             webResult.Message = "Error al validar existencia del usuario.";
             try
             {
-                string decodeClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                Usuario usuario = _usuarioB.Obtener(claveUsuario: decodeClaveUsuario);
-                if (string.IsNullOrEmpty(usuario.ClaveUsuario))
-                {
-                    webResult.Data = false;
-                    webResult.Message = "El usuario no existe en el sistema.";
-
-                }
-                else
+                if (_usuarioB.Exists(idUsuario))
                 {
                     webResult.Data = true;
                     webResult.Message = "El usuario existe en el sistema.";
+                }
+                else
+                {
+                    webResult.Data = false;
+                    webResult.Message = "El usuario no existe en el sistema.";
                 }
                 webResult.Success = true;
             }
@@ -291,15 +137,17 @@ namespace HARD.CORE.API.Controllers.V2
         /// <returns>
         ///     The detailed activity information if found; otherwise, an error message.
         /// </returns>
-        [HttpPost("Insertar")]
-        public IActionResult Insertar([FromBody] Usuario usuario)
+        [HttpPost("Add")]
+        public IActionResult Add([FromBody] Usuario usuario)
         {
-            var webResult = new WebResultModel<Usuario>();
+            var webResult = new WebResultModel<int>();
             try
             {
                 string defaultPassword = _config["DefaultPassword"] ?? "Default.123@";
-                _usuarioB.Insertar(usuario: usuario, defaultPassword: defaultPassword);
-                webResult.Data = (Usuario)_usuarioB.Obtener(claveUsuario: usuario.ClaveUsuario);
+                usuario.Contrasena = defaultPassword;
+                usuario.IdUsuarioModificacion = IdUsuario;
+                usuario.IdUsuarioCreacion = IdUsuario;
+                webResult.Data = _usuarioB.Add(usuario);
                 webResult.Message = "Inserción realizada exitosamente.";
                 webResult.Success = true;
             }
@@ -312,47 +160,23 @@ namespace HARD.CORE.API.Controllers.V2
         }
 
         /// <summary>
-        /// Gets the activity registration status for a user.
-        /// </summary>
-        /// <param name="claveUsuario">The unique identifier of the user.</param>
-        /// <param name="tipoRegistro">The type of activity registration.</param>
-        /// <returns>
-        ///     The activity registration status if found; otherwise, an error message.
-        /// </returns>
-        [HttpGet("RegistrarActividad")]
-        public IActionResult RegistrarActividad([FromQuery, Required] string claveUsuario, [FromQuery, Required] int tipoRegistro)
-        {
-            var webResult = new WebResultModel<object>();
-            try
-            {
-                string decodedClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                BitacoraEventos bitacoraEventos = new BitacoraEventos();
-                bitacoraEventos.ClaveUsuario = decodedClaveUsuario;
-                _usuarioB.RegistrarActividad(bitacoraEventos, tipoRegistro);
-                webResult.Message = "Registro de la actividad del usuario realizada exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar el registro de la actividad del usuario.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
         /// Updates the user information.
         /// </summary>
-        /// <param name="usuario">The user information.</param>
-        /// <returns></returns>
-        [HttpPut("Actualizar")]
-        public IActionResult Actualizar([FromBody] Usuario usuario)
+        /// <param name="usuario">
+        /// The user information to update.
+        /// </param>
+        /// <returns>
+        /// A result indicating the success or failure of the update operation.
+        /// </returns>
+        [HttpPut("Update")]
+        public IActionResult Update([FromBody] Usuario usuario)
         {
-            var webResult = new WebResultModel<object>();
+            var webResult = new WebResultModel<bool>();
             try
             {
-                _usuarioB.Actualizar(usuario: usuario);
-                webResult.Message = "Actualización realizada exitosamente.";
+                usuario.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _usuarioB.Update(usuario);
+                webResult.Message = webResult.Data ? "Actualización realizada exitosamente." : "No se realizó ninguna actualización.";
                 webResult.Success = true;
             }
             catch (Exception ex)
@@ -370,13 +194,14 @@ namespace HARD.CORE.API.Controllers.V2
         /// <returns>
         ///     True if the user is authenticated; otherwise, false.
         /// </returns>
-        [HttpPost("Autenticar")]
-        public IActionResult Autenticar([FromBody] Login login)
+        [HttpPost("AuthenticateUser")]
+        public IActionResult AuthenticateUser([FromBody] Login login)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                webResult.Data = _usuarioB.AutenticarUsuario(claveUsuario: login.Username, password: login.Password);
+                Usuario usuario = _usuarioB.GetByUsername(login.Username);
+                webResult.Data = _usuarioB.AuthenticateUser(usuario.IdUsuario, login.Password);
                 webResult.Message = "Autenticación realizada exitosamente.";
                 webResult.Success = true;
             }
@@ -394,23 +219,24 @@ namespace HARD.CORE.API.Controllers.V2
         /// <param name="login">The login information.</param>
         /// <returns>
         ///     True if the password is updated successfully; otherwise, false.
-        /// </returns>   
+        /// </returns>
         /// 
         [AllowAnonymous]
-        [HttpPut("ActualizaContrasena")]
-        public IActionResult ActualizaContrasena([FromBody] Login login)
+        [HttpPut("UpdatePassword")]
+        public IActionResult UpdatePassword([FromBody] Login login)
         {
             var webResult = new WebResultModel<bool>();
             webResult.Data = false;
             try
             {
-
                 webResult.Message = "Actualización de contraseña realizada exitosamente.";
-                Usuario usuario = new Usuario(); ;
-                usuario.ClaveUsuarioUltimaActualizacion = ClaveUsuario;
-                usuario.ClaveUsuario = login.Username;
-                usuario.Contrasena = login.Password;
-                webResult.Data = _usuarioB.ActualizaContrasena(usuario: usuario);
+                Usuario usuario = new Usuario
+                {
+                    IdUsuarioModificacion = IdUsuario,
+                    ClaveUsuario = login.Username,
+                    Contrasena = login.Password
+                };
+                webResult.Data = _usuarioB.UpdatePassword(usuario: usuario);
                 webResult.Success = true;
             }
             catch (Exception ex)
@@ -422,30 +248,33 @@ namespace HARD.CORE.API.Controllers.V2
         }
 
         /// <summary>
-        /// Updates the user's password.
+        /// Unlocks a user.
         /// </summary>
         /// <param name="claveUsuario">The user's key.</param>
-        /// <returns>True if the password is updated successfully; otherwise, false.</returns>
-        [AllowAnonymous]
-        [HttpGet("ActualizaIntento")]
-        public IActionResult ActualizaIntento([FromQuery, Required] string claveUsuario)
+        /// </param>
+        /// <returns>
+        ///     True if the user is unlocked successfully; otherwise, false.
+        /// </returns>
+        [HttpPut("UnlockUser")]
+        public IActionResult UnlockUser([FromBody, Required] int idUsuario)
         {
-            var webResult = new WebResultModel<object>();
+            var webResult = new WebResultModel<bool>();
+            webResult.Data = false;
             try
             {
-                string decodedClaveUsuario = Uri.UnescapeDataString(claveUsuario);
-                _usuarioB.ActualizaIntento(claveUsuario: decodedClaveUsuario);
-                webResult.Message = "Actualización de intento de ingreso realizado exitosamente.";
+                webResult.Message = "Desbloqueo de usuario realizado exitosamente.";
+                Usuario usuario = _usuarioB.GetById(idUsuario);
+                usuario.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _usuarioB.UnlockUser(usuario: usuario);
                 webResult.Success = true;
             }
             catch (Exception ex)
             {
-                webResult.Message = "Error al actualizar el intento de ingreso del usuario.";
+                webResult.Message = "Error al realizar el desbloqueo de usuario.";
                 webResult.Errors.Add(ex.Message);
             }
             return Ok(webResult);
         }
-       
 
     }
 }

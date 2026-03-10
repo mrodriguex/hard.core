@@ -35,7 +35,7 @@ public class SessionTimeOut
 
     #endregion    
 
-    public void CargarSession(HtmlForm Form, int TimeOut, string claveUsuario)
+    public void CargarSession(HtmlForm Form, int TimeOut, int idUsuario)
     {
 
         RadNotification notificacion = new RadNotification();

@@ -1,56 +1,54 @@
-﻿using HARD.CORE.DAT;
+﻿using HARD.CORE.DAT.Interfaces;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
-
-using System.Data;
+using System.Collections.Generic;
 
 namespace HARD.CORE.NEG
 {
-    public class ClienteB
+    public class ClienteB : IClienteB
     {
 
-        #region "Singleton"
+        private readonly IRepositoryBase<Cliente, BaseFilter, int> _clienteDA;
 
-        private static ClienteB instance = null;
-
-        private static object mutex = new object();
-        private ClienteB()
+        public ClienteB(IRepositoryBase<Cliente, BaseFilter, int> clienteDA)
         {
+            _clienteDA = clienteDA;
         }
 
-        public static ClienteB GetInstance()
+        public IEnumerable<Cliente> GetAll(PagedFilter<BaseFilter> pagedFilter)
         {
-
-            if (instance == null)
-            {
-                lock ((mutex))
-                {
-                    instance = new ClienteB();
-                }
-            }
-
-            return instance;
-
+            return _clienteDA.GetAll(pagedFilter);
         }
 
-        #endregion
-
-        public DataTable ObtenerTodos()
+        public Cliente GetById(int id)
         {
-            return ClienteDA.GetInstance().ObtenerTodos();
+            return _clienteDA.GetById(id);
         }
 
-        public Cliente Obtener(int claveCliente)
+        public bool Update(Cliente entity)
         {
-            return ClienteDA.GetInstance().ObtenerCliente(claveCliente);
+            Cliente clienteModificacion = _clienteDA.GetById(entity.IdCliente);
+            clienteModificacion.Nombre = entity.Nombre;
+            clienteModificacion.Abreviatura = entity.Abreviatura;
+            clienteModificacion.Activo = entity.Activo;
+            clienteModificacion.Descripcion = entity.Descripcion;
+            clienteModificacion.IdClientePadre = entity.IdClientePadre;
+            clienteModificacion.IdUsuarioModificacion = entity.IdUsuarioModificacion;
+            clienteModificacion.Orden = entity.Orden;
+            clienteModificacion.RazonSocial = entity.RazonSocial;
+            clienteModificacion.RFC = entity.RFC;
+            return _clienteDA.Update(clienteModificacion);
         }
-        public DataTable ObtenerActivos()           
+
+        public bool Delete(int id)
         {
-            return ClienteDA.GetInstance().ObtenerClientes();
+            return _clienteDA.Delete(id);
         }
-        public DataTable ObtenerNoRegistrados()
+
+        public int Add(Cliente entity)
         {
-            return ClienteDA.GetInstance().ObtenerNoRegistrados();
-        }              
+            return _clienteDA.Add(entity);
+        }
 
     }
 }

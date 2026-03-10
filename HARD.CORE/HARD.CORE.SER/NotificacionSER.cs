@@ -52,14 +52,14 @@ namespace HARD.CORE.SER
             return httpClientManager.GetWebResult<DataTable>(endPoint: "api/v1//Notificacion/ObtenerUsuariosPermitidos", query: $"claveNotificacion={claveNotificacion}");
         }
 
-        public List<Notificacion> ObtenerPorUsuario(string claveUsuario)
+        public List<Notificacion> ObtenerPorUsuario(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
             return httpClientManager.GetWebResult<List<Notificacion>>(endPoint: "api/v1//Notificacion/ObtenerPorUsuario", query: $"claveUsuario={encodedClaveUsuario}");
         }
 
-        public bool ExistenPendientesPorLeer(string claveUsuario)
+        public bool ExistenPendientesPorLeer(int idUsuario)
         {
             string encodedClaveUsuario = Uri.EscapeDataString(claveUsuario);
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);

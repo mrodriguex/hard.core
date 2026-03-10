@@ -26,7 +26,7 @@ public partial class frm_AdministracionFlujoAutorizacion : System.Web.UI.Page
             if (!IsPostBack)
             {
                 //Usuario usuario = Session["Usuario"] as Usuario;
-                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(usuario.Perfil.ClavePerfil, (int)EnumEntidad.BitacoraAcceso);
+                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(usuario.Perfil.IdPerfil, (int)EnumEntidad.BitacoraAcceso);
 
                 //if (!seguridad.Consultar)
                 //    Response.Redirect("NoAutorizado.aspx");

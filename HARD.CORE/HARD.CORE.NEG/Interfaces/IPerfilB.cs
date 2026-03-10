@@ -1,58 +1,36 @@
-﻿using HARD.CORE.OBJ;
+﻿using HARD.CORE.DAT.Interfaces;
+using HARD.CORE.OBJ;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HARD.CORE.NEG.Interfaces
 {
-    public interface IPerfilB
+    public interface IPerfilB : IRepositoryBase<Perfil, BaseFilter, int>
     {
-        /// <summary>
-        /// Obtains a profile by its unique key.
-        /// </summary>
-        /// <param name="clavePerfil">The unique key identifying the profile.</param>
-        /// <returns>The profile associated with the provided key.</returns>
-        Perfil Obtener(int clavePerfil);
-
-        /// <summary>
-        /// Obtains all profiles.
-        /// </summary>
-        /// <param name="claveEstatus">The status key to filter profiles.</param>
-        /// <param name="claveUsuario">The unique key identifying the user.</param>
-        /// <returns>A list of profiles matching the specified criteria.</returns>
-        List<Perfil> ObtenerTodos(bool? estatus = null, string? claveUsuario = null);
-
-        /// <summary>
-        /// Inserts a new profile.
-        /// </summary>
-        /// <param name="perfil">The profile to insert.</param>
-        /// <returns>The unique key of the inserted profile.</returns>
-        int Insertar(Perfil perfil);
-
-        /// <summary>
-        /// Updates an existing profile.
-        /// </summary>
-        /// <param name="perfil">The profile to update.</param>
-        /// <returns>True if the update was successful; otherwise, false.</returns>
-        bool Actualizar(Perfil perfil);
-
         /// <summary>
         /// Obtains the profiles associated with a specific user.
         /// </summary>
-        /// <param name="claveUsuario">The unique key identifying the user.</param>
-        /// <returns>A list of profiles associated with the provided user key.</returns>
-        List<Perfil> ObtenerPerfilesUsuario(string claveUsuario);
+        /// <param name="idUsuario">The unique key identifying the user.</param>
+        /// <returns>A list of profiles associated with the specified user.</returns>
+        /// <remarks>This method retrieves the user based on the provided unique key and then returns the list of profiles associated with that user. If the user does not exist, it returns an empty list.</remarks>
+        /// <exception cref="ArgumentException">Thrown when the provided user key is invalid.</exception>
+        List<Perfil> GetUserProfiles(int idUsuario);
 
         /// <summary>
-        /// Configures the menu for a given profile.
+        /// Assigns a profile to a user.
         /// </summary>
-        /// <param name="perfil">
-        /// The profile for which the menu configuration is to be updated.
-        /// </param>
-        /// <returns>A boolean indicating whether the menu configuration was successful.</returns>
-        bool ConfigurarMenu_Perfil(Perfil perfil);
+        /// <param name="idUsuario">The unique key identifying the user.</param>
+        /// <param name="idPerfil">The unique key identifying the profile.</param>
+        /// <returns>True if the profile was successfully assigned to the user; otherwise, false.</returns>
+        bool AssignProfileToUser(int idUsuario, int idPerfil);
+
+        /// <summary>
+        /// Removes a profile from a user.
+        /// </summary>
+        /// <param name="idUsuario">The unique key identifying the user.</param>
+        /// <param name="idPerfil">The unique key identifying the profile.</param>
+        /// <returns>True if the profile was successfully removed from the user; otherwise, false.</returns>
+        bool RemoveProfileFromUser(int idUsuario, int idPerfil);
+
     }
 }

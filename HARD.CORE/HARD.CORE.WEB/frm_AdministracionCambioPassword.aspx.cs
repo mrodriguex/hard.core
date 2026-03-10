@@ -20,7 +20,7 @@ public partial class frm_AdministracionCambioPassword : System.Web.UI.Page
             if (!IsPostBack)
             {
                 //Usuario usuario = (Usuario)Session["Usuario"];
-                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(usuario.Perfil.ClavePerfil, (int)EnumEntidad.Contraseña);
+                //Seguridad seguridad = SeguridadAccionSER.GetInstance().Obtener(usuario.Perfil.IdPerfil, (int)EnumEntidad.Contraseña);
 
                 //if (!seguridad.Consultar)
                 //    Response.Redirect("NoAutorizado.aspx");

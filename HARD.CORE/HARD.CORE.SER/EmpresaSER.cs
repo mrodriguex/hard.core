@@ -37,10 +37,10 @@ namespace HARD.CORE.SER
         #endregion
 
 
-        public List<Empresa> ObtenerActivos(string claveUsuario,int clavePerfil)
+        public List<Empresa> ObtenerActivos(int idUsuario,int idPerfil)
         {
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-            return httpClientManager.GetWebResult<List<Empresa>>(endPoint: "api/v1/Empresa/ObtenerAsignado", $"claveUsuario={claveUsuario}&clavePerfil={clavePerfil}");
+            return httpClientManager.GetWebResult<List<Empresa>>(endPoint: "api/v1/Empresa/ObtenerAsignado", $"claveUsuario={claveUsuario}&idPerfil={idPerfil}");
         }
         public List<Empresa> ObtenerTodos()
         {

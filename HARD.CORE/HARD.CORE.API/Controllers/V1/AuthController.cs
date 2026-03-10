@@ -58,7 +58,7 @@ namespace HARD.CORE.API.Controllers.V1
 
             try
             {
-                Usuario usuario = _usuarioB.Obtener(claveUsuario: login.Username);
+                Usuario usuario = _usuarioB.GetByUsername(login.Username);
 
                 if (string.IsNullOrEmpty(usuario.ClaveUsuario))
                 {
@@ -68,7 +68,7 @@ namespace HARD.CORE.API.Controllers.V1
                 {
                     webResult.Errors.Add("Usuario bloqueado");
                 }
-                else if (!_usuarioB.AutenticarUsuario(claveUsuario: login.Username, password: login.Password))
+                else if (!_usuarioB.AuthenticateUser(usuario.IdUsuario, login.Password))
                 {
                     webResult.Errors.Add("Credenciales son incorrectas");
                 }

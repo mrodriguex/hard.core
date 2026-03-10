@@ -35,10 +35,10 @@ namespace HARD.CORE.SER
 
         #endregion
 
-        public Perfil ObtenerPerfil(int clavePerfil)
+        public Perfil ObtenerPerfil(int idPerfil)
         {
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-            return httpClientManager.GetWebResult<Perfil>(endPoint: "api/v1/Perfil/Obtener", $"clavePerfil={clavePerfil}");
+            return httpClientManager.GetWebResult<Perfil>(endPoint: "api/v1/Perfil/Obtener", $"idPerfil={idPerfil}");
         }
 
         public List<Perfil> ObtenerPerfiles()
@@ -46,7 +46,7 @@ namespace HARD.CORE.SER
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
             return httpClientManager.GetWebResult<List<Perfil>>(endPoint: "api/v1/Perfil/ObtenerTodos");
         }
-        public List<Perfil> ObtenerActivos(string claveUsuario)
+        public List<Perfil> ObtenerActivos(int idUsuario)
         {
             HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
             return httpClientManager.GetWebResult<List<Perfil>>(endPoint: "api/v1/Perfil/ObtenerAsignado", $"claveUsuario={claveUsuario}");

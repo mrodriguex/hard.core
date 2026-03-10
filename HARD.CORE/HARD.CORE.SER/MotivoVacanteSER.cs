@@ -37,12 +37,12 @@ namespace CRY.PCC.SER
 
         #endregion
 
-        //public Seguridad Obtener(int clavePerfil, int claveEntidad)
+        //public Seguridad Obtener(int idPerfil, int claveEntidad)
         //{
-        //    string encodedClavePerfil = Uri.EscapeDataString(clavePerfil.ToString());
+        //    string encodedIdPerfil = Uri.EscapeDataString(idPerfil.ToString());
         //    string encodedClaveEntidad = Uri.EscapeDataString(claveEntidad.ToString());
         //    HttpClientManager httpClientManager = new HttpClientManager(urlBase: ConfigurationHelper.BackendApiUrl, token: TokenHelper.Token);
-        //    return httpClientManager.GetWebResult<Seguridad>(endPoint: "api/v1//SeguridadAccion/Obtener", query: $"clavePerfil={encodedClavePerfil}&claveEntidad={encodedClaveEntidad}");
+        //    return httpClientManager.GetWebResult<Seguridad>(endPoint: "api/v1//SeguridadAccion/Obtener", query: $"idPerfil={encodedIdPerfil}&claveEntidad={encodedClaveEntidad}");
         //}
 
         public List<MotivoVacante> ObtenerTodos()

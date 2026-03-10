@@ -3,5 +3,5 @@
 /// </summary>
 public interface IToolTipNotificacionUsuario
 {
-    string ClaveUsuario { get; set; }
+    int IdUsuario { get; set; }
 }

@@ -4,15 +4,13 @@ using System.Text;
 
 namespace HARD.CORE.OBJ
 {
-    public class Empresa
+    public class Empresa : Base
     {
-        public int ClaveEmpresa { get; set; }
-        public string Descripcion { get; set; }
-        public Empresa() { }
-        public Empresa(int claveEmpresa, string descripcion)
-        {
-            ClaveEmpresa = claveEmpresa;
-            Descripcion = descripcion;
-        }
+        public int IdEmpresa => Id;
+
+        public List<Usuario> Usuarios { get; set; } = new();
+
+        public string RFC { get; set; }
+        public string RazonSocial { get; set; }
     }
 }

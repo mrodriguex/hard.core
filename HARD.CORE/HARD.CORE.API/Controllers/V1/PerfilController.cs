@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Azure;
 using HARD.CORE.API.Controllers.Base;
 using HARD.CORE.API.Helpers;
 using HARD.CORE.API.Models.V1;
@@ -26,7 +27,7 @@ namespace HARD.CORE.API.Controllers.V1
     [ApiController]
     public class PerfilController : BaseController
     {
-          
+
         private readonly IPerfilB _perfilB;
 
         /// <summary>
@@ -43,15 +44,15 @@ namespace HARD.CORE.API.Controllers.V1
         /// <summary>
         /// Obtains a profile by its unique key.
         /// </summary>
-        /// <param name="clavePerfil">The unique key identifying the profile.</param>
+        /// <param name="idPerfil">The unique key identifying the profile.</param>
         /// <returns>The profile associated with the provided key.</returns>
-        [HttpGet("Obtener")]
-        public IActionResult Obtener([FromQuery, Required] int clavePerfil)
+        [HttpGet("GetById")]
+        public IActionResult GetById([FromQuery, Required] int idPerfil)
         {
             var webResult = new WebResultModel<Perfil>();
             try
             {
-                webResult.Data = (Perfil)_perfilB.Obtener(clavePerfil);
+                webResult.Data = (Perfil)_perfilB.GetById(idPerfil);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -67,13 +68,19 @@ namespace HARD.CORE.API.Controllers.V1
         /// Obtains all profiles.
         /// </summary>
         /// <returns>A list of all profiles.</returns>
-        [HttpGet("ObtenerTodos")]
-        public IActionResult ObtenerTodos([FromQuery] bool? estatus = null)
+        [HttpGet("GetAll")]
+        public IActionResult GetAll([FromQuery] bool? activo = null)
         {
             var webResult = new WebResultModel<List<Perfil>>();
             try
             {
-                webResult.Data = _perfilB.ObtenerTodos(estatus: estatus);
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    PageIndex = 1,
+                    PageSize = int.MaxValue,
+                    Filters = new BaseFilter()
+                };
+                webResult.Data = _perfilB.GetAll(pagedFilter).ToList();
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -88,37 +95,15 @@ namespace HARD.CORE.API.Controllers.V1
         /// <summary>
         /// Obtains all profiles assigned to a specific user.
         /// </summary>
-        /// <param name="claveUsuario">The unique key identifying the user.</param>
+        /// <param name="idUsuario">The unique key identifying the user.</param>
         /// <returns>A list of profiles assigned to the specified user.</returns>
-        [HttpGet("ObtenerAsignado")]
-        public IActionResult ObtenerAsignado([FromQuery, Required] string claveUsuario)
+        [HttpGet("GetUserProfiles")]
+        public IActionResult GetUserProfiles([FromQuery, Required] int idUsuario)
         {
             var webResult = new WebResultModel<List<Perfil>>();
             try
             {
-                webResult.Data = _perfilB.ObtenerTodos(claveUsuario: claveUsuario);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-        /// <summary>
-        /// Obtains all active profiles.
-        /// </summary>
-        /// <returns>A list of all active profiles.</returns>
-        [HttpGet("ObtenerActivos")]
-        public IActionResult ObtenerActivos()
-        {
-            var webResult = new WebResultModel<List<Perfil>>();
-            try
-            {
-                webResult.Data = _perfilB.ObtenerTodos(estatus: true);
+                webResult.Data = _perfilB.GetUserProfiles(idUsuario: idUsuario);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -135,14 +120,15 @@ namespace HARD.CORE.API.Controllers.V1
         /// </summary>
         /// <param name="perfil">The profile to insert.</param>
         /// <returns>The unique key of the inserted profile.</returns>
-        [HttpPost("Insertar")]
-        public IActionResult Insertar([FromBody] Perfil perfil)
+        [HttpPost("Add")]
+        public IActionResult Add([FromBody] Perfil perfil)
         {
             var webResult = new WebResultModel<int>();
             try
             {
-                perfil.ClaveUsuarioUltimaActualizacion = ClaveUsuario;
-                webResult.Data = _perfilB.Insertar(perfil);
+                perfil.IdUsuarioCreacion = IdUsuario;
+                perfil.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _perfilB.Add(perfil);
                 webResult.Message = "Inserción exitosa del perfil.";
                 webResult.Success = true;
             }
@@ -159,14 +145,14 @@ namespace HARD.CORE.API.Controllers.V1
         /// </summary>
         /// <param name="perfil">The profile to update.</param>
         /// <returns>True if the update was successful; otherwise, false.</returns>
-        [HttpPut("Actualizar")]
-        public IActionResult Actualizar([FromBody] Perfil perfil)
+        [HttpPut("Update")]
+        public IActionResult Update([FromBody] Perfil perfil)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                perfil.ClaveUsuarioUltimaActualizacion = ClaveUsuario;
-                webResult.Data = _perfilB.Actualizar(perfil);
+                perfil.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _perfilB.Update(perfil);
                 webResult.Message = "Actualización exitosa del perfil.";
                 webResult.Success = true;
             }
@@ -178,36 +164,5 @@ namespace HARD.CORE.API.Controllers.V1
             return Ok(webResult);
         }
 
-
-/// <summary>
-/// Configures the menu for a specific profile.
-/// </summary>
-/// <param name="perfil">
-/// The profile for which the menu configuration is to be updated.
-/// </param>
-/// <returns>
-/// A boolean indicating whether the menu configuration was successful.
-/// </returns>
-        [HttpPut("ConfigurarMenu_Perfil")]
-        public IActionResult ConfigurarMenu_Perfil([FromBody] Perfil perfil)
-        {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                perfil.ClaveUsuarioUltimaActualizacion = ClaveUsuario;
-                webResult.Data = _perfilB.ConfigurarMenu_Perfil(perfil);
-                webResult.Message = "Actualización exitosa del perfil.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al actualizar el perfil.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
-
-        
     }
 }

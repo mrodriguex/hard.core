@@ -1,4 +1,6 @@
-﻿using HARD.CORE.NEG.Interfaces;
+﻿using System.Collections.Generic;
+using System.Linq;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 
 namespace HARD.CORE.NEG
@@ -15,12 +17,17 @@ namespace HARD.CORE.NEG
         public bool ValidateUser(string username, string password)
         {
             bool success = false;
-            Usuario usuario = _usuarioB.Obtener(claveUsuario: username);
+
+            BaseFilter baseFilter = new BaseFilter() { Nombre = username };
+            PagedFilter<BaseFilter> filter = new PagedFilter<BaseFilter> { PageIndex = 1, PageSize = int.MaxValue, Filters = baseFilter };
+
+            List<Usuario> usuarios = _usuarioB.GetAll(filter).ToList();
+            Usuario usuario = usuarios.FirstOrDefault();
 
             if (!string.IsNullOrEmpty(usuario.ClaveUsuario) && username.ToLower() == usuario.ClaveUsuario.ToLower())
             {
                 // Validar credenciales contra la base de datos
-                success = _usuarioB.AutenticarUsuario(claveUsuario: usuario.ClaveUsuario, password: password);
+                success = _usuarioB.AuthenticateUser(usuario.IdUsuario, password);
             }
             return (success);
         }

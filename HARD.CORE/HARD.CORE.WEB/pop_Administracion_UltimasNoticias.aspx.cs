@@ -92,7 +92,7 @@ public partial class pop_Administracion_UltimasNoticias : System.Web.UI.Page
             }
             Aviso.RutaImagen = "";
 
-            Aviso.ClaveUsuarioActualizacion = usuario.ClaveUsuario;
+            Aviso.IdUsuarioModificacion = usuario.ClaveUsuario;
             Aviso.FechaInicial = fechaInicial;
             Aviso.FechaFinal = fechaFinal;
 
@@ -142,7 +142,7 @@ public partial class pop_Administracion_UltimasNoticias : System.Web.UI.Page
             }
 
 
-            Aviso.ClaveUsuarioActualizacion = usuario.ClaveUsuario;
+            Aviso.IdUsuarioModificacion = usuario.ClaveUsuario;
             Aviso.RutaImagen = RutaImagen;
 
 
