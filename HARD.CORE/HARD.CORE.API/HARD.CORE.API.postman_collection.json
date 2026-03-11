@@ -15,7 +15,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"your_username\",\n  \"password\": \"your_password\"\n}"
+          "raw": "{\n  \"username\": \"administrador\",\n  \"password\": \"Default.123@\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Auth/login",
