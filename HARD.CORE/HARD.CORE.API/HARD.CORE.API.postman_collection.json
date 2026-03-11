@@ -261,43 +261,268 @@
         ]
     },
     {
-      "name": "Empresa - GetAll",
+      "name": "Usuario - Add",
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
         ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"newuser\",\n  \"password\": \"TempPass123!\",\n  \"email\": \"newuser@example.com\",\n  \"idPerfil\": 1\n}"
+        },
         "url": {
-          "raw": "{{baseUrl}}/api/v1/Empresa/GetAll",
+          "raw": "{{baseUrl}}/api/v1/Usuario/Add",
           "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Empresa", "GetAll"]
+          "path": ["api", "v1", "Usuario", "Add"]
         }
       },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: {},",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {},",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
           }
-        ]
+        }
+      ]
+    },
+    {
+      "name": "Usuario - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idUsuario\": 1,\n  \"username\": \"updateduser\",\n  \"email\": \"updated@example.com\",\n  \"idPerfil\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/Update",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "Update"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {},",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cliente - Add",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Nuevo Cliente\",\n  \"email\": \"cliente@example.com\",\n  \"telefono\": \"123456789\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/Add",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Cliente", "Add"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {},",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cliente - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idCliente\": 1,\n  \"nombre\": \"Cliente Actualizado\",\n  \"email\": \"actualizado@example.com\",\n  \"telefono\": \"987654321\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/Update",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Cliente", "Update"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {},",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empresa - Add",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Nueva Empresa\",\n  \"direccion\": \"Calle Ficticia 123\",\n  \"telefono\": \"123456789\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/Add",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Empresa", "Add"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {},",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empresa - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idEmpresa\": 1,\n  \"nombre\": \"Empresa Actualizada\",\n  \"direccion\": \"Nueva Calle 456\",\n  \"telefono\": \"987654321\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/Update",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Empresa", "Update"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {},",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ]
     }
   ],
   "variable": [
