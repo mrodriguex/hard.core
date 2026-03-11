@@ -1,17 +1,53 @@
 {
   "info": {
-    "_postman_id": "hardcore-api-collection",
+    "_postman_id": "70eadaf0-549a-4c0d-9aad-72951831d994",
     "name": "HARD.CORE.API Collection",
+    "description": "Collection for testing all endpoints in HARD.CORE.API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Collection for testing all endpoints in HARD.CORE.API"
+    "_exporter_id": "17549784",
+    "_collection_link": "https://go.postman.co/collection/17549784-70eadaf0-549a-4c0d-9aad-72951831d994?source=collection_link"
   },
   "item": [
     {
       "name": "Auth - Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "/****************************************************************************/",
+              "pm.test(\"El campo 'success' es 'true'\", function () {",
+              "    let jsonData = pm.response.json();",
+              "    pm.collectionVariables.set(\"jwtToken\", jsonData.data);",
+              "    pm.expect(jsonData.success).to.eql(true);",
+              "});",
+              "/****************************************************************************/",
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: { type: 'string' },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -19,254 +55,89 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Auth/login",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Auth", "login"]
-        }
-      },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "/****************************************************************************/",
-                "pm.test(\"El campo 'success' es 'true'\", function () {",
-                "    let jsonData = pm.response.json();",
-                "    pm.collectionVariables.set(\"jwtToken\", jsonData.data);",
-                "    pm.expect(jsonData.success).to.eql(true);",
-                "});",
-                "/****************************************************************************/",
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: { type: 'string' },",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
-          }
-        ]
-    },
-    {
-      "name": "Usuario - GetById",
-      "request": {
-        "method": "GET",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/Usuario/GetById?idUsuario=1",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Usuario", "GetById"],
-          "query": [
-            { "key": "idUsuario", "value": "1" }
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Auth",
+            "login"
           ]
         }
       },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: {},",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
-          }
-        ]
-    },
-    {
-      "name": "Usuario - GetAll",
-      "request": {
-        "method": "GET",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/Usuario/GetAll",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Usuario", "GetAll"]
-        }
-      },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: {},",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
-          }
-        ]
-    },
-    {
-      "name": "Cliente - GetAll",
-      "request": {
-        "method": "GET",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/Cliente/GetAll",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Cliente", "GetAll"]
-        }
-      },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: {},",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
-          }
-        ]
-    },
-    {
-      "name": "Cliente - GetById",
-      "request": {
-        "method": "GET",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/Cliente/GetById?idCliente=1",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Cliente", "GetById"],
-          "query": [
-            { "key": "idCliente", "value": "1" }
-          ]
-        }
-      },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: {},",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
-          }
-        ]
-    },
-    {
-      "name": "Empresa - GetById",
-      "request": {
-        "method": "GET",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/Empresa/GetById?idEmpresa=1",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Empresa", "GetById"],
-          "query": [
-            { "key": "idEmpresa", "value": "1" }
-          ]
-        }
-      },
-        "response": [],
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "type": "text/javascript",
-              "exec": [
-                "// Schema validation",
-                "const schema = {",
-                "  type: 'object',",
-                "  properties: {",
-                "    success: { type: 'boolean' },",
-                "    message: { type: 'string' },",
-                "    data: {},",
-                "    errors: { type: 'array' }",
-                "  },",
-                "  required: ['success', 'message', 'data', 'errors']",
-                "};",
-                "pm.test(\"Response matches schema\", function () {",
-                "  pm.response.to.have.jsonSchema(schema);",
-                "});"
-              ]
-            }
-          }
-        ]
+      "response": []
     },
     {
       "name": "Usuario - Add",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        claveUsuario: { type: 'string' },",
+              "        numeroEmpleado: { type: 'integer' },",
+              "        isActive: { type: 'boolean' },",
+              "        perfiles: { type: 'array', items: { type: 'object' } },",
+              "        empresas: { type: 'array', items: { type: 'object' } },",
+              "        nombreCompleto: { type: 'string' },",
+              "        nombreUsuario: { type: 'string' },",
+              "        apellidoPaterno: { type: 'string' },",
+              "        apellidoMaterno: { type: 'string' },",
+              "        correo: { type: 'string' },",
+              "        contrasena: { type: 'string' },",
+              "        numeroIntentos: { type: 'integer' },",
+              "        bloqueado: { type: 'boolean' },",
+              "        cambioContrasena: { type: 'boolean' },",
+              "        estatus: { type: 'boolean' },",
+              "        fotografia: { type: 'string' },",
+              "        idUsuarioPorAusencia: { type: 'integer' },",
+              "        nombreUsuarioPorAusencia: { type: 'string' }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'claveUsuario', 'numeroEmpleado', 'isActive', 'perfiles', 'empresas', 'nombreCompleto', 'nombreUsuario', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'contrasena', 'numeroIntentos', 'bloqueado', 'cambioContrasena', 'estatus', 'fotografia', 'idUsuarioPorAusencia', 'nombreUsuarioPorAusencia']",
+              "    },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -274,11 +145,21 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Usuario/Add",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Usuario", "Add"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Usuario",
+            "Add"
+          ]
         }
       },
-      "response": [],
+      "response": []
+    },
+    {
+      "name": "Usuario - Update",
       "event": [
         {
           "listen": "test",
@@ -291,7 +172,40 @@
               "  properties: {",
               "    success: { type: 'boolean' },",
               "    message: { type: 'string' },",
-              "    data: {},",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        claveUsuario: { type: 'string' },",
+              "        numeroEmpleado: { type: 'integer' },",
+              "        isActive: { type: 'boolean' },",
+              "        perfiles: { type: 'array', items: { type: 'object' } },",
+              "        empresas: { type: 'array', items: { type: 'object' } },",
+              "        nombreCompleto: { type: 'string' },",
+              "        nombreUsuario: { type: 'string' },",
+              "        apellidoPaterno: { type: 'string' },",
+              "        apellidoMaterno: { type: 'string' },",
+              "        correo: { type: 'string' },",
+              "        contrasena: { type: 'string' },",
+              "        numeroIntentos: { type: 'integer' },",
+              "        bloqueado: { type: 'boolean' },",
+              "        cambioContrasena: { type: 'boolean' },",
+              "        estatus: { type: 'boolean' },",
+              "        fotografia: { type: 'string' },",
+              "        idUsuarioPorAusencia: { type: 'integer' },",
+              "        nombreUsuarioPorAusencia: { type: 'string' }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'claveUsuario', 'numeroEmpleado', 'isActive', 'perfiles', 'empresas', 'nombreCompleto', 'nombreUsuario', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'contrasena', 'numeroIntentos', 'bloqueado', 'cambioContrasena', 'estatus', 'fotografia', 'idUsuarioPorAusencia', 'nombreUsuarioPorAusencia']",
+              "    },",
               "    errors: { type: 'array' }",
               "  },",
               "  required: ['success', 'message', 'data', 'errors']",
@@ -302,15 +216,18 @@
             ]
           }
         }
-      ]
-    },
-    {
-      "name": "Usuario - Update",
+      ],
       "request": {
         "method": "PUT",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -318,11 +235,21 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Usuario/Update",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Usuario", "Update"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Usuario",
+            "Update"
+          ]
         }
       },
-      "response": [],
+      "response": []
+    },
+    {
+      "name": "Usuario - GetById",
       "event": [
         {
           "listen": "test",
@@ -335,7 +262,40 @@
               "  properties: {",
               "    success: { type: 'boolean' },",
               "    message: { type: 'string' },",
-              "    data: {},",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        claveUsuario: { type: 'string' },",
+              "        numeroEmpleado: { type: 'integer' },",
+              "        isActive: { type: 'boolean' },",
+              "        perfiles: { type: 'array', items: { type: 'object' } },",
+              "        empresas: { type: 'array', items: { type: 'object' } },",
+              "        nombreCompleto: { type: 'string' },",
+              "        nombreUsuario: { type: 'string' },",
+              "        apellidoPaterno: { type: 'string' },",
+              "        apellidoMaterno: { type: 'string' },",
+              "        correo: { type: 'string' },",
+              "        contrasena: { type: 'string' },",
+              "        numeroIntentos: { type: 'integer' },",
+              "        bloqueado: { type: 'boolean' },",
+              "        cambioContrasena: { type: 'boolean' },",
+              "        estatus: { type: 'boolean' },",
+              "        fotografia: { type: 'string' },",
+              "        idUsuarioPorAusencia: { type: 'integer' },",
+              "        nombreUsuarioPorAusencia: { type: 'string' }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'claveUsuario', 'numeroEmpleado', 'isActive', 'perfiles', 'empresas', 'nombreCompleto', 'nombreUsuario', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'contrasena', 'numeroIntentos', 'bloqueado', 'cambioContrasena', 'estatus', 'fotografia', 'idUsuarioPorAusencia', 'nombreUsuarioPorAusencia']",
+              "    },",
               "    errors: { type: 'array' }",
               "  },",
               "  required: ['success', 'message', 'data', 'errors']",
@@ -346,15 +306,176 @@
             ]
           }
         }
-      ]
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/GetById?idUsuario=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Usuario",
+            "GetById"
+          ],
+          "query": [
+            {
+              "key": "idUsuario",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - GetAll",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {",
+              "      type: 'array',",
+              "      items: {",
+              "        type: 'object',",
+              "        properties: {",
+              "          id: { type: 'integer' },",
+              "          descripcion: { type: 'string' },",
+              "          nombre: { type: 'string' },",
+              "          abreviatura: { type: 'string' },",
+              "          activo: { type: 'boolean' },",
+              "          fechaCreacion: { type: 'string' },",
+              "          fechaModificacion: { type: 'string' },",
+              "          idUsuarioCreacion: { type: 'integer' },",
+              "          idUsuarioModificacion: { type: 'integer' },",
+              "          orden: { type: 'integer' },",
+              "          claveUsuario: { type: 'string' },",
+              "          numeroEmpleado: { type: 'integer' },",
+              "          isActive: { type: 'boolean' },",
+              "          perfiles: { type: 'array', items: { type: 'object' } },",
+              "          empresas: { type: 'array', items: { type: 'object' } },",
+              "          nombreCompleto: { type: 'string' },",
+              "          nombreUsuario: { type: 'string' },",
+              "          apellidoPaterno: { type: 'string' },",
+              "          apellidoMaterno: { type: 'string' },",
+              "          correo: { type: 'string' },",
+              "          contrasena: { type: 'string' },",
+              "          numeroIntentos: { type: 'integer' },",
+              "          bloqueado: { type: 'boolean' },",
+              "          cambioContrasena: { type: 'boolean' },",
+              "          estatus: { type: 'boolean' },",
+              "          fotografia: { type: 'string' },",
+              "          idUsuarioPorAusencia: { type: 'integer' },",
+              "          nombreUsuarioPorAusencia: { type: 'string' }",
+              "        },",
+              "        required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'claveUsuario', 'numeroEmpleado', 'isActive', 'perfiles', 'empresas', 'nombreCompleto', 'nombreUsuario', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'contrasena', 'numeroIntentos', 'bloqueado', 'cambioContrasena', 'estatus', 'fotografia', 'idUsuarioPorAusencia', 'nombreUsuarioPorAusencia']",
+              "      }",
+              "    },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/GetAll",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Usuario",
+            "GetAll"
+          ]
+        }
+      },
+      "response": []
     },
     {
       "name": "Cliente - Add",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        rfc: { type: 'string' },",
+              "        razonSocial: { type: 'string' },",
+              "        idClientePadre: { type: ['integer', 'null'] }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'rfc', 'razonSocial']",
+              "    },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -362,11 +483,21 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Cliente/Add",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Cliente", "Add"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Cliente",
+            "Add"
+          ]
         }
       },
-      "response": [],
+      "response": []
+    },
+    {
+      "name": "Cliente - Update",
       "event": [
         {
           "listen": "test",
@@ -379,7 +510,25 @@
               "  properties: {",
               "    success: { type: 'boolean' },",
               "    message: { type: 'string' },",
-              "    data: {},",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        rfc: { type: 'string' },",
+              "        razonSocial: { type: 'string' },",
+              "        idClientePadre: { type: ['integer', 'null'] }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'rfc', 'razonSocial']",
+              "    },",
               "    errors: { type: 'array' }",
               "  },",
               "  required: ['success', 'message', 'data', 'errors']",
@@ -390,15 +539,18 @@
             ]
           }
         }
-      ]
-    },
-    {
-      "name": "Cliente - Update",
+      ],
       "request": {
         "method": "PUT",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -406,11 +558,21 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Cliente/Update",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Cliente", "Update"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Cliente",
+            "Update"
+          ]
         }
       },
-      "response": [],
+      "response": []
+    },
+    {
+      "name": "Cliente - GetById",
       "event": [
         {
           "listen": "test",
@@ -423,7 +585,25 @@
               "  properties: {",
               "    success: { type: 'boolean' },",
               "    message: { type: 'string' },",
-              "    data: {},",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        rfc: { type: 'string' },",
+              "        razonSocial: { type: 'string' },",
+              "        idClientePadre: { type: ['integer', 'null'] }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'rfc', 'razonSocial']",
+              "    },",
               "    errors: { type: 'array' }",
               "  },",
               "  required: ['success', 'message', 'data', 'errors']",
@@ -434,15 +614,161 @@
             ]
           }
         }
-      ]
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/GetById?idCliente=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Cliente",
+            "GetById"
+          ],
+          "query": [
+            {
+              "key": "idCliente",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cliente - GetAll",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {",
+              "      type: 'array',",
+              "      items: {",
+              "        type: 'object',",
+              "        properties: {",
+              "          id: { type: 'integer' },",
+              "          descripcion: { type: 'string' },",
+              "          nombre: { type: 'string' },",
+              "          abreviatura: { type: 'string' },",
+              "          activo: { type: 'boolean' },",
+              "          fechaCreacion: { type: 'string' },",
+              "          fechaModificacion: { type: 'string' },",
+              "          idUsuarioCreacion: { type: 'integer' },",
+              "          idUsuarioModificacion: { type: 'integer' },",
+              "          orden: { type: 'integer' },",
+              "          rfc: { type: 'string' },",
+              "          razonSocial: { type: 'string' },",
+              "          idClientePadre: { type: ['integer', 'null'] }",
+              "        },",
+              "        required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'rfc', 'razonSocial']",
+              "      }",
+              "    },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/GetAll",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Cliente",
+            "GetAll"
+          ]
+        }
+      },
+      "response": []
     },
     {
       "name": "Empresa - Add",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        usuarios: { type: 'array', items: { type: 'object' } },",
+              "        rfc: { type: 'string' },",
+              "        razonSocial: { type: 'string' }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'usuarios', 'rfc', 'razonSocial']",
+              "    },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -450,11 +776,21 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Empresa/Add",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Empresa", "Add"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Empresa",
+            "Add"
+          ]
         }
       },
-      "response": [],
+      "response": []
+    },
+    {
+      "name": "Empresa - Update",
       "event": [
         {
           "listen": "test",
@@ -467,7 +803,25 @@
               "  properties: {",
               "    success: { type: 'boolean' },",
               "    message: { type: 'string' },",
-              "    data: {},",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        usuarios: { type: 'array', items: { type: 'object' } },",
+              "        rfc: { type: 'string' },",
+              "        razonSocial: { type: 'string' }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'usuarios', 'rfc', 'razonSocial']",
+              "    },",
               "    errors: { type: 'array' }",
               "  },",
               "  required: ['success', 'message', 'data', 'errors']",
@@ -478,15 +832,18 @@
             ]
           }
         }
-      ]
-    },
-    {
-      "name": "Empresa - Update",
+      ],
       "request": {
         "method": "PUT",
         "header": [
-          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
@@ -494,11 +851,21 @@
         },
         "url": {
           "raw": "{{baseUrl}}/api/v1/Empresa/Update",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "Empresa", "Update"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Empresa",
+            "Update"
+          ]
         }
       },
-      "response": [],
+      "response": []
+    },
+    {
+      "name": "Empresa - GetAll",
       "event": [
         {
           "listen": "test",
@@ -511,7 +878,28 @@
               "  properties: {",
               "    success: { type: 'boolean' },",
               "    message: { type: 'string' },",
-              "    data: {},",
+              "    data: {",
+              "      type: 'array',",
+              "      items: {",
+              "        type: 'object',",
+              "        properties: {",
+              "          id: { type: 'integer' },",
+              "          descripcion: { type: 'string' },",
+              "          nombre: { type: 'string' },",
+              "          abreviatura: { type: 'string' },",
+              "          activo: { type: 'boolean' },",
+              "          fechaCreacion: { type: 'string' },",
+              "          fechaModificacion: { type: 'string' },",
+              "          idUsuarioCreacion: { type: 'integer' },",
+              "          idUsuarioModificacion: { type: 'integer' },",
+              "          orden: { type: 'integer' },",
+              "          usuarios: { type: 'array', items: { type: 'object' } },",
+              "          rfc: { type: 'string' },",
+              "          razonSocial: { type: 'string' }",
+              "        },",
+              "        required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'usuarios', 'rfc', 'razonSocial']",
+              "      }",
+              "    },",
               "    errors: { type: 'array' }",
               "  },",
               "  required: ['success', 'message', 'data', 'errors']",
@@ -522,11 +910,112 @@
             ]
           }
         }
-      ]
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/GetAll",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Empresa",
+            "GetAll"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empresa - GetById",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Schema validation",
+              "const schema = {",
+              "  type: 'object',",
+              "  properties: {",
+              "    success: { type: 'boolean' },",
+              "    message: { type: 'string' },",
+              "    data: {",
+              "      type: 'object',",
+              "      properties: {",
+              "        id: { type: 'integer' },",
+              "        descripcion: { type: 'string' },",
+              "        nombre: { type: 'string' },",
+              "        abreviatura: { type: 'string' },",
+              "        activo: { type: 'boolean' },",
+              "        fechaCreacion: { type: 'string' },",
+              "        fechaModificacion: { type: 'string' },",
+              "        idUsuarioCreacion: { type: 'integer' },",
+              "        idUsuarioModificacion: { type: 'integer' },",
+              "        orden: { type: 'integer' },",
+              "        usuarios: { type: 'array', items: { type: 'object' } },",
+              "        rfc: { type: 'string' },",
+              "        razonSocial: { type: 'string' }",
+              "      },",
+              "      required: ['id', 'descripcion', 'nombre', 'abreviatura', 'activo', 'fechaCreacion', 'fechaModificacion', 'idUsuarioCreacion', 'idUsuarioModificacion', 'orden', 'usuarios', 'rfc', 'razonSocial']",
+              "    },",
+              "    errors: { type: 'array' }",
+              "  },",
+              "  required: ['success', 'message', 'data', 'errors']",
+              "};",
+              "pm.test(\"Response matches schema\", function () {",
+              "  pm.response.to.have.jsonSchema(schema);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/GetById?idEmpresa=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "Empresa",
+            "GetById"
+          ],
+          "query": [
+            {
+              "key": "idEmpresa",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "https://localhost:7026" },
-    { "key": "jwtToken", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:7026"
+    },
+    {
+      "key": "jwtToken",
+      "value": ""
+    }
   ]
 }
