@@ -111,5 +111,54 @@ namespace HARD.CORE.API.Controllers.V1
             return Ok(webResult);
         }
 
+        /// <summary>
+        /// Inserts a new menu.
+        /// </summary>
+        /// <param name="menu">The menu to insert.</param>
+        /// <returns>The unique key of the inserted menu.</returns>
+        [HttpPost("Add")]
+        public IActionResult Add([FromBody] Menu menu)
+        {
+            var webResult = new WebResultModel<int>();
+            try
+            {
+                menu.IdUsuarioCreacion = IdUsuario;
+                menu.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _menuB.Add(menu);
+                webResult.Message = "Inserción exitosa del menú.";
+                webResult.Success = true;
+            }
+            catch (Exception ex)
+            {
+                webResult.Message = "Error al realizar la inserción.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return Ok(webResult);
+        }
+
+        /// <summary>
+        /// Updates an existing menu.
+        /// </summary>
+        /// <param name="menu">The menu to update.</param>
+        /// <returns>True if the update was successful; otherwise, false.</returns>
+        [HttpPut("Update")]
+        public IActionResult Update([FromBody] Menu menu)
+        {
+            var webResult = new WebResultModel<bool>();
+            try
+            {
+                menu.IdUsuarioModificacion = IdUsuario;
+                webResult.Data = _menuB.Update(menu);
+                webResult.Message = "Actualización exitosa del menú.";
+                webResult.Success = true;
+            }
+            catch (Exception ex)
+            {
+                webResult.Message = "Error al actualizar el menú.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return Ok(webResult);
+        }
+
     }
 }
