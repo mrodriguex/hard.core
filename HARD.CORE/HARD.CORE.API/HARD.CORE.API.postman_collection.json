@@ -1384,6 +1384,362 @@
       "response": []
     },
     {
+      "name": "Usuario - Exists",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/Exists?idUsuario=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "Exists"],
+          "query": [{ "key": "idUsuario", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - Delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/Delete?idUsuario=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "Delete"],
+          "query": [{ "key": "idUsuario", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - AuthenticateUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"administrador\",\n  \"password\": \"Default.123@\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/AuthenticateUser",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "AuthenticateUser"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - UpdatePassword",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"administrador\",\n  \"password\": \"Default.123@\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/UpdatePassword",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "UpdatePassword"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Usuario - UnlockUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "1"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Usuario/UnlockUser",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Usuario", "UnlockUser"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cliente - Delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Cliente/Delete?idCliente=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Cliente", "Delete"],
+          "query": [{ "key": "idCliente", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empresa - Delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/Delete?idEmpresa=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Empresa", "Delete"],
+          "query": [{ "key": "idEmpresa", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Empresa - GetCompaniesByUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'array', items: { type: 'object' } }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Empresa/GetCompaniesByUser?idUsuario=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Empresa", "GetCompaniesByUser"],
+          "query": [{ "key": "idUsuario", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Perfil - Delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Perfil/Delete?idPerfil=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Perfil", "Delete"],
+          "query": [{ "key": "idPerfil", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Perfil - GetUserProfiles",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'array', items: { type: 'object' } }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Perfil/GetUserProfiles?idUsuario=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Perfil", "GetUserProfiles"],
+          "query": [{ "key": "idUsuario", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Menu - Delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'boolean' }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Menu/Delete?idMenu=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Menu", "Delete"],
+          "query": [{ "key": "idMenu", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Menu - GetMenusByUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'array', items: { type: 'object' } }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Menu/GetMenusByUser?idUsuario=1&idPerfil=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Menu", "GetMenusByUser"],
+          "query": [
+            { "key": "idUsuario", "value": "1" },
+            { "key": "idPerfil", "value": "1" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Menu - GetMenusByProfile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const schema = { type: 'object', properties: { success: { type: 'boolean' }, message: { type: 'string' }, data: { type: 'array', items: { type: 'object' } }, errors: { type: 'array' } }, required: ['success','message','data','errors'] };",
+              "pm.test('Response matches schema', function () { pm.response.to.have.jsonSchema(schema); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/Menu/GetMenusByProfile?idPerfil=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "Menu", "GetMenusByProfile"],
+          "query": [{ "key": "idPerfil", "value": "1" }]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Config - Get",
       "event": [
         {
