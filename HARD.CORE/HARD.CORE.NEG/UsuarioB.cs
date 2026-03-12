@@ -13,7 +13,7 @@ namespace HARD.CORE.NEG
     public class UsuarioB : IUsuarioB
     {
         private readonly IRepositoryBase<Usuario, BaseFilter, int> _usuarioDA;
-        private readonly ICryptographer _cryptographer;
+        private readonly ICryptographerB _cryptographer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsuarioB"/> class.
@@ -23,7 +23,7 @@ namespace HARD.CORE.NEG
         /// <param name="cryptographer">Service for cryptographic operations.</param>
         /// <param name="perfilB">Business logic for user profiles.</param>
         public UsuarioB(IRepositoryBase<Usuario, BaseFilter, int> usuarioDA,
-                       ICryptographer cryptographer)
+                       ICryptographerB cryptographer)
         {
             _usuarioDA = usuarioDA;
             _cryptographer = cryptographer;
@@ -128,7 +128,7 @@ namespace HARD.CORE.NEG
             Usuario usuario = _usuarioDA.GetById(idUsuario);
 
 
-            isAuthenticated = _cryptographer.CompareHash("SHA512CryptoServiceProvider", password, usuario.Contrasena);
+            isAuthenticated = _cryptographer.CompareHash(password, usuario.Contrasena);
 
 
             if (isAuthenticated)
@@ -174,7 +174,7 @@ namespace HARD.CORE.NEG
         /// <param name="contrasena">The new password for the user.</param>
         public bool UpdatePassword(Usuario usuario)
         {
-            string hash = _cryptographer.CreateHash(algorithmName: "SHA512CryptoServiceProvider", plainText: usuario.Contrasena);
+            string hash = _cryptographer.CreateHash(input: usuario.Contrasena);
             Usuario usuarioModificacion = _usuarioDA.GetById(usuario.Id);
             usuarioModificacion.Contrasena = hash;
             usuarioModificacion.CambioContrasena = false;

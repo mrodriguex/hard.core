@@ -53,7 +53,6 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                entity.FechaCreacion = DateTime.Now;
                 _context.Empresas.Add(entity);
                 _context.SaveChanges();
                 return entity.Id;
@@ -69,7 +68,6 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                entity.FechaModificacion = DateTime.Now;
                 _context.Empresas.Update(entity);
                 _context.SaveChanges();
                 return true;

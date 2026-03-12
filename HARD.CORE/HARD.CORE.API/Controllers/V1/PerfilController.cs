@@ -1,17 +1,13 @@
 ﻿using Asp.Versioning;
-using Azure;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.API.Helpers;
-using HARD.CORE.API.Models.V1;
-using HARD.CORE.NEG;
-using HARD.CORE.NEG.Interfaces;
+using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace HARD.CORE.API.Controllers.V1
 {
@@ -28,17 +24,17 @@ namespace HARD.CORE.API.Controllers.V1
     public class PerfilController : BaseController
     {
 
-        private readonly IPerfilB _perfilB;
+        private readonly PerfilService _perfilService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PerfilController"/> class.
         /// </summary>
-        /// <param name="perfilB">
-        /// The profile business logic layer.
+        /// <param name="perfilService">
+        /// The profile service layer.
         /// </param>
-        public PerfilController(IPerfilB perfilB)
+        public PerfilController(PerfilService perfilService)
         {
-            _perfilB = perfilB;
+            _perfilService = perfilService;
         }
 
         /// <summary>
@@ -49,19 +45,8 @@ namespace HARD.CORE.API.Controllers.V1
         [HttpGet("GetById")]
         public IActionResult GetById([FromQuery, Required] int idPerfil)
         {
-            var webResult = new WebResultModel<Perfil>();
-            try
-            {
-                webResult.Data = _perfilB.GetById(idPerfil);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _perfilService.GetById(idPerfil);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -69,52 +54,11 @@ namespace HARD.CORE.API.Controllers.V1
         /// </summary>
         /// <returns>A list of all profiles.</returns>
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null)
+        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = new WebResultModel<List<Perfil>>();
-            try
-            {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = 1,
-                    PageSize = int.MaxValue,
-                    Filters = new BaseFilter { Activo = activo }
-                };
-                webResult.Data = _perfilB.GetAll(pagedFilter).ToList();
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _perfilService.GetAll(activo, pageIndex, pageSize);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
-
-        /// <summary>
-        /// Obtains all profiles assigned to a specific user.
-        /// </summary>
-        /// <param name="idUsuario">The unique key identifying the user.</param>
-        /// <returns>A list of profiles assigned to the specified user.</returns>
-        [HttpGet("GetUserProfiles")]
-        public IActionResult GetUserProfiles([FromQuery, Required] int idUsuario)
-        {
-            var webResult = new WebResultModel<List<Perfil>>();
-            try
-            {
-                webResult.Data = _perfilB.GetUserProfiles(idUsuario: idUsuario);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
-        }
-
         /// <summary>
         /// Inserts a new profile.
         /// </summary>
@@ -123,21 +67,8 @@ namespace HARD.CORE.API.Controllers.V1
         [HttpPost("Add")]
         public IActionResult Add([FromBody] Perfil perfil)
         {
-            var webResult = new WebResultModel<int>();
-            try
-            {
-                perfil.IdUsuarioCreacion = IdUsuario;
-                perfil.IdUsuarioModificacion = IdUsuario;
-                webResult.Data = _perfilB.Add(perfil);
-                webResult.Message = "Inserción exitosa del perfil.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al insertar perfil.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _perfilService.Add(perfil, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -148,20 +79,27 @@ namespace HARD.CORE.API.Controllers.V1
         [HttpPut("Update")]
         public IActionResult Update([FromBody] Perfil perfil)
         {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                perfil.IdUsuarioModificacion = IdUsuario;
-                webResult.Data = _perfilB.Update(perfil);
-                webResult.Message = "Actualización exitosa del perfil.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al actualizar el perfil.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+                var webResult = _perfilService.Update(perfil, IdUsuarioAutenticado);
+                return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+        }
+
+        [HttpDelete("Delete")]
+        public IActionResult Delete([FromQuery, Required] int idPerfil)
+        {
+            var webResult = _perfilService.Delete(idPerfil, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+        }
+
+        /// <summary>
+        /// Obtains all profiles assigned to a specific user.
+        /// </summary>
+        /// <param name="idUsuario">The unique key identifying the user.</param>
+        /// <returns>A list of profiles assigned to the specified user.</returns>
+        [HttpGet("GetUserProfiles")]
+        public IActionResult GetUserProfiles([FromQuery, Required] int idUsuario)
+        {
+            var webResult = _perfilService.GetUserProfiles(idUsuario);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
     }

@@ -50,7 +50,6 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                entity.FechaCreacion = DateTime.Now;
                 foreach (var menu in entity.Menus) { _context.Attach(menu); }
                 _context.Perfiles.Add(entity);
                 _context.SaveChanges();
@@ -67,7 +66,6 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                entity.FechaModificacion = DateTime.Now;
                 foreach (var menu in entity.Menus) { _context.Attach(menu); }
                 _context.Perfiles.Update(entity);
                 _context.SaveChanges();

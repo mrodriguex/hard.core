@@ -24,9 +24,9 @@ namespace HARD.CORE.API.Helpers
         /// <returns>
         /// The generated JWT token as a string.
         /// </returns>
-        public static string GenerateJwtToken(string username, int tokenDuration, string jwtPrivKey)
+        public static string GenerateJwtToken(int idUsuario, int tokenDuration, string jwtPrivKey)
         {
-            var claims = new[] { new Claim(ClaimTypes.Name, username) };
+            var claims = new[] { new Claim(ClaimTypes.Name, idUsuario.ToString()) };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtPrivKey ?? ""));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -39,14 +39,14 @@ namespace HARD.CORE.API.Helpers
         }
 
         /// <summary>
-        /// Extracts the username from the JWT token in the Authorization header.
+        /// Extracts the user ID from the JWT token in the Authorization header.
         /// </summary>
         /// <param name="authHeader">
         /// The Authorization header containing the JWT token.</param>
-        /// <returns>The username extracted from the token, or an error message.</returns>
-        public static string GetUsernameFromToken(string authHeader)
+        /// <returns>The user ID extracted from the token, or 0 if an error occurs.</returns>
+        public static int GetUserIdFromToken(string authHeader)
         {
-            int? idUsuario = null;
+            int idUsuario = 0;
             try
             {
                 if (authHeader != null && authHeader.StartsWith("Bearer "))
@@ -56,16 +56,19 @@ namespace HARD.CORE.API.Helpers
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var jwtToken = tokenHandler.ReadJwtToken(token);
 
-                    // Extract username from claims
-                    var usernameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-                    idUsuario = usernameClaim != null ? int.Parse(usernameClaim.Value) : (int?)null;
+                    // Extract user ID from claims
+                    var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+                    if (userIdClaim != null)
+                    {
+                        int.TryParse(userIdClaim.Value, out idUsuario);
+                    }
                 }
             }
             catch
             {
                 Console.WriteLine("Error occurred while parsing JWT token.");
             }
-            return idUsuario.HasValue ? idUsuario.Value.ToString() : "";
+            return idUsuario;
         }
 
     }

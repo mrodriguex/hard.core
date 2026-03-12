@@ -16,5 +16,9 @@
     <ProjectReference Include="..\HARD.CORE.OBJ\HARD.CORE.OBJ.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
 
 </Project>

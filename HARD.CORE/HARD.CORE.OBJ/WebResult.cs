@@ -1,37 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// using System;
+// using System.Collections.Generic;
 
-namespace HARD.CORE.OBJ
-{
-    public class WebResult<T>
+// namespace HARD.CORE.OBJ
+// {
+//     public class WebResult<T>
 
-    {
-        private List<string> _erros;
+//     {
+//         private List<string> _erros;
 
-        public int StatusCode { get; set; }
+//         public int StatusCode { get; set; }
 
-        public bool Success { get; set; } = false;
+//         public bool Success { get; set; } = false;
 
-        public T Data { get; set; }
+//         public T Data { get; set; }
 
-        public string Message { get; set; } = "";
+//         public string Message { get; set; } = "";
 
-        public DateTime CurrentTime { get; } = DateTime.UtcNow;
+//         public DateTime CurrentTime { get; } = DateTime.UtcNow;
 
-        public List<string> Errors
-        {
-            get
-            {
-                if (_erros == null)
-                {
-                    _erros = new List<string>();
-                }
-                return (_erros);
-            }
-            set
-            {
-                _erros = value;
-            }
-        }
-    }
-}
+//         public List<string> Errors
+//         {
+//             get
+//             {
+//                 if (_erros == null)
+//                 {
+//                     _erros = new List<string>();
+//                 }
+//                 return (_erros);
+//             }
+//             set
+//             {
+//                 _erros = value;
+//             }
+//         }
+//     }
+// }

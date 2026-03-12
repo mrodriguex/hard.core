@@ -1,80 +1,60 @@
-﻿using HARD.CORE.NEG.Interfaces;
-
-using System;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace HARD.CORE.NEG
 {
-    public class Cryptographer : ICryptographer
+    public class CryptographerSHA512B : ICryptographerB
     {
         /// <summary>
         /// Compara el hash calculado del input con el hash almacenado utilizando el algoritmo indicado.
         /// </summary>
-        /// <param name="algorithmName">Nombre del algoritmo (ej. "SHA512")</param>
-        /// <param name="plainText">Texto a hashear (por ejemplo, el password en texto plano)</param>
-        /// <param name="storedHash">Hash almacenado para comparación (se supone en formato hexadecimal)</param>
+        /// <param name="input">Texto a hashear (por ejemplo, el password en texto plano)</param>
+        /// <param name="hash">Hash almacenado para comparación (se supone en formato hexadecimal)</param>
         /// <returns>true si los hashes coinciden; false en caso contrario</returns>
-        public bool CompareHash(string algorithmName, string plainText, string storedHash)
+        public bool CompareHash(string input, string hash)
         {
             // Crear la instancia del algoritmo de hash.
             HashAlgorithm hashAlgorithm;
-            if (string.Equals(algorithmName, "SHA512CryptoServiceProvider", StringComparison.OrdinalIgnoreCase))
-            {
-                // Usamos SHA512CryptoServiceProvider directamente para que coincida con el cálculo original.
 
+            // Usamos SHA512CryptoServiceProvider directamente para que coincida con el cálculo original.
 
-                hashAlgorithm = SHA512.Create();    //new SHA512CryptoServiceProvider();
-                byte[] inputBytes = Encoding.UTF8.GetBytes(plainText);
-                byte[] hashBytes = hashAlgorithm.ComputeHash(inputBytes);
+            hashAlgorithm = SHA512.Create();    //new SHA512CryptoServiceProvider();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = hashAlgorithm.ComputeHash(inputBytes);
 
-                // Convertir el hash a Base64 para que coincida con el formato de storedHash
-                string computedHash = Convert.ToBase64String(hashBytes);
+            // Convertir el hash a Base64 para que coincida con el formato de storedHash
+            string computedHash = Convert.ToBase64String(hashBytes);
 
-                return string.Equals(computedHash, storedHash, StringComparison.OrdinalIgnoreCase);
-            }
-            else
-            {
-                hashAlgorithm = SHA512.Create()    //HashAlgorithm.Create(algorithmName)
-                    ?? throw new ArgumentException("Algoritmo no válido", nameof(algorithmName));
-            }
-
-            return false;
+            return string.Equals(computedHash, hash, StringComparison.OrdinalIgnoreCase);
         }
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="algorithmName"></param>
-/// <param name="plainText"></param>
-/// <returns></returns>
-/// <exception cref="ArgumentNullException"></exception>
-/// <exception cref="ArgumentException"></exception>
-        public string CreateHash(string algorithmName, string plainText)
+        /// <summary>
+        /// Crea un hash del texto proporcionado utilizando el algoritmo especificado.
+        /// </summary>
+        /// <param name="algorithmName">Nombre del algoritmo (ej. "SHA512")</param>
+        /// <param name="plainText">Texto a hashear</param>
+        /// <returns>Hash en formato Base64</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public string CreateHash(string input)
         {
-            if (plainText == null)
-                throw new ArgumentNullException(nameof(plainText));
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
 
             // Convertir la cadena en bytes utilizando UTF8 (asegúrate que sea la misma codificación usada originalmente)
-            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
 
             // Crear la instancia del algoritmo de hash.
             HashAlgorithm hashAlgorithm;
-            if (string.Equals(algorithmName, "SHA512CryptoServiceProvider", StringComparison.OrdinalIgnoreCase))
-            {
-                // Se utiliza directamente SHA512CryptoServiceProvider para que el resultado sea idéntico
-                hashAlgorithm = SHA512.Create();    //new SHA512CryptoServiceProvider();
-            }
-            else
-            {
-                hashAlgorithm = SHA512.Create()    // HashAlgorithm.Create(algorithmName)
-                    ?? throw new ArgumentException("Algoritmo no válido", nameof(algorithmName));
-            }
+
+            // Se utiliza directamente SHA512CryptoServiceProvider para que el resultado sea idéntico
+            hashAlgorithm = SHA512.Create();    //new SHA512CryptoServiceProvider();
 
             // Calcular el hash y convertirlo a Base64
             using (hashAlgorithm)
             {
-                byte[] hashBytes = hashAlgorithm.ComputeHash(plainTextBytes);
+                byte[] hashBytes = hashAlgorithm.ComputeHash(inputBytes);
                 return Convert.ToBase64String(hashBytes);
             }
         }

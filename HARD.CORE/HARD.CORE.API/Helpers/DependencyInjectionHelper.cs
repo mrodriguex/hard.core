@@ -2,6 +2,7 @@ using HARD.CORE.DAT;
 using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG;
 using HARD.CORE.NEG.Interfaces;
+using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,12 +44,14 @@ public static class DependencyInjection
         services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
 
         // Register services B
-        services.AddScoped<ICryptographer, Cryptographer>();        
+        services.AddScoped<ICryptographerB, CryptographerSHA512B>();        
         services.AddScoped<IClienteB, ClienteB>();
         services.AddScoped<IEmpresaB, EmpresaB>();
         services.AddScoped<IMenuB, MenuB>();
         services.AddScoped<IPerfilB, PerfilB>();
         services.AddScoped<IUsuarioB, UsuarioB>();
+
+        services.AddScoped<CryptographerService>();
 
         return services;
     }

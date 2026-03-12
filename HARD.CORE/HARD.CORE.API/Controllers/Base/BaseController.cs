@@ -16,12 +16,12 @@ namespace HARD.CORE.API.Controllers.Base
         /// <summary>
         /// Gets the unique key identifying the user from the JWT token.
         /// </summary>
-        public int IdUsuario
+        public int IdUsuarioAutenticado
         {
             get
             {
                 string? token = Request.Headers["Authorization"];
-                return int.Parse(JwtAuthenticateHelper.GetUsernameFromToken(token ?? ""));
+                return JwtAuthenticateHelper.GetUserIdFromToken(token ?? "");
             }
         }
 

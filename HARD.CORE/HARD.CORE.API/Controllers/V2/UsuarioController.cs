@@ -1,15 +1,12 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.API.Models.V1;
-using HARD.CORE.NEG.Interfaces;
+using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;
-
+using HARD.CORE.OBJ.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace HARD.CORE.API.Controllers.V2
 {
@@ -23,20 +20,16 @@ namespace HARD.CORE.API.Controllers.V2
     public class UsuarioController : BaseController
     {
 
-        private readonly IConfiguration _config;
-        private readonly IUsuarioB _usuarioB;
+        private readonly UsuarioService _usuarioService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsuarioController"/> class.
         /// </summary>
-        /// <param name="config">The configuration settings for the application.</param>
-        /// <param name="usuarioB">The user business logic layer.</param>
-        public UsuarioController(IConfiguration config, IUsuarioB usuarioB)
+        /// <param name="usuarioService">The user service layer.</param>
+        public UsuarioController(UsuarioService usuarioService)
         {
-            _config = config;
-            _usuarioB = usuarioB;
+            _usuarioService = usuarioService;
         }
-
         /// <summary>
         /// Gets user information by user key.
         /// </summary>
@@ -48,19 +41,8 @@ namespace HARD.CORE.API.Controllers.V2
         [AllowAnonymous]
         public IActionResult GetById([FromQuery, Required] int idUsuario)
         {
-            var webResult = new WebResultModel<Usuario>();
-            try
-            {
-                webResult.Data = _usuarioB.GetById(idUsuario);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.GetById(idUsuario);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -71,28 +53,10 @@ namespace HARD.CORE.API.Controllers.V2
         ///     A list of all users if found; otherwise, an error message.
         /// </returns>
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null)
+        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = new WebResultModel<List<Usuario>>();
-            try
-            {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    Filters = new BaseFilter
-                    {
-                        Activo = activo
-                    }
-                };
-                webResult.Data = _usuarioB.GetAll(pagedFilter).ToList();
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.GetAll(activo, pageIndex, pageSize);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -108,27 +72,8 @@ namespace HARD.CORE.API.Controllers.V2
         [HttpGet("Exists")]
         public IActionResult Exists([FromQuery, Required] int idUsuario)
         {
-            var webResult = new WebResultModel<bool>();
-            webResult.Message = "Error al validar existencia del usuario.";
-            try
-            {
-                if (_usuarioB.Exists(idUsuario))
-                {
-                    webResult.Data = true;
-                    webResult.Message = "El usuario existe en el sistema.";
-                }
-                else
-                {
-                    webResult.Data = false;
-                    webResult.Message = "El usuario no existe en el sistema.";
-                }
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.Exists(idUsuario);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -141,23 +86,8 @@ namespace HARD.CORE.API.Controllers.V2
         [HttpPost("Add")]
         public IActionResult Add([FromBody] Usuario usuario)
         {
-            var webResult = new WebResultModel<int>();
-            try
-            {
-                string defaultPassword = _config["DefaultPassword"] ?? "Default.123@";
-                usuario.Contrasena = defaultPassword;
-                usuario.IdUsuarioModificacion = IdUsuario;
-                usuario.IdUsuarioCreacion = IdUsuario;
-                webResult.Data = _usuarioB.Add(usuario);
-                webResult.Message = "Inserción realizada exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar la inserción.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.Add(usuario, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -172,20 +102,8 @@ namespace HARD.CORE.API.Controllers.V2
         [HttpPut("Update")]
         public IActionResult Update([FromBody] Usuario usuario)
         {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                usuario.IdUsuarioModificacion = IdUsuario;
-                webResult.Data = _usuarioB.Update(usuario);
-                webResult.Message = webResult.Data ? "Actualización realizada exitosamente." : "No se realizó ninguna actualización.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar la actualización.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.Update(usuario, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -196,41 +114,10 @@ namespace HARD.CORE.API.Controllers.V2
         ///     True if the user is authenticated; otherwise, false.
         /// </returns>
         [HttpPost("AuthenticateUser")]
-        public IActionResult AuthenticateUser([FromBody] Login login)
+        public IActionResult AuthenticateUser([FromBody] LoginModel login)
         {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                string defaultUser = _config["DefaultUser"] ?? "administrador";
-                string defaultPassword = _config["DefaultPassword"] ?? "Default.123@";
-                if (login.Username == defaultUser && login.Password == defaultPassword)
-                {
-                    webResult.Data = true;
-                    webResult.Message = "Autenticación realizada exitosamente con usuario predeterminado.";
-                    webResult.Success = true;
-                    return Ok(webResult);
-                }
-
-                Usuario usuario = _usuarioB.GetByUsername(login.Username);
-                bool isAuthenticated = _usuarioB.AuthenticateUser(usuario.Id, login.Password);
-                if (!isAuthenticated)
-                {
-                    webResult.Data = false;
-                    webResult.Message = "Usuario o contraseña incorrectos.";
-                    webResult.Success = false;
-                    return Ok(webResult);
-                }
-
-                webResult.Data = true;
-                webResult.Message = "Autenticación realizada exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar la autenticación.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.AuthenticateUser(login, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -243,28 +130,10 @@ namespace HARD.CORE.API.Controllers.V2
         /// 
         [AllowAnonymous]
         [HttpPut("UpdatePassword")]
-        public IActionResult UpdatePassword([FromBody] Login login)
+        public IActionResult UpdatePassword([FromBody] LoginModel login)
         {
-            var webResult = new WebResultModel<bool>();
-            webResult.Data = false;
-            try
-            {
-                webResult.Message = "Actualización de contraseña realizada exitosamente.";
-                Usuario usuario = new Usuario
-                {
-                    IdUsuarioModificacion = IdUsuario,
-                    ClaveUsuario = login.Username,
-                    Contrasena = login.Password
-                };
-                webResult.Data = _usuarioB.UpdatePassword(usuario: usuario);
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar la actualización de contraseña.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.UpdatePassword(login, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -278,22 +147,8 @@ namespace HARD.CORE.API.Controllers.V2
         [HttpPut("UnlockUser")]
         public IActionResult UnlockUser([FromBody, Required] int idUsuario)
         {
-            var webResult = new WebResultModel<bool>();
-            webResult.Data = false;
-            try
-            {
-                webResult.Message = "Desbloqueo de usuario realizado exitosamente.";
-                Usuario usuario = _usuarioB.GetById(idUsuario);
-                usuario.IdUsuarioModificacion = IdUsuario;
-                webResult.Data = _usuarioB.UnlockUser(usuario: usuario);
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al realizar el desbloqueo de usuario.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _usuarioService.UnlockUser(idUsuario, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
     }

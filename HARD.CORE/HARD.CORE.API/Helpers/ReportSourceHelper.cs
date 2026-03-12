@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Linq;
 using HARD.CORE.API.Models.RPT;
+using HARD.CORE.OBJ.Models;
 
 namespace HARD.CORE.API.Helpers
 {
@@ -186,9 +187,9 @@ namespace HARD.CORE.API.Helpers
         }
 
 
-        public static ResultModel<string> TransmitFile(ReportDataModel reportData)
+        public static WebResultModel<string> TransmitFile(ReportDataModel reportData)
         {
-            ResultModel<string> resultado = new ResultModel<string>();
+            WebResultModel<string> resultado = new WebResultModel<string>();
             try
             {
                 Directory.CreateDirectory(reportData.ReportExportedPath);
@@ -216,7 +217,7 @@ namespace HARD.CORE.API.Helpers
         public static ActionResult ObtenerActionResultError(string error, object data)
         {
             ActionResult actionResult;
-            ResultModel<object> resultado = new ResultModel<object>();
+            WebResultModel<object> resultado = new WebResultModel<object>();
             resultado.Success = false;
             resultado.Data = data;
             resultado.Errors.Add($"{error}.");

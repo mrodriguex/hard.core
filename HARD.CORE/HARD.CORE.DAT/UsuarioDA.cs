@@ -7,7 +7,6 @@ using HARD.CORE.DAT.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace HARD.CORE.DAT
@@ -53,7 +52,6 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                entity.FechaCreacion = DateTime.Now;
                 foreach (var perfil in entity.Perfiles) { _context.Attach(perfil); }
                 foreach (var empresa in entity.Empresas) { _context.Attach(empresa); }
                 _context.Usuarios.Add(entity);
@@ -71,7 +69,6 @@ namespace HARD.CORE.DAT
         {
             try
             {
-                entity.FechaModificacion = DateTime.Now;
                 foreach (var perfil in entity.Perfiles) { _context.Attach(perfil); }
                 foreach (var empresa in entity.Empresas) { _context.Attach(empresa); }
                 _context.Usuarios.Update(entity);

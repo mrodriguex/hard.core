@@ -1,10 +1,9 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
 using HARD.CORE.API.Helpers;
-using HARD.CORE.API.Models.V1;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
-
+using HARD.CORE.OBJ.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,7 +49,7 @@ namespace HARD.CORE.API.Controllers.V1
         /// If authentication is successful, returns a JWT token; otherwise, returns error messages indicating the reason for failure.
         /// </returns>
         [HttpPost("login")]
-        public IActionResult Login([FromBody] Login login)
+        public IActionResult Login([FromBody] LoginModel login)
         {
             var webResult = new WebResultModel<string>();
             webResult.Success = false;
@@ -65,7 +64,7 @@ namespace HARD.CORE.API.Controllers.V1
                     int tokenDuration = 60; //Default value
                     int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
                     var jwtPrivKey = _config["Jwt:Key"] ?? "";
-                    webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(login.Username, tokenDuration, jwtPrivKey);
+                    webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(0, tokenDuration, jwtPrivKey); // Use 0 as the user ID for the default user
                     webResult.Success = true;
                     webResult.Message = "Inicio de sesión exitoso";
                 }
@@ -91,7 +90,7 @@ namespace HARD.CORE.API.Controllers.V1
                         int tokenDuration = 60; //Default value
                         int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
                         var jwtPrivKey = _config["Jwt:Key"] ?? "";
-                        webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(login.Username, tokenDuration, jwtPrivKey);
+                        webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(usuario.Id, tokenDuration, jwtPrivKey);
                         webResult.Success = true;
                         webResult.Message = "Inicio de sesión exitoso";
                     }

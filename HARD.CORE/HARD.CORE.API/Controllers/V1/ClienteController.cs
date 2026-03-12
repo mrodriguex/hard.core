@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.API.Models.V1;
-using HARD.CORE.NEG.Interfaces;
+using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;
 
 using Microsoft.AspNetCore.Authorization;
@@ -17,92 +16,46 @@ namespace HARD.CORE.API.Controllers.V1
     [Route("api/v{version:apiVersion}/[controller]")] // Version in the URL path
     public class ClienteController : BaseController
     {
-        private readonly IClienteB _clienteB;
+        private readonly ClienteService _clienteService;
 
-        public ClienteController(IClienteB clienteB)
+        public ClienteController(ClienteService clienteService)
         {
-            _clienteB = clienteB;
+            _clienteService = clienteService;
         }
-        [HttpGet("GetAll")]
 
-        public IActionResult GetAll([FromQuery] bool? activo = null)
+        [HttpGet("GetAll")]
+        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = new WebResultModel<List<Cliente>>();
-            try
-            {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = 1,
-                    PageSize = int.MaxValue,
-                    Filters = new BaseFilter { Activo = activo }
-                };
-                webResult.Data = _clienteB.GetAll(pagedFilter).ToList();
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _clienteService.GetAll(activo, pageIndex, pageSize);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpGet("GetById")]
         public IActionResult GetById([FromQuery, Required] int idCliente)
         {
-            var webResult = new WebResultModel<Cliente>();
-            try
-            {
-                webResult.Data = _clienteB.GetById(idCliente);
-                webResult.Message = "Información obtenida exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al obtener la información.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _clienteService.GetById(idCliente);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpPost("Add")]
         public IActionResult Add([FromBody] Cliente cliente)
         {
-            var webResult = new WebResultModel<int>();
-            try
-            {
-                cliente.IdUsuarioCreacion = IdUsuario;
-                webResult.Data = _clienteB.Add(cliente);
-                webResult.Message = "Cliente agregado exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al agregar el cliente.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _clienteService.Add(cliente, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpPut("Update")]
         public IActionResult Update([FromBody] Cliente cliente)
         {
-            var webResult = new WebResultModel<bool>();
-            try
-            {
-                cliente.IdUsuarioModificacion = IdUsuario;
-                webResult.Data = _clienteB.Update(cliente);
-                webResult.Message = "Cliente actualizado exitosamente.";
-                webResult.Success = true;
-            }
-            catch (Exception ex)
-            {
-                webResult.Message = "Error al actualizar el cliente.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return Ok(webResult);
+            var webResult = _clienteService.Update(cliente, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
+        [HttpDelete("Delete")]
+        public IActionResult Delete([FromQuery, Required] int idCliente)
+        {
+            var webResult = _clienteService.Delete(idCliente, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+        }
     }
 }
