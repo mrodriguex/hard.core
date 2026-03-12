@@ -66,17 +66,16 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Add(Menu menu, int idUsuarioAuenticado)
+        public WebResultModel<int> Add(Menu menu, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new WebResultModel<int>();
             try
             {
                 menu.IdUsuarioCreacion = idUsuarioAuenticado;
                 menu.IdUsuarioModificacion = idUsuarioAuenticado;
                 menu.FechaCreacion = DateTime.UtcNow;
-                menu.FechaModificacion = DateTime.UtcNow;
-                _menuB.Add(menu);
-                webResult.Data = true;
+                menu.FechaModificacion = DateTime.UtcNow;                
+                webResult.Data = _menuB.Add(menu);
                 webResult.Message = "Menu agregado exitosamente.";
                 webResult.Success = true;
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
+using Humanizer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -68,17 +69,16 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Add(Empresa empresa, int idUsuarioAuenticado)
+        public WebResultModel<int> Add(Empresa empresa, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new WebResultModel<int>();
             try
             {
                 empresa.IdUsuarioCreacion = idUsuarioAuenticado;
                 empresa.IdUsuarioModificacion = idUsuarioAuenticado;
                 empresa.FechaCreacion = DateTime.UtcNow;
                 empresa.FechaModificacion = DateTime.UtcNow;
-                _empresaB.Add(empresa);
-                webResult.Data = true;
+                webResult.Data = _empresaB.Add(empresa);
                 webResult.Message = "Empresa agregado exitosamente.";
                 webResult.Success = true;
             }

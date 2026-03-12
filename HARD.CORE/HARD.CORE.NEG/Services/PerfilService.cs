@@ -66,17 +66,16 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Add(Perfil perfil, int idUsuarioAuenticado)
+        public WebResultModel<int> Add(Perfil perfil, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new WebResultModel<int>();
             try
             {
                 perfil.IdUsuarioCreacion = idUsuarioAuenticado;
                 perfil.IdUsuarioModificacion = idUsuarioAuenticado;
                 perfil.FechaCreacion = DateTime.UtcNow;
                 perfil.FechaModificacion = DateTime.UtcNow;
-                _perfilB.Add(perfil);
-                webResult.Data = true;
+                webResult.Data = _perfilB.Add(perfil);
                 webResult.Message = "Perfil agregado exitosamente.";
                 webResult.Success = true;
             }

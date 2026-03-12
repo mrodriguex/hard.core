@@ -25,12 +25,6 @@ public static class DependencyInjection
         // Register configuration
         services.AddSingleton<IConfiguration>(configuration);
 
-        // Register DbContext
-        services.AddDbContext<HardCoreDbContext>(options =>
-            options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("HARD.CORE.DAT")
-            ));
 
         // Register services DA
         services.AddScoped<IRepositoryBase<Usuario, BaseFilter, int>, UsuarioDA>();
@@ -44,15 +38,29 @@ public static class DependencyInjection
         services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
 
         // Register services B
-        services.AddScoped<ICryptographerB, CryptographerSHA512B>();        
+        services.AddScoped<ICryptographerB, CryptographerSHA512B>();
+        services.AddScoped<ICryptographerService, CryptographerService>();
+
         services.AddScoped<IClienteB, ClienteB>();
         services.AddScoped<IEmpresaB, EmpresaB>();
         services.AddScoped<IMenuB, MenuB>();
         services.AddScoped<IPerfilB, PerfilB>();
         services.AddScoped<IUsuarioB, UsuarioB>();
 
-        services.AddScoped<CryptographerService>();
+        services.AddScoped<ClienteService>();
+        services.AddScoped<EmpresaService>();
+        services.AddScoped<MenuService>();
+        services.AddScoped<PerfilService>();
+        services.AddScoped<UsuarioService>();
+        services.AddScoped<ConfigService>();
 
+        // Register DbContext
+        services.AddDbContext<HardCoreDbContext>(options =>
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("HARD.CORE.DAT")
+            ));
+        
         return services;
     }
 }

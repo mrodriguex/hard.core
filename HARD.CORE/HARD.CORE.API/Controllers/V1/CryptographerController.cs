@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.NEG.Services;
+using HARD.CORE.NEG.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +14,9 @@ namespace HARD.CORE.API.Controllers.V1
     public class CryptographerController : BaseController
     {
 
-        private readonly CryptographerService _cryptographerService;
+        private readonly ICryptographerService _cryptographerService;
 
-        public CryptographerController(CryptographerService cryptographerService)
+        public CryptographerController(ICryptographerService cryptographerService)
         {
             _cryptographerService = cryptographerService;
         }

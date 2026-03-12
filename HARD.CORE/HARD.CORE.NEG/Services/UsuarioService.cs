@@ -66,17 +66,16 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Add(Usuario usuario, int idUsuarioAutenticado)
+        public WebResultModel<int> Add(Usuario usuario, int idUsuarioAutenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new WebResultModel<int>();
             try
             {
                 usuario.IdUsuarioCreacion = idUsuarioAutenticado;
                 usuario.IdUsuarioModificacion = idUsuarioAutenticado;
                 usuario.FechaCreacion = DateTime.UtcNow;
                 usuario.FechaModificacion = DateTime.UtcNow;
-                _usuarioB.Add(usuario);
-                webResult.Data = true;
+                webResult.Data = _usuarioB.Add(usuario);
                 webResult.Message = "Usuario agregado exitosamente.";
                 webResult.Success = true;
             }

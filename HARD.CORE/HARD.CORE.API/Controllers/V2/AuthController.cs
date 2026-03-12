@@ -57,29 +57,12 @@ namespace HARD.CORE.API.Controllers.V2
 
             try
             {
-                Usuario usuario = _usuarioB.GetByUsername(login.Username);
-
-                if (string.IsNullOrEmpty(usuario.ClaveUsuario))
-                {
-                    webResult.Errors.Add("Usuario no existe en el sistema");
-                }
-                else if (usuario.Bloqueado)
-                {
-                    webResult.Errors.Add("Usuario bloqueado");
-                }
-                else if (!_usuarioB.AuthenticateUser(usuario.Id, login.Password))
-                {
-                    webResult.Errors.Add("Credenciales son incorrectas");
-                }
-                else
-                {
-                    int tokenDuration = 60; //Default value
-                    int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
-                    var jwtPrivKey = _config["Jwt:Key"] ?? "";
-                    webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(usuario.Id, tokenDuration, jwtPrivKey);
-                    webResult.Success = true;
-                    webResult.Message = "Inicio de sesión exitoso";
-                }
+                int tokenDuration = 60; //Default value
+                int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
+                var jwtPrivKey = _config["Jwt:Key"] ?? "";
+                webResult.Data = GenerateToken(login.Username);
+                webResult.Success = true;
+                webResult.Message = "Inicio de sesión exitoso";
             }
             catch (Exception ex)
             {
@@ -87,6 +70,31 @@ namespace HARD.CORE.API.Controllers.V2
             }
 
             return Ok(webResult);
+        }
+
+
+        public static string GenerateToken(string username)
+        {
+            var secret = "Cryoinfra_SDL_3d80b5da-824b-4dde-b1db-3942c6d3d9fc";
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+        new Claim(ClaimTypes.Name, username),
+        new Claim("username", username)
+    };
+
+            var token = new JwtSecurityToken(
+                issuer: "Cryoinfra",
+                audience: "SDM",
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(15),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
     }
