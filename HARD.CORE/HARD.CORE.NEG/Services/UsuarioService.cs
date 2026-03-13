@@ -196,7 +196,7 @@ namespace HARD.CORE.NEG.Services
                     Contrasena = login.Password
                 };
                 webResult.Data = _usuarioB.UpdatePassword(usuario: usuario);
-                webResult.Message = "Actualización de contraseña realizada exitosamente.";
+                webResult.Message = webResult.Data ? "Actualización de contraseña realizada exitosamente." : "Error al actualizar la contraseña.";
                 webResult.Success = true;
             }
             catch (Exception ex)
@@ -213,11 +213,18 @@ namespace HARD.CORE.NEG.Services
             try
             {
                 Usuario usuario = _usuarioB.GetById(idUsuario);
+                if (usuario == null)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "Usuario no encontrado.";
+                    webResult.Success = false;
+                    return webResult;
+                }
                 usuario.IdUsuarioModificacion = idUsuarioAutenticado;
                 usuario.FechaModificacion = DateTime.UtcNow;
                 webResult.Data = _usuarioB.UnlockUser(usuario);
-                webResult.Message = "Usuario desbloqueado exitosamente.";
-                webResult.Success = true;
+                webResult.Message = webResult.Data ? "Usuario desbloqueado exitosamente." : "Error al desbloquear el usuario.";
+                webResult.Success = webResult.Data;
             }
             catch (Exception ex)
             {

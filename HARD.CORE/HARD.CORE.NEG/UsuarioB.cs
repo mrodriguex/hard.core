@@ -176,6 +176,10 @@ namespace HARD.CORE.NEG
         {
             string hash = _cryptographer.CreateHash(input: usuario.Contrasena);
             Usuario usuarioModificacion = _usuarioDA.GetById(usuario.Id);
+            if (usuarioModificacion == null)
+            {
+                return false;
+            }
             usuarioModificacion.Contrasena = hash;
             usuarioModificacion.CambioContrasena = false;
             return _usuarioDA.Update(usuarioModificacion);
