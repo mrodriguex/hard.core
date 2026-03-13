@@ -6,9 +6,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/HARD.CORE/HARD.CORE.API/bin/Debug/net8.0/HARD.CORE.API.dll",
+      "program": "${workspaceFolder}/HARD.CORE.API/bin/Debug/net8.0/HARD.CORE.API.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/HARD.CORE/HARD.CORE.API",
+      "cwd": "${workspaceFolder}/HARD.CORE.API",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
@@ -37,7 +37,7 @@
 //             "name": "C#: HARD.CORE.API Debug",
 //             "type": "dotnet",
 //             "request": "launch",
-//             "projectPath": "${workspaceFolder}/HARD.CORE/HARD.CORE.API/HARD.CORE.API.csproj"
+//             "projectPath": "${workspaceFolder}/HARD.CORE.API/HARD.CORE.API.csproj"
         
 //         }
 

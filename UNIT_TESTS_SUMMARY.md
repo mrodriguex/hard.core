@@ -277,7 +277,7 @@ dotnet test HARD.CORE.NEG.Tests/HARD.CORE.NEG.Tests.csproj /p:CollectCoverage=tr
 
 All test files are located in:
 ```
-HARD.CORE/HARD.CORE.NEG.Tests/Services/
+HARD.CORE.NEG.Tests/Services/
 ├── CryptographerServiceTests.cs
 ├── ClienteServiceTests.cs
 ├── ConfigServiceTests.cs

@@ -252,11 +252,9 @@ The solution follows a **4-tier layered architecture**:
 hard.core/
 ├── README.md                          # This file
 ├── LICENSE                            # GPL v3 License
-├── HARD.CORE/                         # Main solution directory
-│   ├── HARD.CORE.sln                 # Visual Studio Solution file
-│   ├── limpiarBinarios.bat           # Script to clean binaries
-│   │
-│   ├── HARD.CORE.API/                # REST API Project (.NET 8.0)
+├── HARD.CORE.sln                      # Visual Studio Solution file
+├── limpiarBinarios.bat                # Script to clean binaries
+├── HARD.CORE.API/                     # REST API Project (.NET 8.0)
 │   │   ├── appsettings.json          # Configuration file
 │   │   ├── appsettings.Development.json
 │   │   ├── Program.cs                # Main entry point
@@ -264,7 +262,7 @@ hard.core/
 │   │   ├── HARD.CORE.API.http       # HTTP request file for testing
 │   │   ├── NuGet.Config             # NuGet configuration
 │   │   │
-│   │   ├── Config/                   # Configuration classes
+│   │   ├── Config/                    # Configuration classes
 │   │   │   └── Config.cs
 │   │   │
 │   │   ├── Helpers/                  # Helper utilities
@@ -435,7 +433,6 @@ cd hard.core
 Navigate to the solution directory and restore dependencies:
 
 ```bash
-cd HARD.CORE
 dotnet restore HARD.CORE.sln
 ```
 
@@ -454,13 +451,13 @@ Or using Visual Studio:
 
 #### Option B: Using Entity Framework Core Migrations
 ```bash
-cd HARD.CORE\HARD.CORE.API
+cd HARD.CORE.API
 dotnet ef database update
 ```
 
 ### 4. Configure Database Connection
 
-Edit `HARD.CORE/HARD.CORE.API/appsettings.json`:
+Edit `HARD.CORE.API/appsettings.json`:
 
 ```json
 {
@@ -490,14 +487,11 @@ Review and update configuration in `appsettings.json`:
 ### Using .NET CLI
 
 ```bash
-# Navigate to solution directory
-cd HARD.CORE
-
 # Build the entire solution
 dotnet build HARD.CORE.sln
 
 # Build specific project
-dotnet build HARD.CORE/HARD.CORE.API/HARD.CORE.API.csproj
+dotnet build HARD.CORE.API/HARD.CORE.API.csproj
 
 # Build in Release mode
 dotnet build -c Release HARD.CORE.sln
@@ -505,7 +499,7 @@ dotnet build -c Release HARD.CORE.sln
 
 ### Using Visual Studio
 
-1. Open `HARD.CORE/HARD.CORE.sln` in Visual Studio 2022
+1. Open `HARD.CORE.sln` in Visual Studio 2022
 2. Select desired configuration: **Debug** or **Release**
 3. In Solution Explorer, right-click the solution
 4. Select **Build Solution** (Ctrl+Shift+B)
@@ -526,8 +520,7 @@ The workspace includes a pre-configured build task:
 dotnet clean HARD.CORE.sln
 
 # Or use the provided batch script (Windows only)
-cd HARD.CORE
-limpiarBinarios.bat
+./limpiarBinarios.bat
 ```
 
 ---
@@ -537,7 +530,7 @@ limpiarBinarios.bat
 ### Start the API Server
 
 ```bash
-cd HARD.CORE/HARD.CORE.API
+cd HARD.CORE.API
 dotnet run
 ```
 
@@ -930,7 +923,6 @@ git clone https://github.com/mrodriguex/hard.core.git
 cd hard.core
 
 # 2. Install dependencies
-cd HARD.CORE
 dotnet restore
 
 # 3. Configure local database connection
@@ -970,7 +962,7 @@ dotnet run --project HARD.CORE.API/HARD.CORE.API.csproj
 dotnet test
 
 # Run specific test project
-dotnet test HARD.CORE/HARD.CORE.Tests.csproj
+dotnet test HARD.CORE.NEG.Tests/HARD.CORE.NEG.Tests.csproj
 
 # With coverage
 dotnet test /p:CollectCoverage=true
@@ -1036,7 +1028,7 @@ See `HARD.CORE.API/HARD.CORE.API.http` for pre-configured test requests.
 
 ```bash
 # Release build
-dotnet publish -c Release -o ./publish HARD.CORE/HARD.CORE.API/HARD.CORE.API.csproj
+dotnet publish -c Release -o ./publish HARD.CORE.API/HARD.CORE.API.csproj
 ```
 
 ### Docker Support (Optional)
