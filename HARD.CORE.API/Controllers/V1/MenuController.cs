@@ -25,16 +25,16 @@ namespace HARD.CORE.API.Controllers.V1
         }
 
         [HttpGet("GetById")]
-        public IActionResult GetById([FromQuery, Required] int idMenu)
+        public async Task<IActionResult> GetByIdAsync([FromQuery, Required] int idMenu)
         {
-            var webResult = _menuService.GetById(idMenu);
+            var webResult = await _menuService.GetByIdAsync(idMenu);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = _menuService.GetAll(activo, pageIndex, pageSize);
+            var webResult = await _menuService.GetAllAsync(activo, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -44,9 +44,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="menu">The menu to insert.</param>
         /// <returns>The unique key of the inserted menu.</returns>
         [HttpPost("Add")]
-        public IActionResult Add([FromBody] Menu menu)
+        public async Task<IActionResult> Add([FromBody] Menu menu)
         {
-            var webResult = _menuService.Add(menu, IdUsuarioAutenticado);
+            var webResult = await _menuService.AddAsync(menu, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -56,32 +56,32 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="menu">The menu to update.</param>
         /// <returns>True if the update was successful; otherwise, false.</returns>
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] Menu menu)
+        public async Task<IActionResult> Update([FromBody] Menu menu)
         {
-            var webResult = _menuService.Update(menu, IdUsuarioAutenticado);
+            var webResult = await _menuService.UpdateAsync(menu, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpDelete("Delete")]
-        public IActionResult Delete([FromQuery, Required] int idMenu)
+        public async Task<IActionResult> Delete([FromQuery, Required] int idMenu)
         {
-            var webResult = _menuService.Delete(idMenu, IdUsuarioAutenticado);
+            var webResult = await _menuService.DeleteAsync(idMenu, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         // Obtener menú de usuario
         [HttpGet("GetMenusByUser")]
-        public IActionResult GetMenusByUser([FromQuery, Required] int idUsuario, [FromQuery, Required] int idPerfil)
+        public async Task<IActionResult> GetMenusByUser([FromQuery, Required] int idUsuario, [FromQuery, Required] int idPerfil)
         {
-            var webResult = _menuService.GetMenusByUser(idUsuario, idPerfil);
+            var webResult = await _menuService.GetMenusByUserAsync(idUsuario, idPerfil);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         // Obtener menú de perfil
         [HttpGet("GetMenusByProfile")]
-        public IActionResult GetMenusByProfile([FromQuery, Required] int idPerfil)
+        public async Task<IActionResult> GetMenusByProfile([FromQuery, Required] int idPerfil)
         {
-            var webResult = _menuService.GetMenusByProfile(idPerfil);
+            var webResult = await _menuService.GetMenusByProfileAsync(idPerfil);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

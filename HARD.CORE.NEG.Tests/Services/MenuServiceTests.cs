@@ -31,15 +31,15 @@ namespace HARD.CORE.NEG.Tests.Services
             var menu = CreateMenu(2);
 
             _menuBMock
-                .Setup(x => x.GetById(2))
+                .Setup(x => x.GetByIdAsync(2))
                 .Returns(menu);
 
-            var result = _service.GetById(2);
+            var result = _service.GetByIdAsync(2);
 
             Assert.True(result.Success);
             Assert.Equal(menu, result.Data);
             Assert.Equal("Información del menu obtenida exitosamente.", result.Message);
-            _menuBMock.Verify(x => x.GetById(2), Times.Once);
+            _menuBMock.Verify(x => x.GetByIdAsync(2), Times.Once);
             _menuBMock.Verify(x => x.GetMenusByProfile(It.IsAny<int>()), Times.Never);
         }
 
@@ -47,16 +47,16 @@ namespace HARD.CORE.NEG.Tests.Services
         public void GetById_WhenBusinessThrows_ReturnsFailure()
         {
             _menuBMock
-                .Setup(x => x.GetById(2))
+                .Setup(x => x.GetByIdAsync(2))
                 .Throws(new Exception("get error"));
 
-            var result = _service.GetById(2);
+            var result = _service.GetByIdAsync(2);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del menu.", result.Message);
             Assert.Contains("get error", result.Errors);
-            _menuBMock.Verify(x => x.GetById(2), Times.Once);
+            _menuBMock.Verify(x => x.GetByIdAsync(2), Times.Once);
         }
 
         [Fact]
@@ -196,7 +196,7 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.True(result.Data);
             Assert.Equal("Menu eliminado exitosamente.", result.Message);
             _menuBMock.Verify(x => x.Delete(25), Times.Once);
-            _menuBMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Never);
+            _menuBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]

@@ -1,5 +1,6 @@
 using HARD.CORE.DAT;
 using HARD.CORE.DAT.Interfaces;
+using HARD.CORE.DAT.Repositories;
 using HARD.CORE.NEG;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.NEG.Services;
@@ -38,21 +39,16 @@ public static class DependencyInjection
         services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
 
         // Register services B
+
+        services.AddScoped<IClienteService, ClienteService>();
+        services.AddScoped<IEmpresaService, EmpresaService>();
+        services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<IPerfilService, PerfilService>();
+        services.AddScoped<IUsuarioService, UsuarioService>();
+
+        services.AddScoped<ConfigService>();
         services.AddScoped<ICryptographerB, CryptographerSHA512B>();
         services.AddScoped<ICryptographerService, CryptographerService>();
-
-        services.AddScoped<IClienteB, ClienteB>();
-        services.AddScoped<IEmpresaB, EmpresaB>();
-        services.AddScoped<IMenuB, MenuB>();
-        services.AddScoped<IPerfilB, PerfilB>();
-        services.AddScoped<IUsuarioB, UsuarioB>();
-
-        services.AddScoped<ClienteService>();
-        services.AddScoped<EmpresaService>();
-        services.AddScoped<MenuService>();
-        services.AddScoped<PerfilService>();
-        services.AddScoped<UsuarioService>();
-        services.AddScoped<ConfigService>();
 
         // Register DbContext
         services.AddDbContext<HardCoreDbContext>(options =>
@@ -60,7 +56,7 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly("HARD.CORE.DAT")
             ));
-        
+
         return services;
     }
 }

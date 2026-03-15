@@ -31,16 +31,16 @@ namespace HARD.CORE.NEG.Tests.Services
             var usuario = CreateUsuario(10);
 
             _usuarioBMock
-                .Setup(x => x.GetById(10))
+                .Setup(x => x.GetByIdAsync(10))
                 .Returns(usuario);
 
-            var result = _service.GetById(10);
+            var result = _service.GetByIdAsync(10);
 
             Assert.True(result.Success);
             Assert.Equal(usuario, result.Data);
             Assert.Equal("Información del usuario obtenida exitosamente.", result.Message);
             Assert.Empty(result.Errors);
-            _usuarioBMock.Verify(x => x.GetById(10), Times.Once);
+            _usuarioBMock.Verify(x => x.GetByIdAsync(10), Times.Once);
             _usuarioBMock.Verify(x => x.GetAll(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Never);
         }
 
@@ -48,16 +48,16 @@ namespace HARD.CORE.NEG.Tests.Services
         public void GetById_WhenBusinessThrows_ReturnsFailure()
         {
             _usuarioBMock
-                .Setup(x => x.GetById(10))
+                .Setup(x => x.GetByIdAsync(10))
                 .Throws(new InvalidOperationException("db error"));
 
-            var result = _service.GetById(10);
+            var result = _service.GetByIdAsync(10);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del usuario.", result.Message);
             Assert.Contains("db error", result.Errors);
-            _usuarioBMock.Verify(x => x.GetById(10), Times.Once);
+            _usuarioBMock.Verify(x => x.GetByIdAsync(10), Times.Once);
         }
 
         [Fact]
@@ -201,7 +201,7 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.True(result.Data);
             Assert.Equal("Usuario eliminado exitosamente.", result.Message);
             _usuarioBMock.Verify(x => x.Delete(13), Times.Once);
-            _usuarioBMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Never);
+            _usuarioBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]

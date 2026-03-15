@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
@@ -9,25 +11,32 @@ using Microsoft.Extensions.Logging;
 
 namespace HARD.CORE.NEG.Services
 {
-    public class UsuarioService
+    public class UsuarioService : IUsuarioService
     {
-        private readonly IUsuarioB _usuarioB;
+        private readonly IRepositoryBase<Usuario, BaseFilter, int> _usuarioRepository;
         private readonly ILogger<UsuarioService> _logger;
         private readonly IConfiguration _config;
 
-        public UsuarioService( ILogger<UsuarioService> logger,IUsuarioB usuarioB, IConfiguration config)
+        private readonly ICryptographerB _cryptographer;
+
+        public UsuarioService(ILogger<UsuarioService> logger,
+        IRepositoryBase<Usuario, BaseFilter, int> usuarioRepository, ICryptographerB cryptographer,
+         IConfiguration config)
         {
-            _usuarioB = usuarioB;
+            _usuarioRepository = usuarioRepository;
             _logger = logger;
+            _cryptographer = cryptographer;
             _config = config;
         }
 
-        public WebResultModel<Usuario> GetById(int idUsuario)
+        #region Implementation of IServiceBase
+
+        public async Task<WebResultModel<Usuario>> GetByIdAsync(int idUsuario)
         {
             var webResult = new WebResultModel<Usuario>();
             try
             {
-                webResult.Data = _usuarioB.GetById(idUsuario);
+                webResult.Data = await _usuarioRepository.GetByIdAsync(idUsuario);
                 webResult.Message = "Información del usuario obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -39,22 +48,13 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
-        public WebResultModel<List<Usuario>> GetAll(bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<WebResultModel<IEnumerable<Usuario>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
         {
-            var webResult = new WebResultModel<List<Usuario>>();
+            var webResult = new WebResultModel<IEnumerable<Usuario>>();
             try
             {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        Activo = activo
-                    }
-                };
-                webResult.Data = _usuarioB.GetAll(pagedFilter).ToList();
-                webResult.Message = "Información de los usuarios obtenida exitosamente.";
+                webResult.Data = (await _usuarioRepository.GetAllAsync(pagedFilter)).ToList();
+                webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<int> Add(Usuario usuario, int idUsuarioAutenticado)
+        public async Task<WebResultModel<int>> AddAsync(Usuario usuario, int idUsuarioAutenticado)
         {
             var webResult = new WebResultModel<int>();
             try
@@ -75,7 +75,7 @@ namespace HARD.CORE.NEG.Services
                 usuario.IdUsuarioModificacion = idUsuarioAutenticado;
                 usuario.FechaCreacion = DateTime.UtcNow;
                 usuario.FechaModificacion = DateTime.UtcNow;
-                webResult.Data = _usuarioB.Add(usuario);
+                webResult.Data = await _usuarioRepository.AddAsync(usuario);
                 webResult.Message = "Usuario agregado exitosamente.";
                 webResult.Success = true;
             }
@@ -88,14 +88,14 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Update(Usuario usuario, int idUsuarioAutenticado)
+        public async Task<WebResultModel<bool>> UpdateAsync(Usuario usuario, int idUsuarioAutenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
                 usuario.IdUsuarioModificacion = idUsuarioAutenticado;
                 usuario.FechaModificacion = DateTime.UtcNow;
-                _usuarioB.Update(usuario);
+                await _usuarioRepository.UpdateAsync(usuario);
                 webResult.Data = true;
                 webResult.Message = "Usuario actualizado exitosamente.";
                 webResult.Success = true;
@@ -109,12 +109,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Delete(int idUsuario, int idUsuarioAutenticado)
+        public async Task<WebResultModel<bool>> DeleteAsync(int idUsuario, int idUsuarioAutenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                _usuarioB.Delete(idUsuario);
+                await _usuarioRepository.DeleteAsync(idUsuario);
                 webResult.Data = true;
                 webResult.Message = "Usuario eliminado exitosamente.";
                 webResult.Success = true;
@@ -127,13 +127,42 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
-        
-        public WebResultModel<bool> Exists(int idUsuario)
+        #endregion
+
+        #region Implementation of IUsuarioService
+
+        public async Task<WebResultModel<IEnumerable<Usuario>>> GetAllAsync(bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        {
+            var webResult = new WebResultModel<IEnumerable<Usuario>>();
+            try
+            {
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    PageIndex = pageIndex ?? 1,
+                    PageSize = pageSize ?? int.MaxValue,
+                    Filters = new BaseFilter
+                    {
+                        Activo = activo
+                    }
+                };
+                webResult = await GetAllAsync(pagedFilter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la información de los usuarios");
+                webResult.Message = "Error al obtener la información de los usuarios.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return webResult;
+        }
+
+        public async Task<WebResultModel<bool>> ExistsAsync(int idUsuario)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                webResult.Data = _usuarioB.Exists(idUsuario);
+                Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
+                webResult.Data = usuario != null;
                 webResult.Message = "Verificación de existencia del usuario realizada exitosamente.";
                 webResult.Success = true;
             }
@@ -146,12 +175,26 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> AuthenticateUser(LoginModel login, int idUsuarioAutenticado)
+        public async Task<WebResultModel<Usuario>> GetByUsernameAsync(string username)
+        {
+            var webResult = new WebResultModel<Usuario>();
+            BaseFilter baseFilter = new BaseFilter() { Nombre = username };
+            PagedFilter<BaseFilter> filter = new PagedFilter<BaseFilter> { PageIndex = 1, PageSize = int.MaxValue, Filters = baseFilter };
+
+            IEnumerable<Usuario> usuarios = await _usuarioRepository.GetAllAsync(filter);
+            webResult.Data = usuarios.FirstOrDefault();
+            webResult.Success = webResult.Data != null;
+            webResult.Message = webResult.Success ? "Usuario encontrado." : "Usuario no encontrado.";
+            return webResult;
+        }
+
+        public async Task<WebResultModel<bool>> AuthenticateUserAsync(LoginModel login, int idUsuarioAutenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-            string defaultUser = _config["DefaultUser"];
+                bool isAuthenticated = false;
+                string defaultUser = _config["DefaultUser"];
                 string defaultPassword = _config["DefaultPassword"];
                 if (login.Username == defaultUser && login.Password == defaultPassword)
                 {
@@ -161,8 +204,35 @@ namespace HARD.CORE.NEG.Services
                     return webResult;
                 }
 
-                Usuario usuario = _usuarioB.GetByUsername(login.Username);
-                bool isAuthenticated = _usuarioB.AuthenticateUser(usuario.Id, login.Password);
+                Usuario usuario = (await GetByUsernameAsync(login.Username)).Data;
+                if (usuario == null)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "Usuario no encontrado.";
+                    webResult.Success = false;
+                    return webResult;
+                }
+
+                isAuthenticated = _cryptographer.CompareHash(login.Password, usuario.Contrasena);
+
+
+                if (isAuthenticated)
+                {
+                    usuario.NumeroIntentos = 0;
+                }
+
+                else
+                {
+                    usuario.NumeroIntentos++;
+                }
+
+                if (usuario.NumeroIntentos >= 3)
+                {
+                    usuario.Bloqueado = true;
+                }
+
+                await UpdateAsync(usuario, idUsuarioAutenticado);
+
                 if (!isAuthenticated)
                 {
                     webResult.Data = false;
@@ -183,21 +253,29 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> UpdatePassword(LoginModel login, int idUsuarioAutenticado)
+        public async Task<WebResultModel<bool>> UpdatePasswordAsync(LoginModel login, int idUsuarioAutenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                Usuario usuario = new Usuario
+                Usuario usuario = (await GetByUsernameAsync(login.Username)).Data;
+
+                if (usuario == null)
                 {
-                    IdUsuarioModificacion = idUsuarioAutenticado,
-                    FechaModificacion = DateTime.UtcNow,
-                    ClaveUsuario = login.Username,
-                    Contrasena = login.Password
-                };
-                webResult.Data = _usuarioB.UpdatePassword(usuario: usuario);
+                    webResult.Data = false;
+                    webResult.Message = "Usuario no encontrado.";
+                    webResult.Success = false;
+                    return webResult;
+                }
+
+                usuario.Contrasena = _cryptographer.CreateHash(input: login.Password);
+                usuario.CambioContrasena = false;
+                usuario.IdUsuarioModificacion = idUsuarioAutenticado;
+                usuario.FechaModificacion = DateTime.UtcNow;
+
+                webResult.Data = (await UpdateAsync(usuario, idUsuarioAutenticado)).Data;
                 webResult.Message = webResult.Data ? "Actualización de contraseña realizada exitosamente." : "Error al actualizar la contraseña.";
-                webResult.Success = true;
+                webResult.Success = webResult.Data;
             }
             catch (Exception ex)
             {
@@ -207,12 +285,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> UnlockUser(int idUsuario, int idUsuarioAutenticado)
+        public async Task<WebResultModel<bool>> UnlockUserAsync(int idUsuario, int idUsuarioAutenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                Usuario usuario = _usuarioB.GetById(idUsuario);
+                Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
                 if (usuario == null)
                 {
                     webResult.Data = false;
@@ -222,7 +300,7 @@ namespace HARD.CORE.NEG.Services
                 }
                 usuario.IdUsuarioModificacion = idUsuarioAutenticado;
                 usuario.FechaModificacion = DateTime.UtcNow;
-                webResult.Data = _usuarioB.UnlockUser(usuario);
+                webResult.Data = (await UpdateAsync(usuario, idUsuarioAutenticado)).Data;
                 webResult.Message = webResult.Data ? "Usuario desbloqueado exitosamente." : "Error al desbloquear el usuario.";
                 webResult.Success = webResult.Data;
             }
@@ -234,5 +312,7 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
+
+        #endregion
     }
 }

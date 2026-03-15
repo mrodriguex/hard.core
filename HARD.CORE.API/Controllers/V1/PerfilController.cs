@@ -43,9 +43,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="idPerfil">The unique key identifying the profile.</param>
         /// <returns>The profile associated with the provided key.</returns>
         [HttpGet("GetById")]
-        public IActionResult GetById([FromQuery, Required] int idPerfil)
+        public async Task<IActionResult> GetByIdAsync([FromQuery, Required] int idPerfil)
         {
-            var webResult = _perfilService.GetById(idPerfil);
+            var webResult = await _perfilService.GetByIdAsync(idPerfil);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -54,9 +54,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// </summary>
         /// <returns>A list of all profiles.</returns>
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = _perfilService.GetAll(activo, pageIndex, pageSize);
+            var webResult = await _perfilService.GetAllAsync(activo, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
         /// <summary>
@@ -65,9 +65,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="perfil">The profile to insert.</param>
         /// <returns>The unique key of the inserted profile.</returns>
         [HttpPost("Add")]
-        public IActionResult Add([FromBody] Perfil perfil)
+        public async Task<IActionResult> Add([FromBody] Perfil perfil)
         {
-            var webResult = _perfilService.Add(perfil, IdUsuarioAutenticado);
+            var webResult = await _perfilService.AddAsync(perfil, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -77,16 +77,16 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="perfil">The profile to update.</param>
         /// <returns>True if the update was successful; otherwise, false.</returns>
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] Perfil perfil)
+        public async Task<IActionResult> Update([FromBody] Perfil perfil)
         {
-                var webResult = _perfilService.Update(perfil, IdUsuarioAutenticado);
-                return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+            var webResult = await _perfilService.UpdateAsync(perfil, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpDelete("Delete")]
-        public IActionResult Delete([FromQuery, Required] int idPerfil)
+        public async Task<IActionResult> Delete([FromQuery, Required] int idPerfil)
         {
-            var webResult = _perfilService.Delete(idPerfil, IdUsuarioAutenticado);
+            var webResult = await _perfilService.DeleteAsync(idPerfil, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -96,9 +96,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="idUsuario">The unique key identifying the user.</param>
         /// <returns>A list of profiles assigned to the specified user.</returns>
         [HttpGet("GetUserProfiles")]
-        public IActionResult GetUserProfiles([FromQuery, Required] int idUsuario)
+        public async Task<IActionResult> GetUserProfiles([FromQuery, Required] int idUsuario)
         {
-            var webResult = _perfilService.GetUserProfiles(idUsuario);
+            var webResult = await _perfilService.GetUserProfilesAsync(idUsuario);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

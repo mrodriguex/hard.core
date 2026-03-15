@@ -23,7 +23,7 @@ namespace HARD.CORE.API.Controllers.V1
     public class AuthController : BaseController
     {
         private readonly IConfiguration _config;
-        private readonly IUsuarioB _usuarioB;
+        private readonly IUsuarioService _usuarioService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
@@ -31,13 +31,13 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="config">
         /// The configuration settings for the application.
         /// </param>
-        /// <param name="usuarioB">
-        /// The user business logic layer.
+        /// <param name="usuarioService">
+        /// The user service layer.
         /// </param>
-        public AuthController(IConfiguration config, IUsuarioB usuarioB)
+        public AuthController(IConfiguration config, IUsuarioService usuarioService)
         {
             _config = config;
-            _usuarioB = usuarioB;
+            _usuarioService = usuarioService;
         }
 
         /// <summary>
@@ -49,52 +49,29 @@ namespace HARD.CORE.API.Controllers.V1
         /// If authentication is successful, returns a JWT token; otherwise, returns error messages indicating the reason for failure.
         /// </returns>
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             var webResult = new WebResultModel<string>();
-            webResult.Success = false;
-            webResult.Message = "Error de autenticación";
 
             try
             {
-                string defaultUser = _config["DefaultUser"] ?? "administrador";
-                string defaultPassword = _config["DefaultPassword"] ?? "Default.123@";
-                if (login.Username == defaultUser && login.Password == defaultPassword)
+                if (!(await _usuarioService.AuthenticateUserAsync(login, IdUsuarioAutenticado)).Data)
                 {
-                    int tokenDuration = 60; //Default value
-                    int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
-                    var jwtPrivKey = _config["Jwt:Key"] ?? "";
-                    webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(0, tokenDuration, jwtPrivKey); // Use 0 as the user ID for the default user
-                    webResult.Success = true;
-                    webResult.Message = "Inicio de sesión exitoso";
+                    webResult.Errors.Add("Credenciales son incorrectas");
                 }
                 else
                 {
 
-                    Usuario usuario = _usuarioB.GetByUsername(login.Username);
+                    Usuario usuario = (await _usuarioService.GetByUsernameAsync(login.Username)).Data;
 
-                    if (string.IsNullOrEmpty(usuario.ClaveUsuario))
-                    {
-                        webResult.Errors.Add("Usuario no existe en el sistema");
-                    }
-                    else if (usuario.Bloqueado)
-                    {
-                        webResult.Errors.Add("Usuario bloqueado");
-                    }
-                    else if (!_usuarioB.AuthenticateUser(usuario.Id, login.Password))
-                    {
-                        webResult.Errors.Add("Credenciales son incorrectas");
-                    }
-                    else
-                    {
-                        int tokenDuration = 60; //Default value
-                        int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
-                        var jwtPrivKey = _config["Jwt:Key"] ?? "";
-                        webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(usuario.Id, tokenDuration, jwtPrivKey);
-                        webResult.Success = true;
-                        webResult.Message = "Inicio de sesión exitoso";
-                    }
+                    int tokenDuration = 60; //Default value
+                    int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value
+                    var jwtPrivKey = _config["Jwt:Key"] ?? "";
+                    webResult.Data = JwtAuthenticateHelper.GenerateJwtToken(usuario.Id, tokenDuration, jwtPrivKey);
+                    webResult.Success = true;
+                    webResult.Message = "Inicio de sesión exitoso";
                 }
+
             }
             catch (Exception ex)
             {

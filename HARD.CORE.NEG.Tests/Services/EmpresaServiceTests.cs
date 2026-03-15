@@ -31,15 +31,15 @@ namespace HARD.CORE.NEG.Tests.Services
             var empresa = CreateEmpresa(3);
 
             _empresaBMock
-                .Setup(x => x.GetById(3))
+                .Setup(x => x.GetByIdAsync(3))
                 .Returns(empresa);
 
-            var result = _service.GetById(3);
+            var result = _service.GetByIdAsync(3);
 
             Assert.True(result.Success);
             Assert.Equal(empresa, result.Data);
             Assert.Equal("Información del empresa obtenida exitosamente.", result.Message);
-            _empresaBMock.Verify(x => x.GetById(3), Times.Once);
+            _empresaBMock.Verify(x => x.GetByIdAsync(3), Times.Once);
             _empresaBMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
         }
 
@@ -47,16 +47,16 @@ namespace HARD.CORE.NEG.Tests.Services
         public void GetById_WhenBusinessThrows_ReturnsFailure()
         {
             _empresaBMock
-                .Setup(x => x.GetById(3))
+                .Setup(x => x.GetByIdAsync(3))
                 .Throws(new Exception("get error"));
 
-            var result = _service.GetById(3);
+            var result = _service.GetByIdAsync(3);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del empresa.", result.Message);
             Assert.Contains("get error", result.Errors);
-            _empresaBMock.Verify(x => x.GetById(3), Times.Once);
+            _empresaBMock.Verify(x => x.GetByIdAsync(3), Times.Once);
         }
 
         [Fact]
@@ -200,7 +200,7 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.True(result.Data);
             Assert.Equal("Empresa eliminado exitosamente.", result.Message);
             _empresaBMock.Verify(x => x.Delete(15), Times.Once);
-            _empresaBMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Never);
+            _empresaBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]

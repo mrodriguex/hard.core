@@ -2,16 +2,17 @@
 using System.Linq;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
+using HARD.CORE.OBJ.Models;
 
 namespace HARD.CORE.NEG
 {
     public class AuthB
     {
-        private readonly IUsuarioB _usuarioB;
+        private readonly IUsuarioService _usuarioService;
 
-        public AuthB(IUsuarioB usuarioB)
+        public AuthB(IUsuarioService usuarioService)
         {
-            _usuarioB = usuarioB;
+            _usuarioService = usuarioService;
         }
 
         public bool ValidateUser(string username, string password)
@@ -21,13 +22,13 @@ namespace HARD.CORE.NEG
             BaseFilter baseFilter = new BaseFilter() { Nombre = username };
             PagedFilter<BaseFilter> filter = new PagedFilter<BaseFilter> { PageIndex = 1, PageSize = int.MaxValue, Filters = baseFilter };
 
-            List<Usuario> usuarios = _usuarioB.GetAll(filter).ToList();
+            List<Usuario> usuarios = _usuarioService.GetAllAsync(filter).Result.Data.ToList();
             Usuario usuario = usuarios.FirstOrDefault();
 
             if (!string.IsNullOrEmpty(usuario.ClaveUsuario) && username.ToLower() == usuario.ClaveUsuario.ToLower())
             {
                 // Validar credenciales contra la base de datos
-                success = _usuarioB.AuthenticateUser(usuario.Id, password);
+                success = _usuarioService.AuthenticateUserAsync(new LoginModel { Username = username, Password = password }, usuario.Id).Result.Data;
             }
             return (success);
         }

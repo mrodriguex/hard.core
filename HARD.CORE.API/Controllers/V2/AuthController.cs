@@ -23,7 +23,7 @@ namespace HARD.CORE.API.Controllers.V2
     public class AuthController : BaseController
     {
         private readonly IConfiguration _config;
-        private readonly IUsuarioB _usuarioB;
+        private readonly IUsuarioService _usuarioService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
@@ -34,10 +34,10 @@ namespace HARD.CORE.API.Controllers.V2
         /// <param name="usuarioB">
         /// The user business logic layer.
         /// </param>
-        public AuthController(IConfiguration config, IUsuarioB usuarioB)
+        public AuthController(IConfiguration config, IUsuarioService usuarioService)
         {
             _config = config;
-            _usuarioB = usuarioB;
+            _usuarioService = usuarioService;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace HARD.CORE.API.Controllers.V2
         /// If authentication is successful, returns a JWT token; otherwise, returns error messages indicating the reason for failure.
         /// </returns>
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             var webResult = new WebResultModel<string>();
             webResult.Success = false;

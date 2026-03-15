@@ -24,37 +24,37 @@ namespace HARD.CORE.API.Controllers.V1
         }
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = _clienteService.GetAll(activo, pageIndex, pageSize);
+            var webResult = await _clienteService.GetAllAsync(activo, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpGet("GetById")]
-        public IActionResult GetById([FromQuery, Required] int idCliente)
+        public async Task<IActionResult> GetByIdAsync([FromQuery, Required] int idCliente)
         {
-            var webResult = _clienteService.GetById(idCliente);
+            var webResult = await _clienteService.GetByIdAsync(idCliente);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpPost("Add")]
-        public IActionResult Add([FromBody] Cliente cliente)
+        public async Task<IActionResult> Add([FromBody] Cliente cliente)
         {
-            var webResult = _clienteService.Add(cliente, IdUsuarioAutenticado);
+            var webResult = await _clienteService.AddAsync(cliente, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] Cliente cliente)
+        public async Task<IActionResult> Update([FromBody] Cliente cliente)
         {
-            var webResult = _clienteService.Update(cliente, IdUsuarioAutenticado);
+            var webResult = await _clienteService.UpdateAsync(cliente, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpDelete("Delete")]
-        public IActionResult Delete([FromQuery, Required] int idCliente)
+        public async Task<IActionResult> Delete([FromQuery, Required] int idCliente)
         {
-            var webResult = _clienteService.Delete(idCliente, IdUsuarioAutenticado);
+            var webResult = await _clienteService.DeleteAsync(idCliente, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
     }

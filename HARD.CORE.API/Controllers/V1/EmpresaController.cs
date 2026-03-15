@@ -42,9 +42,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="idEmpresa">The unique key identifying the company.</param>
         /// <returns>The company associated with the provided key.</returns>
         [HttpGet("GetById")]
-        public IActionResult GetById([FromQuery, Required] int idEmpresa)
+        public async Task<IActionResult> GetByIdAsync([FromQuery, Required] int idEmpresa)
         {
-            var webResult = _empresaService.GetById(idEmpresa);
+            var webResult = await _empresaService.GetByIdAsync(idEmpresa);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -64,31 +64,31 @@ namespace HARD.CORE.API.Controllers.V1
         /// A list of companies matching the specified criteria.
         /// </returns>
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null, [FromQuery] int? idPerfil = null, [FromQuery] int? idUsuario = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, [FromQuery] int? idPerfil = null, [FromQuery] int? idUsuario = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = _empresaService.GetAll(activo, idUsuario, idPerfil, pageIndex, pageSize);
+            var webResult = await _empresaService.GetAllAsync(activo, idUsuario, idPerfil, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpPost("Add")]
-        public IActionResult Add([FromBody] Empresa empresa)
+        public async Task<IActionResult> Add([FromBody] Empresa empresa)
         {
-                var webResult = _empresaService.Add(empresa, IdUsuarioAutenticado);
-                return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+            var webResult = await _empresaService.AddAsync(empresa, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] Empresa empresa)
+        public async Task<IActionResult> Update([FromBody] Empresa empresa)
         {
-                var webResult = _empresaService.Update(empresa, IdUsuarioAutenticado);
-                return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+            var webResult = await _empresaService.UpdateAsync(empresa, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         [HttpDelete("Delete")]
-        public IActionResult Delete([FromQuery, Required] int idEmpresa)
+        public async Task<IActionResult> Delete([FromQuery, Required] int idEmpresa)
         {
-                var webResult = _empresaService.Delete(idEmpresa, IdUsuarioAutenticado);
-                return webResult.Success ? Ok(webResult) : BadRequest(webResult);
+            var webResult = await _empresaService.DeleteAsync(idEmpresa, IdUsuarioAutenticado);
+            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
@@ -101,9 +101,9 @@ namespace HARD.CORE.API.Controllers.V1
         /// A list of companies assigned to the user.
         /// </returns>
         [HttpGet("GetCompaniesByUser")]
-        public IActionResult GetCompaniesByUser([FromQuery, Required] int idUsuario, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetCompaniesByUser([FromQuery, Required] int idUsuario, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = _empresaService.GetCompaniesByUser(idUsuario, pageIndex, pageSize);
+            var webResult = await _empresaService.GetCompaniesByUserAsync(idUsuario, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

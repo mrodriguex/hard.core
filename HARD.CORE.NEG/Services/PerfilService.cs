@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
@@ -9,25 +11,31 @@ using Microsoft.Extensions.Logging;
 
 namespace HARD.CORE.NEG.Services
 {
-    public class PerfilService
+    public class PerfilService : IPerfilService
     {
-        private readonly IPerfilB _perfilB;
-        private readonly ILogger<PerfilService> _logger;
-        private readonly IConfiguration _config;
+        private readonly IRepositoryBase<Perfil, BaseFilter, int> _perfilRepository;
 
-        public PerfilService(ILogger<PerfilService> logger, IPerfilB perfilB, IConfiguration config)
+        private readonly IRepositoryBase<Usuario, BaseFilter, int> _usuarioRepository;
+        private readonly ILogger<PerfilService> _logger;        
+
+        public PerfilService(ILogger<PerfilService> logger,
+        IRepositoryBase<Perfil, BaseFilter, int> perfilRepository,
+        IRepositoryBase<Usuario, BaseFilter, int> usuarioRepository,
+         IConfiguration config)
         {
-            _perfilB = perfilB;
+            _perfilRepository = perfilRepository;
+            _usuarioRepository = usuarioRepository;
             _logger = logger;
-            _config = config;
         }
 
-        public WebResultModel<Perfil> GetById(int idPerfil)
+        #region Implementation od IServiceBase
+
+        public async Task<WebResultModel<Perfil>> GetByIdAsync(int idPerfil)
         {
             var webResult = new WebResultModel<Perfil>();
             try
             {
-                webResult.Data = _perfilB.GetById(idPerfil);
+                webResult.Data = await _perfilRepository.GetByIdAsync(idPerfil);
                 webResult.Message = "Información del perfil obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -39,22 +47,14 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
-        public WebResultModel<List<Perfil>> GetAll(bool? activo = null, int? pageIndex = null, int? pageSize = null)
+
+        public async Task<WebResultModel<IEnumerable<Perfil>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
         {
-            var webResult = new WebResultModel<List<Perfil>>();
+            var webResult = new WebResultModel<IEnumerable<Perfil>>();
             try
             {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        Activo = activo
-                    }
-                };
-                webResult.Data = _perfilB.GetAll(pagedFilter).ToList();
-                webResult.Message = "Información de los perfiles obtenida exitosamente.";
+                webResult.Data = (await _perfilRepository.GetAllAsync(pagedFilter)).ToList();
+                webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<int> Add(Perfil perfil, int idUsuarioAuenticado)
+        public async Task<WebResultModel<int>> AddAsync(Perfil perfil, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<int>();
             try
@@ -75,7 +75,7 @@ namespace HARD.CORE.NEG.Services
                 perfil.IdUsuarioModificacion = idUsuarioAuenticado;
                 perfil.FechaCreacion = DateTime.UtcNow;
                 perfil.FechaModificacion = DateTime.UtcNow;
-                webResult.Data = _perfilB.Add(perfil);
+                webResult.Data = await _perfilRepository.AddAsync(perfil);
                 webResult.Message = "Perfil agregado exitosamente.";
                 webResult.Success = true;
             }
@@ -88,15 +88,14 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Update(Perfil perfil, int idUsuarioAuenticado)
+        public async Task<WebResultModel<bool>> UpdateAsync(Perfil perfil, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
                 perfil.IdUsuarioModificacion = idUsuarioAuenticado;
                 perfil.FechaModificacion = DateTime.UtcNow;
-                _perfilB.Update(perfil);
-                webResult.Data = true;
+                webResult.Data = await _perfilRepository.UpdateAsync(perfil);
                 webResult.Message = "Perfil actualizado exitosamente.";
                 webResult.Success = true;
             }
@@ -109,12 +108,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Delete(int idPerfil, int idUsuarioAuenticado)
+        public async Task<WebResultModel<bool>> DeleteAsync(int idPerfil, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
-            {                
-                webResult.Data = _perfilB.Delete(idPerfil);
+            {
+                webResult.Data = await _perfilRepository.DeleteAsync(idPerfil);
                 webResult.Message = "Perfil eliminado exitosamente.";
                 webResult.Success = true;
             }
@@ -127,12 +126,48 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<List<Perfil>> GetUserProfiles(int idUsuario)
+        #endregion
+
+        #region Implementation of IPerfilService
+        public async Task<WebResultModel<IEnumerable<Perfil>>> GetAllAsync(bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = new WebResultModel<List<Perfil>>();
+            var webResult = new WebResultModel<IEnumerable<Perfil>>();
             try
             {
-                webResult.Data = _perfilB.GetUserProfiles(idUsuario: idUsuario);
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    PageIndex = pageIndex ?? 1,
+                    PageSize = pageSize ?? int.MaxValue,
+                    Filters = new BaseFilter
+                    {
+                        Activo = activo
+                    }
+                };
+                webResult = await GetAllAsync(pagedFilter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la información de los perfiles");
+                webResult.Message = "Error al obtener la información de los perfiles.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return webResult;
+        }
+
+        public async Task<WebResultModel<IEnumerable<Perfil>>> GetUserProfilesAsync(int idUsuario)
+        {
+            var webResult = new WebResultModel<IEnumerable<Perfil>>();
+            try
+            {
+                List<Perfil> perfiles = new List<Perfil>();
+                Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
+                if (usuario != null)
+                {
+                    perfiles = usuario.Perfiles;
+                    perfiles ??= new List<Perfil>();
+                }
+
+                webResult.Data = perfiles;
                 webResult.Message = "Información de los perfiles del usuario obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -144,6 +179,86 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
+
+
+        public async Task<WebResultModel<bool>> AssignProfileToUserAsync(int idUsuario, int idPerfil)
+        {
+            var webResult = new WebResultModel<bool>();
+            try
+            {
+                Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
+                Perfil perfil = await _perfilRepository.GetByIdAsync(idPerfil);
+                if (usuario == null || perfil == null)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "Usuario o perfil no encontrado.";
+                    webResult.Success = false;
+                    return webResult;
+                }
+
+                var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.Id == idPerfil);
+                if (existingPerfil != null)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "El perfil ya está asignado al usuario.";
+                    webResult.Success = false;
+                    return webResult;
+                }
+
+                usuario.Perfiles.Add(perfil);
+                bool updateResult = await _usuarioRepository.UpdateAsync(usuario);
+                webResult.Data = updateResult;
+                webResult.Message = updateResult ? "Perfil asignado exitosamente." : "Error al asignar el perfil.";
+                webResult.Success = updateResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al asignar el perfil con ID: {IdPerfil} al usuario con ID: {IdUsuario}", idPerfil, idUsuario);
+                webResult.Message = "Error al asignar el perfil al usuario.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return webResult;
+        }
+
+        public async Task<WebResultModel<bool>> RemoveProfileFromUserAsync(int idUsuario, int idPerfil)
+        {
+            var webResult = new WebResultModel<bool>();
+            try
+            {
+                Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
+                Perfil perfil = await _perfilRepository.GetByIdAsync(idPerfil);
+                if (usuario == null || perfil == null)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "Usuario o perfil no encontrado.";
+                    webResult.Success = false;
+                    return webResult;
+                }
+
+                var existingPerfil = usuario.Perfiles.FirstOrDefault(p => p.Id == idPerfil);
+                if (existingPerfil == null)
+                {
+                    webResult.Data = false;
+                    webResult.Message = "El perfil no está asignado al usuario.";
+                    webResult.Success = false;
+                    return webResult;
+                }
+
+                usuario.Perfiles.Remove(existingPerfil);
+                bool updateResult = await _usuarioRepository.UpdateAsync(usuario);
+                webResult.Data = updateResult;
+                webResult.Message = updateResult ? "Perfil removido exitosamente." : "Error al remover el perfil.";
+                webResult.Success = updateResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al remover el perfil con ID: {IdPerfil} del usuario con ID: {IdUsuario}", idPerfil, idUsuario);
+                webResult.Message = "Error al remover el perfil del usuario.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return webResult;
+        }
+        #endregion
 
     }
 }

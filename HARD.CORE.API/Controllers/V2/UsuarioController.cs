@@ -39,9 +39,9 @@ namespace HARD.CORE.API.Controllers.V2
         /// </returns>
         [HttpGet("GetById")]
         [AllowAnonymous]
-        public IActionResult GetById([FromQuery, Required] int idUsuario)
+        public async Task<IActionResult> GetByIdAsync([FromQuery, Required] int idUsuario)
         {
-            var webResult = _usuarioService.GetById(idUsuario);
+            var webResult = await _usuarioService.GetByIdAsync(idUsuario);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -53,9 +53,9 @@ namespace HARD.CORE.API.Controllers.V2
         ///     A list of all users if found; otherwise, an error message.
         /// </returns>
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = _usuarioService.GetAll(activo, pageIndex, pageSize);
+            var webResult = await _usuarioService.GetAllAsync(activo, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -70,9 +70,9 @@ namespace HARD.CORE.API.Controllers.V2
         /// </returns>
         [AllowAnonymous]
         [HttpGet("Exists")]
-        public IActionResult Exists([FromQuery, Required] int idUsuario)
+        public async Task<IActionResult> Exists([FromQuery, Required] int idUsuario)
         {
-            var webResult = _usuarioService.Exists(idUsuario);
+            var webResult = await _usuarioService.ExistsAsync(idUsuario);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -84,9 +84,9 @@ namespace HARD.CORE.API.Controllers.V2
         ///     The detailed activity information if found; otherwise, an error message.
         /// </returns>
         [HttpPost("Add")]
-        public IActionResult Add([FromBody] Usuario usuario)
+        public async Task<IActionResult> Add([FromBody] Usuario usuario)
         {
-            var webResult = _usuarioService.Add(usuario, IdUsuarioAutenticado);
+            var webResult = await _usuarioService.AddAsync(usuario, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -100,9 +100,9 @@ namespace HARD.CORE.API.Controllers.V2
         /// A result indicating the success or failure of the update operation.
         /// </returns>
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] Usuario usuario)
+        public async Task<IActionResult> Update([FromBody] Usuario usuario)
         {
-            var webResult = _usuarioService.Update(usuario, IdUsuarioAutenticado);
+            var webResult = await _usuarioService.UpdateAsync(usuario, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -114,9 +114,9 @@ namespace HARD.CORE.API.Controllers.V2
         ///     True if the user is authenticated; otherwise, false.
         /// </returns>
         [HttpPost("AuthenticateUser")]
-        public IActionResult AuthenticateUser([FromBody] LoginModel login)
+        public async Task<IActionResult> AuthenticateUser([FromBody] LoginModel login)
         {
-            var webResult = _usuarioService.AuthenticateUser(login, IdUsuarioAutenticado);
+            var webResult = await _usuarioService.AuthenticateUserAsync(login, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -128,11 +128,10 @@ namespace HARD.CORE.API.Controllers.V2
         ///     True if the password is updated successfully; otherwise, false.
         /// </returns>
         /// 
-        [AllowAnonymous]
         [HttpPut("UpdatePassword")]
-        public IActionResult UpdatePassword([FromBody] LoginModel login)
+        public async Task<IActionResult> UpdatePassword([FromBody] LoginModel login)
         {
-            var webResult = _usuarioService.UpdatePassword(login, IdUsuarioAutenticado);
+            var webResult = await _usuarioService.UpdatePasswordAsync(login, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -145,9 +144,9 @@ namespace HARD.CORE.API.Controllers.V2
         ///     True if the user is unlocked successfully; otherwise, false.
         /// </returns>
         [HttpPut("UnlockUser")]
-        public IActionResult UnlockUser([FromBody, Required] int idUsuario)
+        public async Task<IActionResult> UnlockUser([FromBody, Required] int idUsuario)
         {
-            var webResult = _usuarioService.UnlockUser(idUsuario, IdUsuarioAutenticado);
+            var webResult = await _usuarioService.UnlockUserAsync(idUsuario, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

@@ -85,10 +85,10 @@ All tests follow the AAA pattern:
 ```csharp
 // Arrange - Setup mocks and test data
 var expectedUsuario = new Usuario { Id = 1, Nombre = "Test" };
-_usuarioBMock.Setup(x => x.GetById(1)).Returns(expectedUsuario);
+_usuarioBMock.Setup(x => x.GetByIdAsync(1)).Returns(expectedUsuario);
 
 // Act - Execute service method
-var result = _service.GetById(1);
+var result = _service.GetByIdAsync(1);
 
 // Assert - Verify results
 Assert.True(result.Success);
@@ -98,7 +98,7 @@ Assert.Equal(expectedUsuario, result.Data);
 ### 2. Mock Verification
 Verify dependencies were called correctly:
 ```csharp
-_usuarioBMock.Verify(x => x.GetById(idUsuario), Times.Once);
+_usuarioBMock.Verify(x => x.GetByIdAsync(idUsuario), Times.Once);
 _usuarioBMock.Verify(x => x.Add(It.IsAny<Usuario>()), Times.Never);
 ```
 
@@ -122,10 +122,10 @@ Test service behavior when dependencies throw:
 [Fact]
 public void GetById_WhenBusinessThrows_ReturnsFailure()
 {
-    _usuarioBMock.Setup(x => x.GetById(It.IsAny<int>()))
+    _usuarioBMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
         .Throws(new Exception("DB error"));
     
-    var result = _service.GetById(1);
+    var result = _service.GetByIdAsync(1);
     
     Assert.False(result.Success);
     Assert.Contains("DB error", result.Errors);
@@ -159,7 +159,7 @@ Duration: 216 ms
 
 ### For each CRUD service (Usuario, Cliente, Empresa, Perfil, Menu):
 
-✅ **GetById(id)** - Returns entity by ID
+✅ **GetByIdAsync(id)** - Returns entity by ID
 - ✓ Success scenario with valid entity
 - ✓ Exception handling when business layer throws
 
@@ -213,7 +213,7 @@ Duration: 216 ms
 
 ### Standard Service Mock
 ```csharp
-_usuarioBMock.Setup(x => x.GetById(It.IsAny<int>()))
+_usuarioBMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
     .Returns(new Usuario { Id = 1, Nombre = "Test" });
 
 _usuarioBMock.Setup(x => x.Add(It.IsAny<Usuario>()))
@@ -225,7 +225,7 @@ _usuarioBMock.Setup(x => x.Update(It.IsAny<Usuario>()))
 
 ### Exception Mock
 ```csharp
-_usuarioBMock.Setup(x => x.GetById(1))
+_usuarioBMock.Setup(x => x.GetByIdAsync(1))
     .Throws(new Exception("Database connection failed"));
 ```
 

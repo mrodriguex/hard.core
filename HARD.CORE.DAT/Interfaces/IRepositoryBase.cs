@@ -5,10 +5,10 @@ namespace HARD.CORE.DAT.Interfaces
 {
     public interface IRepositoryBase<MyClass, FilterClass, IdType>
     {
-        MyClass GetById(IdType id);
-        IEnumerable<MyClass> GetAll(PagedFilter<FilterClass> pagedFilter);
-        IdType Add(MyClass entity);
-        bool Update(MyClass entity);
-        bool Delete(IdType id);
+        Task<MyClass> GetByIdAsync(IdType id);
+        Task<IEnumerable<MyClass>> GetAllAsync(PagedFilter<FilterClass> pagedFilter);
+        Task<IdType> AddAsync(MyClass entity);
+        Task<bool> UpdateAsync(MyClass entity);
+        Task<bool> DeleteAsync(IdType id);
     }
 }

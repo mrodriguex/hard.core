@@ -31,15 +31,15 @@ namespace HARD.CORE.NEG.Tests.Services
             var perfil = CreatePerfil(5);
 
             _perfilBMock
-                .Setup(x => x.GetById(5))
+                .Setup(x => x.GetByIdAsync(5))
                 .Returns(perfil);
 
-            var result = _service.GetById(5);
+            var result = _service.GetByIdAsync(5);
 
             Assert.True(result.Success);
             Assert.Equal(perfil, result.Data);
             Assert.Equal("Información del perfil obtenida exitosamente.", result.Message);
-            _perfilBMock.Verify(x => x.GetById(5), Times.Once);
+            _perfilBMock.Verify(x => x.GetByIdAsync(5), Times.Once);
             _perfilBMock.Verify(x => x.GetUserProfiles(It.IsAny<int>()), Times.Never);
         }
 
@@ -47,16 +47,16 @@ namespace HARD.CORE.NEG.Tests.Services
         public void GetById_WhenBusinessThrows_ReturnsFailure()
         {
             _perfilBMock
-                .Setup(x => x.GetById(5))
+                .Setup(x => x.GetByIdAsync(5))
                 .Throws(new Exception("get error"));
 
-            var result = _service.GetById(5);
+            var result = _service.GetByIdAsync(5);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del perfil.", result.Message);
             Assert.Contains("get error", result.Errors);
-            _perfilBMock.Verify(x => x.GetById(5), Times.Once);
+            _perfilBMock.Verify(x => x.GetByIdAsync(5), Times.Once);
         }
 
         [Fact]
@@ -196,7 +196,7 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.True(result.Data);
             Assert.Equal("Perfil eliminado exitosamente.", result.Message);
             _perfilBMock.Verify(x => x.Delete(22), Times.Once);
-            _perfilBMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Never);
+            _perfilBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]

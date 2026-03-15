@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
@@ -8,23 +10,24 @@ using Microsoft.Extensions.Logging;
 
 namespace HARD.CORE.NEG.Services
 {
-    public class ClienteService
+    public class ClienteService : IClienteService
     {
-        private readonly IClienteB _clienteB;
-        private readonly ILogger<ClienteService> _logger;        
+        private readonly ILogger<ClienteService> _logger;
+        private readonly IRepositoryBase<Cliente, BaseFilter, int> _clienteRepository;
 
-        public ClienteService(ILogger<ClienteService> logger, IClienteB clienteB)
+        public ClienteService(ILogger<ClienteService> logger, IRepositoryBase<Cliente, BaseFilter, int> clienteRepository)
         {
-            _clienteB = clienteB;
+            _clienteRepository = clienteRepository;
             _logger = logger;
         }
 
-        public WebResultModel<Cliente> GetById(int idCliente)
+        #region Implementation of IServiceBase
+        public async Task<WebResultModel<Cliente>> GetByIdAsync(int idCliente)
         {
             var webResult = new WebResultModel<Cliente>();
             try
             {
-                webResult.Data = _clienteB.GetById(idCliente);
+                webResult.Data = await _clienteRepository.GetByIdAsync(idCliente);
                 webResult.Message = "Información del cliente obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -36,36 +39,26 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
-        public WebResultModel<List<Cliente>> GetAll(bool? activo = null, int? idUsuario = null, int? idPerfil = null, int? pageIndex = null, int? pageSize = null)
+
+        public async Task<WebResultModel<IEnumerable<Cliente>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
         {
-            var webResult = new WebResultModel<List<Cliente>>();
+            var webResult = new WebResultModel<IEnumerable<Cliente>>();
             try
             {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        IdMaster = idUsuario,
-                        IdDetail = idPerfil,
-                        Activo = activo
-                    }
-                };
-                webResult.Data = _clienteB.GetAll(pagedFilter).ToList();
+                webResult.Data = (await _clienteRepository.GetAllAsync(pagedFilter)).ToList();
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la información");
-                webResult.Message = "Error al obtener la información.";
+                _logger.LogError(ex, "Error al obtener la información de los clientes");
+                webResult.Message = "Error al obtener la información de los clientes.";
                 webResult.Errors.Add(ex.Message);
             }
             return webResult;
         }
 
-        public WebResultModel<int> Add(Cliente cliente, int idUsuarioAuenticado)
+        public async Task<WebResultModel<int>> AddAsync(Cliente cliente, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<int>();
             try
@@ -74,7 +67,7 @@ namespace HARD.CORE.NEG.Services
                 cliente.IdUsuarioModificacion = idUsuarioAuenticado;
                 cliente.FechaCreacion = DateTime.UtcNow;
                 cliente.FechaModificacion = DateTime.UtcNow;
-                webResult.Data = _clienteB.Add(cliente);
+                webResult.Data = await _clienteRepository.AddAsync(cliente);
                 webResult.Message = "Cliente agregado exitosamente.";
                 webResult.Success = true;
             }
@@ -87,14 +80,14 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Update(Cliente cliente, int idUsuarioAuenticado)
+        public async Task<WebResultModel<bool>> UpdateAsync(Cliente cliente, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
                 cliente.IdUsuarioModificacion = idUsuarioAuenticado;
                 cliente.FechaModificacion = DateTime.UtcNow;
-                _clienteB.Update(cliente);
+                await _clienteRepository.UpdateAsync(cliente);
                 webResult.Data = true;
                 webResult.Message = "Cliente actualizado exitosamente.";
                 webResult.Success = true;
@@ -108,12 +101,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Delete(int idCliente, int idUsuarioAuenticado)
+        public async Task<WebResultModel<bool>> DeleteAsync(int idCliente, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                webResult.Data = _clienteB.Delete(idCliente);
+                webResult.Data = await _clienteRepository.DeleteAsync(idCliente);
                 webResult.Message = "Cliente eliminado exitosamente.";
                 webResult.Success = true;
             }
@@ -125,6 +118,36 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
+        #endregion
+
+        #region Implementation of IClienteService
+        public async Task<WebResultModel<IEnumerable<Cliente>>> GetAllAsync(bool? activo = null, int? idUsuario = null, int? idPerfil = null, int? pageIndex = null, int? pageSize = null)
+        {
+            var webResult = new WebResultModel<IEnumerable<Cliente>>();
+            try
+            {
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    PageIndex = pageIndex ?? 1,
+                    PageSize = pageSize ?? int.MaxValue,
+                    Filters = new BaseFilter
+                    {
+                        IdMaster = idUsuario,
+                        IdDetail = idPerfil,
+                        Activo = activo
+                    }
+                };
+                webResult = await GetAllAsync(pagedFilter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la información");
+                webResult.Message = "Error al obtener la información.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return webResult;
+        }
+        #endregion
 
     }
 }

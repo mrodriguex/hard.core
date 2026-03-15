@@ -1,34 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
-using Humanizer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace HARD.CORE.NEG.Services
 {
-    public class EmpresaService
+    public class EmpresaService : IEmpresaService
     {
-        private readonly IEmpresaB _empresaB;
+        private readonly IRepositoryBase<Empresa, BaseFilter, int> _empresaRepository;
+        private readonly IRepositoryBase<Usuario, BaseFilter, int> _usuarioDA;
         private readonly ILogger<EmpresaService> _logger;
-        private readonly IConfiguration _config;
 
-        public EmpresaService(ILogger<EmpresaService> logger, IEmpresaB empresaB, IConfiguration config)
+        public EmpresaService(ILogger<EmpresaService> logger,
+        IRepositoryBase<Empresa, BaseFilter, int> empresaRepository,
+        IRepositoryBase<Usuario, BaseFilter, int> usuarioDA)
         {
-            _empresaB = empresaB;
+            _empresaRepository = empresaRepository;
+            _usuarioDA = usuarioDA;
             _logger = logger;
-            _config = config;
         }
 
-        public WebResultModel<Empresa> GetById(int idEmpresa)
+        #region Implementation of IServiceBase
+        public async Task<WebResultModel<Empresa>> GetByIdAsync(int idEmpresa)
         {
             var webResult = new WebResultModel<Empresa>();
             try
             {
-                webResult.Data = _empresaB.GetById(idEmpresa);
+                webResult.Data = await _empresaRepository.GetByIdAsync(idEmpresa);
                 webResult.Message = "Información del empresa obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -40,36 +44,26 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
-        public WebResultModel<List<Empresa>> GetAll(bool? activo = null, int? idUsuario = null, int? idPerfil = null, int? pageIndex = null, int? pageSize = null)
+
+        public async Task<WebResultModel<IEnumerable<Empresa>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
         {
-            var webResult = new WebResultModel<List<Empresa>>();
+            var webResult = new WebResultModel<IEnumerable<Empresa>>();
             try
             {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        IdMaster = idUsuario,
-                        IdDetail = idPerfil,
-                        Activo = activo
-                    }
-                };
-                webResult.Data = _empresaB.GetAll(pagedFilter).ToList();
+                webResult.Data = (await _empresaRepository.GetAllAsync(pagedFilter)).ToList();
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la información");
-                webResult.Message = "Error al obtener la información.";
+                _logger.LogError(ex, "Error al obtener la información de los empresaes");
+                webResult.Message = "Error al obtener la información de los empresaes.";
                 webResult.Errors.Add(ex.Message);
             }
             return webResult;
         }
 
-        public WebResultModel<int> Add(Empresa empresa, int idUsuarioAuenticado)
+        public async Task<WebResultModel<int>> AddAsync(Empresa empresa, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<int>();
             try
@@ -78,7 +72,7 @@ namespace HARD.CORE.NEG.Services
                 empresa.IdUsuarioModificacion = idUsuarioAuenticado;
                 empresa.FechaCreacion = DateTime.UtcNow;
                 empresa.FechaModificacion = DateTime.UtcNow;
-                webResult.Data = _empresaB.Add(empresa);
+                webResult.Data = await _empresaRepository.AddAsync(empresa);
                 webResult.Message = "Empresa agregado exitosamente.";
                 webResult.Success = true;
             }
@@ -91,14 +85,14 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Update(Empresa empresa, int idUsuarioAuenticado)
+        public async Task<WebResultModel<bool>> UpdateAsync(Empresa empresa, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
                 empresa.IdUsuarioModificacion = idUsuarioAuenticado;
                 empresa.FechaModificacion = DateTime.UtcNow;
-                _empresaB.Update(empresa);
+                await _empresaRepository.UpdateAsync(empresa);
                 webResult.Data = true;
                 webResult.Message = "Empresa actualizado exitosamente.";
                 webResult.Success = true;
@@ -112,12 +106,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> Delete(int idEmpresa, int idUsuarioAuenticado)
+        public async Task<WebResultModel<bool>> DeleteAsync(int idEmpresa, int idUsuarioAuenticado)
         {
             var webResult = new WebResultModel<bool>();
             try
             {
-                webResult.Data = _empresaB.Delete(idEmpresa);
+                webResult.Data = await _empresaRepository.DeleteAsync(idEmpresa);
                 webResult.Message = "Empresa eliminado exitosamente.";
                 webResult.Success = true;
             }
@@ -129,24 +123,63 @@ namespace HARD.CORE.NEG.Services
             }
             return webResult;
         }
+        #endregion
 
-        public WebResultModel<List<Empresa>> GetCompaniesByUser(int idUsuario, int? pageIndex = null, int? pageSize = null)
+        #region Implementation of IEmpresaService
+
+        public async Task<WebResultModel<IEnumerable<Empresa>>> GetAllAsync(bool? activo = null, int? idUsuario = null, int? idPerfil = null, int? pageIndex = null, int? pageSize = null)
         {
-            var webResult = new WebResultModel<List<Empresa>>();
+            var webResult = new WebResultModel<IEnumerable<Empresa>>();
             try
             {
-                webResult.Data = _empresaB.GetCompaniesByUser(idUsuario: idUsuario);
-                webResult.Message = "Información de los empresaes del usuario obtenida exitosamente.";
-                webResult.Success = true;
+                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
+                {
+                    PageIndex = pageIndex ?? 1,
+                    PageSize = pageSize ?? int.MaxValue,
+                    Filters = new BaseFilter
+                    {
+                        IdMaster = idUsuario,
+                        IdDetail = idPerfil,
+                        Activo = activo
+                    }
+                };
+                webResult = await GetAllAsync(pagedFilter);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la información de los empresaes del usuario con ID: {IdUsuario}", idUsuario);
-                webResult.Message = "Error al obtener la información de los empresaes del usuario.";
+                _logger.LogError(ex, "Error al obtener la información");
+                webResult.Message = "Error al obtener la información.";
                 webResult.Errors.Add(ex.Message);
             }
             return webResult;
         }
+
+        public async Task<WebResultModel<IEnumerable<Empresa>>> GetCompaniesByUserAsync(int idUsuario, int? pageIndex = null, int? pageSize = null)
+        {
+            var webResult = new WebResultModel<IEnumerable<Empresa>>();
+            try
+            {
+                Usuario usuario = await _usuarioDA.GetByIdAsync(idUsuario);
+                List<Empresa> empresas = new List<Empresa>();
+                if (usuario != null)
+                {
+                    usuario.Empresas ??= new List<Empresa>();
+                    empresas = usuario.Empresas;
+                }
+                webResult.Data = empresas;
+                webResult.Message = "Información de los empresas del usuario obtenida exitosamente.";
+                webResult.Success = true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la información de los empresas del usuario con ID: {IdUsuario}", idUsuario);
+                webResult.Message = "Error al obtener la información de los empresas del usuario.";
+                webResult.Errors.Add(ex.Message);
+            }
+            return webResult;
+        }
+
+        #endregion
 
     }
 }

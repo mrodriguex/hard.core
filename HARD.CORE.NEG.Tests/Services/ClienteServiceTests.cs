@@ -28,15 +28,15 @@ namespace HARD.CORE.NEG.Tests.Services
             var cliente = CreateCliente(4);
 
             _clienteBMock
-                .Setup(x => x.GetById(4))
+                .Setup(x => x.GetByIdAsync(4))
                 .Returns(cliente);
 
-            var result = _service.GetById(4);
+            var result = _service.GetByIdAsync(4);
 
             Assert.True(result.Success);
             Assert.Equal(cliente, result.Data);
             Assert.Equal("Información del cliente obtenida exitosamente.", result.Message);
-            _clienteBMock.Verify(x => x.GetById(4), Times.Once);
+            _clienteBMock.Verify(x => x.GetByIdAsync(4), Times.Once);
             _clienteBMock.Verify(x => x.Add(It.IsAny<Cliente>()), Times.Never);
         }
 
@@ -44,16 +44,16 @@ namespace HARD.CORE.NEG.Tests.Services
         public void GetById_WhenBusinessThrows_ReturnsFailure()
         {
             _clienteBMock
-                .Setup(x => x.GetById(4))
+                .Setup(x => x.GetByIdAsync(4))
                 .Throws(new Exception("get error"));
 
-            var result = _service.GetById(4);
+            var result = _service.GetByIdAsync(4);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del cliente.", result.Message);
             Assert.Contains("get error", result.Errors);
-            _clienteBMock.Verify(x => x.GetById(4), Times.Once);
+            _clienteBMock.Verify(x => x.GetByIdAsync(4), Times.Once);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.Equal(88, capturedCliente.IdUsuarioModificacion);
             Assert.InRange(capturedCliente.FechaModificacion, before, after);
             _clienteBMock.Verify(x => x.Update(It.IsAny<Cliente>()), Times.Once);
-            _clienteBMock.Verify(x => x.GetById(It.IsAny<int>()), Times.Never);
+            _clienteBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
