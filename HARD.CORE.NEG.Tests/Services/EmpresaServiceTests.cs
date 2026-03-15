@@ -12,110 +12,108 @@ namespace HARD.CORE.NEG.Tests.Services
 {
     public class EmpresaServiceTests
     {
-        private readonly Mock<IEmpresaB> _empresaBMock;
+        private readonly Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Empresa, BaseFilter, int>> _empresaRepositoryMock;
+        private readonly Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Usuario, BaseFilter, int>> _usuarioRepositoryMock;
         private readonly Mock<ILogger<EmpresaService>> _loggerMock;
-        private readonly Mock<IConfiguration> _configurationMock;
         private readonly EmpresaService _service;
 
         public EmpresaServiceTests()
         {
-            _empresaBMock = new Mock<IEmpresaB>();
+            _empresaRepositoryMock = new Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Empresa, BaseFilter, int>>();
+            _usuarioRepositoryMock = new Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Usuario, BaseFilter, int>>();
             _loggerMock = new Mock<ILogger<EmpresaService>>();
-            _configurationMock = new Mock<IConfiguration>();
-            _service = new EmpresaService(_loggerMock.Object, _empresaBMock.Object, _configurationMock.Object);
+            _service = new EmpresaService(_loggerMock.Object, _empresaRepositoryMock.Object, _usuarioRepositoryMock.Object);
         }
 
         [Fact]
-        public void GetById_WhenCompanyExists_ReturnsSuccess()
+        public async Task GetById_WhenCompanyExists_ReturnsSuccess()
         {
             var empresa = CreateEmpresa(3);
-
-            _empresaBMock
+            _empresaRepositoryMock
                 .Setup(x => x.GetByIdAsync(3))
-                .Returns(empresa);
+                .ReturnsAsync(empresa);
 
-            var result = _service.GetByIdAsync(3);
+            var result = await _service.GetByIdAsync(3);
 
             Assert.True(result.Success);
             Assert.Equal(empresa, result.Data);
             Assert.Equal("Información del empresa obtenida exitosamente.", result.Message);
-            _empresaBMock.Verify(x => x.GetByIdAsync(3), Times.Once);
-            _empresaBMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.GetByIdAsync(3), Times.Once);
         }
 
         [Fact]
-        public void GetById_WhenBusinessThrows_ReturnsFailure()
+        public async Task GetById_WhenBusinessThrows_ReturnsFailure()
         {
-            _empresaBMock
+            _empresaRepositoryMock
                 .Setup(x => x.GetByIdAsync(3))
                 .Throws(new Exception("get error"));
 
-            var result = _service.GetByIdAsync(3);
+            var result = await _service.GetByIdAsync(3);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del empresa.", result.Message);
             Assert.Contains("get error", result.Errors);
-            _empresaBMock.Verify(x => x.GetByIdAsync(3), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.GetByIdAsync(3), Times.Once);
         }
 
         [Fact]
-        public void GetAll_WhenCompaniesExist_ReturnsSuccess()
+        public async Task GetAll_WhenCompaniesExist_ReturnsSuccess()
         {
             var empresas = new List<Empresa> { CreateEmpresa(1), CreateEmpresa(2) };
 
-            _empresaBMock
-                .Setup(x => x.GetAll(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _empresaRepositoryMock
+                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
                     f.PageIndex == 2 &&
                     f.PageSize == 25 &&
                     f.Filters.IdMaster == 5 &&
                     f.Filters.IdDetail == 6 &&
                     f.Filters.Activo == true)))
-                .Returns(empresas);
+                .ReturnsAsync(empresas);
 
-            var result = _service.GetAll(true, 5, 6, 2, 25);
+            var result = await _service.GetAllAsync(true, 5, 6, 2, 25);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.Count);
+            Assert.Equal(2, result.Data.ToList().Count);
             Assert.Equal("Información obtenida exitosamente.", result.Message);
-            _empresaBMock.Verify(x => x.GetAll(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _empresaRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
                 f.PageIndex == 2 &&
                 f.PageSize == 25 &&
                 f.Filters.IdMaster == 5 &&
                 f.Filters.IdDetail == 6 &&
                 f.Filters.Activo == true)), Times.Once);
-            _empresaBMock.Verify(x => x.Add(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Empresa>()), Times.Never);
         }
 
         [Fact]
-        public void GetAll_WhenBusinessThrows_ReturnsFailure()
+        public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
-            _empresaBMock
-                .Setup(x => x.GetAll(It.IsAny<global::PagedFilter<BaseFilter>>()))
+            _empresaRepositoryMock
+                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
                 .Throws(new Exception("list error"));
 
-            var result = _service.GetAll(false, 5, 6, 1, 10);
+            var result = await _service.GetAllAsync(false, 5, 6, 1, 10);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
-            Assert.Equal("Error al obtener la información.", result.Message);
+            Assert.Equal("Error al obtener la información de los empresaes.", result.Message);
             Assert.Contains("list error", result.Errors);
-            _empresaBMock.Verify(x => x.GetAll(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
         }
 
         [Fact]
-        public void Add_WhenCompanyIsValid_InyectsAuditFieldsAndReturnsId()
+        public async Task Add_WhenCompanyIsValid_InyectsAuditFieldsAndReturnsId()
         {
             var empresa = CreateEmpresa();
             Empresa? capturedEmpresa = null;
             var before = DateTime.UtcNow;
 
-            _empresaBMock
-                .Setup(x => x.Add(It.IsAny<Empresa>()))
+            _empresaRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Empresa>()))
                 .Callback<Empresa>(value => capturedEmpresa = value)
-                .Returns(31);
+                .ReturnsAsync(31);
 
-            var result = _service.Add(empresa, 64);
+            var result = await _service.AddAsync(empresa, 64);
             var after = DateTime.UtcNow;
 
             Assert.True(result.Success);
@@ -126,39 +124,39 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.Equal(64, capturedEmpresa.IdUsuarioModificacion);
             Assert.InRange(capturedEmpresa.FechaCreacion, before, after);
             Assert.InRange(capturedEmpresa.FechaModificacion, before, after);
-            _empresaBMock.Verify(x => x.Add(It.IsAny<Empresa>()), Times.Once);
-            _empresaBMock.Verify(x => x.Update(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Empresa>()), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Empresa>()), Times.Never);
         }
 
         [Fact]
-        public void Add_WhenBusinessThrows_ReturnsFailure()
+        public async Task Add_WhenBusinessThrows_ReturnsFailure()
         {
-            _empresaBMock
-                .Setup(x => x.Add(It.IsAny<Empresa>()))
-                .Throws(new Exception("insert error"));
+            _empresaRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Empresa>()))
+                .ThrowsAsync(new Exception("insert error"));
 
-            var result = _service.Add(CreateEmpresa(), 64);
+            var result = await _service.AddAsync(CreateEmpresa(), 64);
 
             Assert.False(result.Success);
             Assert.Equal(0, result.Data);
             Assert.Equal("Error al agregar el empresa.", result.Message);
             Assert.Contains("insert error", result.Errors);
-            _empresaBMock.Verify(x => x.Add(It.IsAny<Empresa>()), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Empresa>()), Times.Once);
         }
 
         [Fact]
-        public void Update_WhenCompanyIsValid_InyectsAuditFieldsAndReturnsSuccess()
+        public async Task Update_WhenCompanyIsValid_InyectsAuditFieldsAndReturnsSuccess()
         {
             var empresa = CreateEmpresa(11);
             Empresa? capturedEmpresa = null;
             var before = DateTime.UtcNow;
 
-            _empresaBMock
-                .Setup(x => x.Update(It.IsAny<Empresa>()))
+            _empresaRepositoryMock
+                .Setup(x => x.UpdateAsync(It.IsAny<Empresa>()))
                 .Callback<Empresa>(value => capturedEmpresa = value)
-                .Returns(true);
+                .ReturnsAsync(true);
 
-            var result = _service.Update(empresa, 70);
+            var result = await _service.UpdateAsync(empresa, 70);
             var after = DateTime.UtcNow;
 
             Assert.True(result.Success);
@@ -167,56 +165,56 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.NotNull(capturedEmpresa);
             Assert.Equal(70, capturedEmpresa.IdUsuarioModificacion);
             Assert.InRange(capturedEmpresa.FechaModificacion, before, after);
-            _empresaBMock.Verify(x => x.Update(It.IsAny<Empresa>()), Times.Once);
-            _empresaBMock.Verify(x => x.GetCompaniesByUser(It.IsAny<int?>()), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Empresa>()), Times.Once);
+            // Removed invalid GetCompaniesByUserAsync verification (not a repository method)
         }
 
         [Fact]
-        public void Update_WhenBusinessThrows_ReturnsFailure()
+        public async Task Update_WhenBusinessThrows_ReturnsFailure()
         {
-            _empresaBMock
-                .Setup(x => x.Update(It.IsAny<Empresa>()))
-                .Throws(new Exception("update error"));
+            _empresaRepositoryMock
+                .Setup(x => x.UpdateAsync(It.IsAny<Empresa>()))
+                .ThrowsAsync(new Exception("update error"));
 
-            var result = _service.Update(CreateEmpresa(11), 70);
+            var result = await _service.UpdateAsync(CreateEmpresa(11), 70);
 
             Assert.False(result.Success);
             Assert.False(result.Data);
             Assert.Equal("Error al actualizar el empresa.", result.Message);
             Assert.Contains("update error", result.Errors);
-            _empresaBMock.Verify(x => x.Update(It.IsAny<Empresa>()), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Empresa>()), Times.Once);
         }
 
         [Fact]
-        public void Delete_WhenBusinessDeletesCompany_ReturnsSuccess()
+        public async Task Delete_WhenBusinessDeletesCompany_ReturnsSuccess()
         {
-            _empresaBMock
-                .Setup(x => x.Delete(15))
-                .Returns(true);
+            _empresaRepositoryMock
+                .Setup(x => x.DeleteAsync(15))
+                .ReturnsAsync(true);
 
-            var result = _service.Delete(15, 70);
+            var result = await _service.DeleteAsync(15, 70);
 
             Assert.True(result.Success);
             Assert.True(result.Data);
             Assert.Equal("Empresa eliminado exitosamente.", result.Message);
-            _empresaBMock.Verify(x => x.Delete(15), Times.Once);
-            _empresaBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
+            _empresaRepositoryMock.Verify(x => x.DeleteAsync(15), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public void Delete_WhenBusinessThrows_ReturnsFailure()
+        public async Task Delete_WhenBusinessThrows_ReturnsFailure()
         {
-            _empresaBMock
-                .Setup(x => x.Delete(15))
+            _empresaRepositoryMock
+                .Setup(x => x.DeleteAsync(15))
                 .Throws(new Exception("delete error"));
 
-            var result = _service.Delete(15, 70);
+            var result = await _service.DeleteAsync(15, 70);
 
             Assert.False(result.Success);
             Assert.False(result.Data);
             Assert.Equal("Error al eliminar el empresa.", result.Message);
             Assert.Contains("delete error", result.Errors);
-            _empresaBMock.Verify(x => x.Delete(15), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.DeleteAsync(15), Times.Once);
         }
 
         private static Empresa CreateEmpresa(int id = 1)

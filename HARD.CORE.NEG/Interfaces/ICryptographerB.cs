@@ -1,6 +1,8 @@
-
-public interface ICryptographerB
+namespace HARD.CORE.NEG.Interfaces
 {
-    string CreateHash(string input);
-    bool CompareHash(string input, string hash);
+    public interface ICryptographerB
+    {
+        string CreateHash(string input);
+        bool CompareHash(string input, string hash);
+    }
 }

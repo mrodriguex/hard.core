@@ -12,106 +12,105 @@ namespace HARD.CORE.NEG.Tests.Services
 {
     public class PerfilServiceTests
     {
-        private readonly Mock<IPerfilB> _perfilBMock;
+        private readonly Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Perfil, BaseFilter, int>> _perfilRepositoryMock;
+        private readonly Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Usuario, BaseFilter, int>> _usuarioRepositoryMock;
         private readonly Mock<ILogger<PerfilService>> _loggerMock;
         private readonly Mock<IConfiguration> _configurationMock;
         private readonly PerfilService _service;
 
         public PerfilServiceTests()
         {
-            _perfilBMock = new Mock<IPerfilB>();
+            _perfilRepositoryMock = new Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Perfil, BaseFilter, int>>();
+            _usuarioRepositoryMock = new Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Usuario, BaseFilter, int>>();
             _loggerMock = new Mock<ILogger<PerfilService>>();
             _configurationMock = new Mock<IConfiguration>();
-            _service = new PerfilService(_loggerMock.Object, _perfilBMock.Object, _configurationMock.Object);
+            _service = new PerfilService(_loggerMock.Object, _perfilRepositoryMock.Object, _usuarioRepositoryMock.Object, _configurationMock.Object);
         }
 
         [Fact]
-        public void GetById_WhenProfileExists_ReturnsSuccess()
+        public async Task GetById_WhenProfileExists_ReturnsSuccess()
         {
             var perfil = CreatePerfil(5);
-
-            _perfilBMock
+            _perfilRepositoryMock
                 .Setup(x => x.GetByIdAsync(5))
-                .Returns(perfil);
+                .ReturnsAsync(perfil);
 
-            var result = _service.GetByIdAsync(5);
+            var result = await _service.GetByIdAsync(5);
 
             Assert.True(result.Success);
             Assert.Equal(perfil, result.Data);
             Assert.Equal("Información del perfil obtenida exitosamente.", result.Message);
-            _perfilBMock.Verify(x => x.GetByIdAsync(5), Times.Once);
-            _perfilBMock.Verify(x => x.GetUserProfiles(It.IsAny<int>()), Times.Never);
+            _perfilRepositoryMock.Verify(x => x.GetByIdAsync(5), Times.Once);
         }
 
         [Fact]
-        public void GetById_WhenBusinessThrows_ReturnsFailure()
+        public async Task GetById_WhenBusinessThrows_ReturnsFailure()
         {
-            _perfilBMock
+            _perfilRepositoryMock
                 .Setup(x => x.GetByIdAsync(5))
-                .Throws(new Exception("get error"));
+                .ThrowsAsync(new Exception("get error"));
 
-            var result = _service.GetByIdAsync(5);
+            var result = await _service.GetByIdAsync(5);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información del perfil.", result.Message);
             Assert.Contains("get error", result.Errors);
-            _perfilBMock.Verify(x => x.GetByIdAsync(5), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.GetByIdAsync(5), Times.Once);
         }
 
         [Fact]
-        public void GetAll_WhenProfilesExist_ReturnsSuccess()
+        public async Task GetAll_WhenProfilesExist_ReturnsSuccess()
         {
             var perfiles = new List<Perfil> { CreatePerfil(1), CreatePerfil(2) };
-
-            _perfilBMock
-                .Setup(x => x.GetAll(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _perfilRepositoryMock
+                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
                     f.PageIndex == 4 &&
                     f.PageSize == 30 &&
                     f.Filters.Activo == true)))
-                .Returns(perfiles);
+                .ReturnsAsync(perfiles);
 
-            var result = _service.GetAll(true, 4, 30);
+            var result = await _service.GetAllAsync(true, 4, 30);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.Count);
-            Assert.Equal("Información de los perfiles obtenida exitosamente.", result.Message);
-            _perfilBMock.Verify(x => x.GetAll(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            Assert.Equal(2, result.Data.Count());
+            Assert.Equal("Información obtenida exitosamente.", result.Message);
+            _perfilRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
                 f.PageIndex == 4 &&
                 f.PageSize == 30 &&
                 f.Filters.Activo == true)), Times.Once);
-            _perfilBMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
+            _perfilRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public void GetAll_WhenBusinessThrows_ReturnsFailure()
+        public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
-            _perfilBMock
-                .Setup(x => x.GetAll(It.IsAny<global::PagedFilter<BaseFilter>>()))
-                .Throws(new Exception("list error"));
+            _perfilRepositoryMock
+                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
+                .ThrowsAsync(new Exception("list error"));
 
-            var result = _service.GetAll(false, 1, 10);
+            var result = await _service.GetAllAsync(false, 1, 10);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los perfiles.", result.Message);
             Assert.Contains("list error", result.Errors);
-            _perfilBMock.Verify(x => x.GetAll(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
         }
 
         [Fact]
-        public void Add_WhenProfileIsValid_InyectsAuditFieldsAndReturnsId()
+        public async Task Add_WhenProfileIsValid_InyectsAuditFieldsAndReturnsId()
         {
             var perfil = CreatePerfil();
             Perfil? capturedPerfil = null;
             var before = DateTime.UtcNow;
 
-            _perfilBMock
-                .Setup(x => x.Add(It.IsAny<Perfil>()))
+            _perfilRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Perfil>()))
                 .Callback<Perfil>(value => capturedPerfil = value)
-                .Returns(99);
+                .ReturnsAsync(99);
 
-            var result = _service.Add(perfil, 41);
+            var result = await _service.AddAsync(perfil, 41);
             var after = DateTime.UtcNow;
 
             Assert.True(result.Success);
@@ -122,39 +121,39 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.Equal(41, capturedPerfil.IdUsuarioModificacion);
             Assert.InRange(capturedPerfil.FechaCreacion, before, after);
             Assert.InRange(capturedPerfil.FechaModificacion, before, after);
-            _perfilBMock.Verify(x => x.Add(It.IsAny<Perfil>()), Times.Once);
-            _perfilBMock.Verify(x => x.Update(It.IsAny<Perfil>()), Times.Never);
+            _perfilRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Perfil>()), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Perfil>()), Times.Never);
         }
 
         [Fact]
-        public void Add_WhenBusinessThrows_ReturnsFailure()
+        public async Task Add_WhenBusinessThrows_ReturnsFailure()
         {
-            _perfilBMock
-                .Setup(x => x.Add(It.IsAny<Perfil>()))
-                .Throws(new Exception("insert error"));
+            _perfilRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Perfil>()))
+                .ThrowsAsync(new Exception("insert error"));
 
-            var result = _service.Add(CreatePerfil(), 41);
+            var result = await _service.AddAsync(CreatePerfil(), 41);
 
             Assert.False(result.Success);
             Assert.Equal(0, result.Data);
             Assert.Equal("Error al agregar el perfil.", result.Message);
             Assert.Contains("insert error", result.Errors);
-            _perfilBMock.Verify(x => x.Add(It.IsAny<Perfil>()), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Perfil>()), Times.Once);
         }
 
         [Fact]
-        public void Update_WhenProfileIsValid_InyectsAuditFieldsAndReturnsSuccess()
+        public async Task Update_WhenProfileIsValid_InyectsAuditFieldsAndReturnsSuccess()
         {
             var perfil = CreatePerfil(18);
             Perfil? capturedPerfil = null;
             var before = DateTime.UtcNow;
 
-            _perfilBMock
-                .Setup(x => x.Update(It.IsAny<Perfil>()))
+            _perfilRepositoryMock
+                .Setup(x => x.UpdateAsync(It.IsAny<Perfil>()))
                 .Callback<Perfil>(value => capturedPerfil = value)
-                .Returns(true);
+                .ReturnsAsync(true);
 
-            var result = _service.Update(perfil, 77);
+            var result = await _service.UpdateAsync(perfil, 77);
             var after = DateTime.UtcNow;
 
             Assert.True(result.Success);
@@ -163,90 +162,88 @@ namespace HARD.CORE.NEG.Tests.Services
             Assert.NotNull(capturedPerfil);
             Assert.Equal(77, capturedPerfil.IdUsuarioModificacion);
             Assert.InRange(capturedPerfil.FechaModificacion, before, after);
-            _perfilBMock.Verify(x => x.Update(It.IsAny<Perfil>()), Times.Once);
-            _perfilBMock.Verify(x => x.Add(It.IsAny<Perfil>()), Times.Never);
+            _perfilRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Perfil>()), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Perfil>()), Times.Never);
         }
 
         [Fact]
-        public void Update_WhenBusinessThrows_ReturnsFailure()
+        public async Task Update_WhenBusinessThrows_ReturnsFailure()
         {
-            _perfilBMock
-                .Setup(x => x.Update(It.IsAny<Perfil>()))
-                .Throws(new Exception("update error"));
+            _perfilRepositoryMock
+                .Setup(x => x.UpdateAsync(It.IsAny<Perfil>()))
+                .ThrowsAsync(new Exception("update error"));
 
-            var result = _service.Update(CreatePerfil(18), 77);
+            var result = await _service.UpdateAsync(CreatePerfil(18), 77);
 
             Assert.False(result.Success);
             Assert.False(result.Data);
             Assert.Equal("Error al actualizar el perfil.", result.Message);
             Assert.Contains("update error", result.Errors);
-            _perfilBMock.Verify(x => x.Update(It.IsAny<Perfil>()), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Perfil>()), Times.Once);
         }
 
         [Fact]
-        public void Delete_WhenBusinessDeletesProfile_ReturnsSuccess()
+        public async Task Delete_WhenBusinessDeletesProfile_ReturnsSuccess()
         {
-            _perfilBMock
-                .Setup(x => x.Delete(22))
-                .Returns(true);
+            _perfilRepositoryMock
+                .Setup(x => x.DeleteAsync(22))
+                .ReturnsAsync(true);
 
-            var result = _service.Delete(22, 77);
+            var result = await _service.DeleteAsync(22, 77);
 
             Assert.True(result.Success);
             Assert.True(result.Data);
             Assert.Equal("Perfil eliminado exitosamente.", result.Message);
-            _perfilBMock.Verify(x => x.Delete(22), Times.Once);
-            _perfilBMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
+            _perfilRepositoryMock.Verify(x => x.DeleteAsync(22), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
-        public void Delete_WhenBusinessThrows_ReturnsFailure()
+        public async Task Delete_WhenBusinessThrows_ReturnsFailure()
         {
-            _perfilBMock
-                .Setup(x => x.Delete(22))
-                .Throws(new Exception("delete error"));
+            _perfilRepositoryMock
+                .Setup(x => x.DeleteAsync(22))
+                .ThrowsAsync(new Exception("delete error"));
 
-            var result = _service.Delete(22, 77);
+            var result = await _service.DeleteAsync(22, 77);
 
             Assert.False(result.Success);
             Assert.False(result.Data);
             Assert.Equal("Error al eliminar el perfil.", result.Message);
             Assert.Contains("delete error", result.Errors);
-            _perfilBMock.Verify(x => x.Delete(22), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.DeleteAsync(22), Times.Once);
         }
 
         [Fact]
-        public void GetUserProfiles_WhenProfilesExist_ReturnsSuccess()
+        public async Task GetUserProfiles_WhenProfilesExist_ReturnsSuccess()
         {
-            var perfiles = new List<Perfil> { CreatePerfil(10), CreatePerfil(11) };
+            var usuario = new Usuario { Id = 12, Perfiles = new List<Perfil> { CreatePerfil(10), CreatePerfil(11) } };
+            _usuarioRepositoryMock
+                .Setup(x => x.GetByIdAsync(12))
+                .ReturnsAsync(usuario);
 
-            _perfilBMock
-                .Setup(x => x.GetUserProfiles(12))
-                .Returns(perfiles);
-
-            var result = _service.GetUserProfiles(12);
+            var result = await _service.GetUserProfilesAsync(12);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.Count);
+            Assert.Equal(2, result.Data.Count());
             Assert.Equal("Información de los perfiles del usuario obtenida exitosamente.", result.Message);
-            _perfilBMock.Verify(x => x.GetUserProfiles(12), Times.Once);
-            _perfilBMock.Verify(x => x.GetAll(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Never);
+            _usuarioRepositoryMock.Verify(x => x.GetByIdAsync(12), Times.Once);
         }
 
         [Fact]
-        public void GetUserProfiles_WhenBusinessThrows_ReturnsFailure()
+        public async Task GetUserProfiles_WhenBusinessThrows_ReturnsFailure()
         {
-            _perfilBMock
-                .Setup(x => x.GetUserProfiles(12))
-                .Throws(new Exception("profiles error"));
+            _usuarioRepositoryMock
+                .Setup(x => x.GetByIdAsync(12))
+                .ThrowsAsync(new Exception("profiles error"));
 
-            var result = _service.GetUserProfiles(12);
+            var result = await _service.GetUserProfilesAsync(12);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los perfiles del usuario.", result.Message);
             Assert.Contains("profiles error", result.Errors);
-            _perfilBMock.Verify(x => x.GetUserProfiles(12), Times.Once);
+            _usuarioRepositoryMock.Verify(x => x.GetByIdAsync(12), Times.Once);
         }
 
         private static Perfil CreatePerfil(int id = 1)

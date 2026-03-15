@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HARD.CORE.API", "HARD.CORE.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HARD.CORE.DAT.Tests", "HARD.CORE.DAT.Tests\HARD.CORE.DAT.Tests.csproj", "{9B040DB2-ECBC-48F1-942C-EE070637A999}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HARD.CORE.NEG.Tests", "HARD.CORE.NEG.Tests\HARD.CORE.NEG.Tests.csproj", "{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{9B040DB2-ECBC-48F1-942C-EE070637A999}.Release|x64.Build.0 = Release|Any CPU
 		{9B040DB2-ECBC-48F1-942C-EE070637A999}.Release|x86.ActiveCfg = Release|Any CPU
 		{9B040DB2-ECBC-48F1-942C-EE070637A999}.Release|x86.Build.0 = Release|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Debug|x64.Build.0 = Debug|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Debug|x86.Build.0 = Debug|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Release|x64.ActiveCfg = Release|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Release|x64.Build.0 = Release|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Release|x86.ActiveCfg = Release|Any CPU
+		{78B00BFC-FBEB-4ED5-B22F-BDF490D73074}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

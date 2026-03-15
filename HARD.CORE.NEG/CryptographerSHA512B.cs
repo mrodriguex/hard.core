@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using HARD.CORE.NEG.Interfaces;
 
 namespace HARD.CORE.NEG
 {
