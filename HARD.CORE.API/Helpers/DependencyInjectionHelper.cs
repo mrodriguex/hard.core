@@ -36,6 +36,7 @@ public static class DependencyInjection
 
         // Register services B
 
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IClienteService, ClienteService>();
         services.AddScoped<IEmpresaService, EmpresaService>();
         services.AddScoped<IMenuService, MenuService>();
