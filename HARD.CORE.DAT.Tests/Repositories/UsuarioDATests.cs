@@ -52,7 +52,7 @@ public class UsuarioDATests
 
         var repository = new UsuarioDA(context, TestDataFactory.Logger<UsuarioDA>());
 
-        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: true, nombre: "admin", pageIndex: 1, pageSize: 10))).ToList();
+        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: true, nombre: "admin", pageIndex: 1, pageSize: 10))).Data.ToList();
 
         Assert.Equal(2, result.Count);
         Assert.All(result, u => Assert.True(u.Estatus));

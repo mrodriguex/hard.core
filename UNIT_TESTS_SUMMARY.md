@@ -298,7 +298,7 @@ HARD.CORE.NEG.Tests/Services/
 ## Notes
 
 - All tests use Moq for dependency injection
-- WebResultModel<T> wrapping is verified for consistency
+- ResultModel<T> wrapping is verified for consistency
 - Pagination parameters are tested where applicable
 - Audit field injection is explicitly tested for CRUD operations
 - Exception messages are captured and verified

@@ -6,6 +6,6 @@
 //     public interface IRepositoryRead<MyClass, FilterClass, IdType>
 //     {
 //         MyClass GetByIdAsync(IdType id);
-//         IEnumerable<MyClass> GetAll(PagedFilter<FilterClass> pagedFilter);
+//         IEnumerable<MyClass> GetAll(FilterClass filterClass);
 //     }
 // }

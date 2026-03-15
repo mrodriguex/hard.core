@@ -5,6 +5,10 @@ namespace HARD.CORE.OBJ
     public class BaseFilter
     {
 
+        public int PageIndex { get; set; }
+
+        public int PageSize { get; set; }
+
         public int? IdMaster { get; set; }
 
         public int? IdDetail { get; set; }

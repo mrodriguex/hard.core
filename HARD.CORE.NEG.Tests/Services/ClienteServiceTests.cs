@@ -60,42 +60,44 @@ namespace HARD.CORE.NEG.Tests.Services
             var clientes = new List<Cliente> { CreateCliente(1), CreateCliente(2) };
 
             _clienteRepositoryMock
-                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+                .Setup(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                     f.PageIndex == 3 &&
                     f.PageSize == 15 &&
-                    f.Filters.IdMaster == 7 &&
-                    f.Filters.IdDetail == 9 &&
-                    f.Filters.Activo == true)))
-                .ReturnsAsync(clientes);
+                    f.IdMaster == 7 &&
+                    f.IdDetail == 9 &&
+                    f.Activo == true)))
+                .ReturnsAsync(new HARD.CORE.OBJ.Models.PagedResult<Cliente> { Data = clientes, TotalCount = 2, PageIndex = 3, PageSize = 15 });
 
-            var result = await _service.GetAllAsync(true, 7, 9, 3, 15);
+            var filter = new BaseFilter { Activo = true, IdMaster = 7, IdDetail = 9, PageIndex = 3, PageSize = 15 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.ToList().Count);
+            Assert.Equal(2, result.Data.Data.Count());
             Assert.Equal("Información obtenida exitosamente.", result.Message);
-            _clienteRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _clienteRepositoryMock.Verify(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                 f.PageIndex == 3 &&
                 f.PageSize == 15 &&
-                f.Filters.IdMaster == 7 &&
-                f.Filters.IdDetail == 9 &&
-                f.Filters.Activo == true)), Times.Once);
-            _clienteRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<int>()), Times.Never);
+                f.IdMaster == 7 &&
+                f.IdDetail == 9 &&
+                f.Activo == true)), Times.Once);
+            _clienteRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Cliente>()), Times.Never);
         }
 
         [Fact]
         public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
             _clienteRepositoryMock
-                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
+                .Setup(x => x.GetAllAsync(It.IsAny<BaseFilter>()))
                 .ThrowsAsync(new Exception("list error"));
 
-            var result = await _service.GetAllAsync(false, 1, 2, 1, 10);
+            var filter = new BaseFilter { Activo = false, IdMaster = 1, IdDetail = 2, PageIndex = 1, PageSize = 10 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los clientes.", result.Message);
             Assert.Contains("list error", result.Errors);
-            _clienteRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _clienteRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<BaseFilter>()), Times.Once);
         }
 
         [Fact]

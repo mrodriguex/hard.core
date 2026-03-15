@@ -15,17 +15,14 @@ internal static class TestDataFactory
         return LoggerFactory.Create(builder => { }).CreateLogger<T>();
     }
 
-    public static PagedFilter<BaseFilter> Paged(bool? activo = null, string nombre = "", int pageIndex = 1, int pageSize = 50)
+    public static BaseFilter Paged(bool? activo = null, string nombre = "", int pageIndex = 1, int pageSize = 50)
     {
-        return new PagedFilter<BaseFilter>
+        return new BaseFilter
         {
             PageIndex = pageIndex,
             PageSize = pageSize,
-            Filters = new BaseFilter
-            {
-                Activo = activo,
-                Nombre = nombre
-            }
+            Activo = activo,
+            Nombre = nombre
         };
     }
 }

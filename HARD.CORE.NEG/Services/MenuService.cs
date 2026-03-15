@@ -15,7 +15,7 @@ namespace HARD.CORE.NEG.Services
         private readonly IRepositoryBase<Menu, BaseFilter, int> _menuRepository;
         private readonly IRepositoryBase<Usuario, BaseFilter, int> _usuarioRepository;
         private readonly IRepositoryBase<Perfil, BaseFilter, int> _perfilRepository;
-        private readonly ILogger<MenuService> _logger;        
+        private readonly ILogger<MenuService> _logger;
 
         public MenuService(ILogger<MenuService> logger,
         IRepositoryBase<Menu, BaseFilter, int> menuRepository,
@@ -29,9 +29,9 @@ namespace HARD.CORE.NEG.Services
         }
 
         #region Implementation of IServiceBase
-        public async Task<WebResultModel<Menu>> GetByIdAsync(int idMenu)
+        public async Task<ResultModel<Menu>> GetByIdAsync(int idMenu)
         {
-            var webResult = new WebResultModel<Menu>();
+            var webResult = new ResultModel<Menu>();
             try
             {
                 webResult.Data = await _menuRepository.GetByIdAsync(idMenu);
@@ -47,12 +47,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<IEnumerable<Menu>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<ResultModel<PagedResult<Menu>>> GetAllAsync(BaseFilter filterClass)
         {
-            var webResult = new WebResultModel<IEnumerable<Menu>>();
+            var webResult = new ResultModel<PagedResult<Menu>>();
             try
             {
-                webResult.Data = (await _menuRepository.GetAllAsync(pagedFilter)).ToList();
+                webResult.Data = (await _menuRepository.GetAllAsync(filterClass));
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -65,9 +65,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<int>> AddAsync(Menu menu, int idUsuarioAuenticado)
+        public async Task<ResultModel<int>> AddAsync(Menu menu, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<int>();
+            var webResult = new ResultModel<int>();
             try
             {
                 menu.IdUsuarioCreacion = idUsuarioAuenticado;
@@ -87,9 +87,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> UpdateAsync(Menu menu, int idUsuarioAuenticado)
+        public async Task<ResultModel<bool>> UpdateAsync(Menu menu, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 menu.IdUsuarioModificacion = idUsuarioAuenticado;
@@ -108,9 +108,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> DeleteAsync(int idMenu, int idUsuarioAuenticado)
+        public async Task<ResultModel<bool>> DeleteAsync(int idMenu, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 webResult.Data = await _menuRepository.DeleteAsync(idMenu);
@@ -128,34 +128,10 @@ namespace HARD.CORE.NEG.Services
         #endregion
 
         #region Implementation of IMenuService
-        public async Task<WebResultModel<IEnumerable<Menu>>> GetAllAsync(bool? activo = null, int? pageIndex = null, int? pageSize = null)
-        {
-            var webResult = new WebResultModel<IEnumerable<Menu>>();
-            try
-            {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        Activo = activo
-                    }
-                };
-                webResult = await GetAllAsync(pagedFilter);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener la información de los menues");
-                webResult.Message = "Error al obtener la información de los menues.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return webResult;
-        }
 
-        public async Task<WebResultModel<IEnumerable<Menu>>> GetMenusByUserAsync(int idUsuario, int idPerfil)
+        public async Task<ResultModel<IEnumerable<Menu>>> GetMenusByUserAsync(int idUsuario, int idPerfil)
         {
-            var webResult = new WebResultModel<IEnumerable<Menu>>();
+            var webResult = new ResultModel<IEnumerable<Menu>>();
             try
             {
                 Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
@@ -175,9 +151,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<IEnumerable<Menu>>> GetMenusByProfileAsync(int idPerfil)
+        public async Task<ResultModel<IEnumerable<Menu>>> GetMenusByProfileAsync(int idPerfil)
         {
-            var webResult = new WebResultModel<IEnumerable<Menu>>();
+            var webResult = new ResultModel<IEnumerable<Menu>>();
             try
             {
                 Perfil perfil = await _perfilRepository.GetByIdAsync(idPerfil);

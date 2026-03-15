@@ -16,9 +16,9 @@ namespace HARD.CORE.NEG.Services
             _logger = logger;
         }
 
-        public WebResultModel<string> CreateHash(string? input)
+        public ResultModel<string> CreateHash(string input)
         {
-            var webResult = new WebResultModel<string>();
+            var webResult = new ResultModel<string>();
             try
             {
                 if (string.IsNullOrEmpty(input))
@@ -45,9 +45,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public WebResultModel<bool> CompareHash(string? input, string? hash)
+        public ResultModel<bool> CompareHash(string input, string hash)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 if (string.IsNullOrEmpty(input))

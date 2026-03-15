@@ -64,9 +64,18 @@ namespace HARD.CORE.API.Controllers.V1
         /// A list of companies matching the specified criteria.
         /// </returns>
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, [FromQuery] int? idPerfil = null, [FromQuery] int? idUsuario = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, [FromQuery] int? idPerfil = null, [FromQuery] int? idUsuario = null, int pageIndex = 1, int pageSize = int.MaxValue)
         {
-            var webResult = await _empresaService.GetAllAsync(activo, idUsuario, idPerfil, pageIndex, pageSize);
+            BaseFilter filter = new BaseFilter
+            {
+                Activo = activo,
+                IdMaster = idPerfil,
+                IdDetail = idUsuario,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+            
+            var webResult = await _empresaService.GetAllAsync(filter);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -101,7 +110,7 @@ namespace HARD.CORE.API.Controllers.V1
         /// A list of companies assigned to the user.
         /// </returns>
         [HttpGet("GetCompaniesByUser")]
-        public async Task<IActionResult> GetCompaniesByUser([FromQuery, Required] int idUsuario, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetCompaniesByUser([FromQuery, Required] int idUsuario, int pageIndex = 1, int pageSize = int.MaxValue)
         {
             var webResult = await _empresaService.GetCompaniesByUserAsync(idUsuario, pageIndex, pageSize);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);

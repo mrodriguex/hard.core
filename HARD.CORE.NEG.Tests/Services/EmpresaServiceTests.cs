@@ -61,27 +61,28 @@ namespace HARD.CORE.NEG.Tests.Services
         public async Task GetAll_WhenCompaniesExist_ReturnsSuccess()
         {
             var empresas = new List<Empresa> { CreateEmpresa(1), CreateEmpresa(2) };
+            var filter = new BaseFilter { Activo = true, IdMaster = 5, IdDetail = 6, PageIndex = 2, PageSize = 25 };
 
             _empresaRepositoryMock
-                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+                .Setup(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                     f.PageIndex == 2 &&
                     f.PageSize == 25 &&
-                    f.Filters.IdMaster == 5 &&
-                    f.Filters.IdDetail == 6 &&
-                    f.Filters.Activo == true)))
-                .ReturnsAsync(empresas);
+                    f.IdMaster == 5 &&
+                    f.IdDetail == 6 &&
+                    f.Activo == true)))
+                .ReturnsAsync(new HARD.CORE.OBJ.Models.PagedResult<Empresa> { Data = empresas, TotalCount = 2, PageIndex = 2, PageSize = 25 });
 
-            var result = await _service.GetAllAsync(true, 5, 6, 2, 25);
+            var result = await _service.GetAllAsync(filter);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.ToList().Count);
+            Assert.Equal(2, result.Data.Data.Count());
             Assert.Equal("Información obtenida exitosamente.", result.Message);
-            _empresaRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _empresaRepositoryMock.Verify(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                 f.PageIndex == 2 &&
                 f.PageSize == 25 &&
-                f.Filters.IdMaster == 5 &&
-                f.Filters.IdDetail == 6 &&
-                f.Filters.Activo == true)), Times.Once);
+                f.IdMaster == 5 &&
+                f.IdDetail == 6 &&
+                f.Activo == true)), Times.Once);
             _empresaRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Empresa>()), Times.Never);
         }
 
@@ -89,16 +90,17 @@ namespace HARD.CORE.NEG.Tests.Services
         public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
             _empresaRepositoryMock
-                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
+                .Setup(x => x.GetAllAsync(It.IsAny<BaseFilter>()))
                 .Throws(new Exception("list error"));
 
-            var result = await _service.GetAllAsync(false, 5, 6, 1, 10);
+            var filter = new BaseFilter { Activo = false, IdMaster = 5, IdDetail = 6, PageIndex = 1, PageSize = 10 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los empresaes.", result.Message);
             Assert.Contains("list error", result.Errors);
-            _empresaRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _empresaRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<BaseFilter>()), Times.Once);
         }
 
         [Fact]

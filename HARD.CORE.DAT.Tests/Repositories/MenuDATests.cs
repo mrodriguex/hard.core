@@ -19,7 +19,7 @@ public class MenuDATests
 
         var repository = new MenuDA(context, TestDataFactory.Logger<MenuDA>());
 
-        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: true, nombre: "Admin"))).ToList();
+        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: true, nombre: "Admin"))).Data.ToList();
 
         Assert.Single(result);
         Assert.Equal("Administracion", result[0].Nombre);

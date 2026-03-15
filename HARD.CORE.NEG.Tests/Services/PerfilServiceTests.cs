@@ -64,38 +64,40 @@ namespace HARD.CORE.NEG.Tests.Services
         {
             var perfiles = new List<Perfil> { CreatePerfil(1), CreatePerfil(2) };
             _perfilRepositoryMock
-                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+                .Setup(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                     f.PageIndex == 4 &&
                     f.PageSize == 30 &&
-                    f.Filters.Activo == true)))
-                .ReturnsAsync(perfiles);
+                    f.Activo == true)))
+                .ReturnsAsync(new HARD.CORE.OBJ.Models.PagedResult<Perfil> { Data = perfiles, TotalCount = 2, PageIndex = 4, PageSize = 30 });
 
-            var result = await _service.GetAllAsync(true, 4, 30);
+            var filter = new BaseFilter { Activo = true, PageIndex = 4, PageSize = 30 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.Count());
+            Assert.Equal(2, result.Data.Data.Count());
             Assert.Equal("Información obtenida exitosamente.", result.Message);
-            _perfilRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _perfilRepositoryMock.Verify(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                 f.PageIndex == 4 &&
                 f.PageSize == 30 &&
-                f.Filters.Activo == true)), Times.Once);
-            _perfilRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<int>()), Times.Never);
+                f.Activo == true)), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Perfil>()), Times.Never);
         }
 
         [Fact]
         public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
             _perfilRepositoryMock
-                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
+                .Setup(x => x.GetAllAsync(It.IsAny<BaseFilter>()))
                 .ThrowsAsync(new Exception("list error"));
 
-            var result = await _service.GetAllAsync(false, 1, 10);
+            var filter = new BaseFilter { Activo = false, PageIndex = 1, PageSize = 10 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los perfiles.", result.Message);
             Assert.Contains("list error", result.Errors);
-            _perfilRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _perfilRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<BaseFilter>()), Times.Once);
         }
 
         [Fact]

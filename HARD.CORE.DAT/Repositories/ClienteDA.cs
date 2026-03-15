@@ -1,16 +1,12 @@
 ﻿using HARD.CORE.OBJ;
-
-using Microsoft.Extensions.Configuration;
-
-using System;
 using System.Data;
 using System.Linq;
 
 using HARD.CORE.DAT.Interfaces;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using HARD.CORE.OBJ.Models;
 
 namespace HARD.CORE.DAT.Repositories
 {
@@ -34,20 +30,25 @@ namespace HARD.CORE.DAT.Repositories
             return cliente;
         }
 
-        public async Task<IEnumerable<Cliente>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
-        {
-            var query = _context.Clientes.AsQueryable();
-            if (pagedFilter.Filters?.Activo.HasValue == true)
-            {
-                query = query.Where(c => c.Activo == pagedFilter.Filters.Activo.Value);
-            }
-            var clientes = await query
+        public async Task<PagedResult<Cliente>> GetAllAsync(BaseFilter filterClass)
+        {          
+            var query = _context.Clientes.Where(u => (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+                && (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+            );
+         
+            var result = await query
                 .OrderBy(c => c.Id)
-                .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
-                .Take(pagedFilter.PageSize)
+                .Skip((filterClass.PageIndex - 1) * filterClass.PageSize)
+                .Take(filterClass.PageSize)
                 .ToListAsync();
 
-            return clientes.AsEnumerable();
+            return new PagedResult<Cliente>
+            {
+                Data = result,
+                PageIndex = filterClass.PageIndex,
+                PageSize = filterClass.PageSize,
+                TotalCount = await query.CountAsync()
+            };
 
         }
 

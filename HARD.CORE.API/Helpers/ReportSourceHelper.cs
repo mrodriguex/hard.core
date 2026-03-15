@@ -187,9 +187,9 @@
 //         }
 
 
-//         public static WebResultModel<string> TransmitFile(ReportDataModel reportData)
+//         public static ResultModel<string> TransmitFile(ReportDataModel reportData)
 //         {
-//             WebResultModel<string> resultado = new WebResultModel<string>();
+//             ResultModel<string> resultado = new ResultModel<string>();
 //             try
 //             {
 //                 Directory.CreateDirectory(reportData.ReportExportedPath);
@@ -217,7 +217,7 @@
 //         public static ActionResult ObtenerActionResultError(string error, object data)
 //         {
 //             ActionResult actionResult;
-//             WebResultModel<object> resultado = new WebResultModel<object>();
+//             ResultModel<object> resultado = new ResultModel<object>();
 //             resultado.Success = false;
 //             resultado.Data = data;
 //             resultado.Errors.Add($"{error}.");

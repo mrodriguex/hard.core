@@ -23,6 +23,7 @@ namespace HARD.CORE.API.Controllers.V1
     public class AuthController : BaseController
     {
         private readonly IConfiguration _config;
+        private readonly IAuthService _authService;
         private readonly IUsuarioService _usuarioService;
 
         /// <summary>
@@ -32,11 +33,13 @@ namespace HARD.CORE.API.Controllers.V1
         /// The configuration settings for the application.
         /// </param>
         /// <param name="usuarioService">
-        /// The user service layer.
+        /// The user service layer. This service is responsible for handling user-related operations, such as retrieving user information and validating credentials.
         /// </param>
-        public AuthController(IConfiguration config, IUsuarioService usuarioService)
+        public AuthController(IConfiguration config, IAuthService authService, IUsuarioService usuarioService)
         {
             _config = config;
+
+            _authService = authService;
             _usuarioService = usuarioService;
         }
 
@@ -45,17 +48,17 @@ namespace HARD.CORE.API.Controllers.V1
         /// </summary>
         /// <param name="login">The login credentials provided by the user.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing a <c>WebResultModel&lt;string&gt;</c> object with the result of the authentication process.
+        /// An <see cref="IActionResult"/> containing a <c>ResultModel&lt;string&gt;</c> object with the result of the authentication process.
         /// If authentication is successful, returns a JWT token; otherwise, returns error messages indicating the reason for failure.
         /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var webResult = new WebResultModel<string>();
+            var webResult = new ResultModel<string>();
 
             try
             {
-                if (!(await _usuarioService.AuthenticateUserAsync(login, IdUsuarioAutenticado)).Data)
+                if (!(await _authService.AuthenticateUserAsync(login, IdUsuarioAutenticado)).Data)
                 {
                     webResult.Errors.Add("Credenciales son incorrectas");
                 }

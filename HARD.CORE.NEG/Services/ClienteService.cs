@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.NEG.Interfaces;
@@ -22,9 +20,9 @@ namespace HARD.CORE.NEG.Services
         }
 
         #region Implementation of IServiceBase
-        public async Task<WebResultModel<Cliente>> GetByIdAsync(int idCliente)
+        public async Task<ResultModel<Cliente>> GetByIdAsync(int idCliente)
         {
-            var webResult = new WebResultModel<Cliente>();
+            var webResult = new ResultModel<Cliente>();
             try
             {
                 webResult.Data = await _clienteRepository.GetByIdAsync(idCliente);
@@ -40,12 +38,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<IEnumerable<Cliente>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<ResultModel<PagedResult<Cliente>>> GetAllAsync(BaseFilter filterClass)
         {
-            var webResult = new WebResultModel<IEnumerable<Cliente>>();
+            var webResult = new ResultModel<PagedResult<Cliente>>();
             try
             {
-                webResult.Data = (await _clienteRepository.GetAllAsync(pagedFilter)).ToList();
+                webResult.Data = await _clienteRepository.GetAllAsync(filterClass);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -58,9 +56,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<int>> AddAsync(Cliente cliente, int idUsuarioAuenticado)
+        public async Task<ResultModel<int>> AddAsync(Cliente cliente, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<int>();
+            var webResult = new ResultModel<int>();
             try
             {
                 cliente.IdUsuarioCreacion = idUsuarioAuenticado;
@@ -80,9 +78,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> UpdateAsync(Cliente cliente, int idUsuarioAuenticado)
+        public async Task<ResultModel<bool>> UpdateAsync(Cliente cliente, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 cliente.IdUsuarioModificacion = idUsuarioAuenticado;
@@ -101,9 +99,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> DeleteAsync(int idCliente, int idUsuarioAuenticado)
+        public async Task<ResultModel<bool>> DeleteAsync(int idCliente, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 webResult.Data = await _clienteRepository.DeleteAsync(idCliente);
@@ -114,35 +112,6 @@ namespace HARD.CORE.NEG.Services
             {
                 _logger.LogError(ex, "Error al eliminar el cliente con ID: {IdCliente}", idCliente);
                 webResult.Message = "Error al eliminar el cliente.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return webResult;
-        }
-        #endregion
-
-        #region Implementation of IClienteService
-        public async Task<WebResultModel<IEnumerable<Cliente>>> GetAllAsync(bool? activo = null, int? idUsuario = null, int? idPerfil = null, int? pageIndex = null, int? pageSize = null)
-        {
-            var webResult = new WebResultModel<IEnumerable<Cliente>>();
-            try
-            {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        IdMaster = idUsuario,
-                        IdDetail = idPerfil,
-                        Activo = activo
-                    }
-                };
-                webResult = await GetAllAsync(pagedFilter);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener la información");
-                webResult.Message = "Error al obtener la información.";
                 webResult.Errors.Add(ex.Message);
             }
             return webResult;

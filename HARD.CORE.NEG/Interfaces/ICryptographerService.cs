@@ -4,7 +4,7 @@ namespace HARD.CORE.NEG.Interfaces
 {
     public interface ICryptographerService
     {
-        WebResultModel<string> CreateHash(string input);
-        WebResultModel<bool> CompareHash(string input, string hash);
+        ResultModel<string> CreateHash(string input);
+        ResultModel<bool> CompareHash(string input, string hash);
     }
 }

@@ -53,9 +53,16 @@ namespace HARD.CORE.API.Controllers.V1
         /// </summary>
         /// <returns>A list of all profiles.</returns>
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int pageIndex = 1, int pageSize = int.MaxValue)
         {
-            var webResult = await _perfilService.GetAllAsync(activo, pageIndex, pageSize);
+            BaseFilter filter = new BaseFilter
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Activo = activo
+            };
+
+            var webResult = await _perfilService.GetAllAsync(filter);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
         /// <summary>

@@ -1,7 +1,7 @@
 using HARD.CORE.DAT;
 using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.DAT.Repositories;
-using HARD.CORE.NEG;
+using HARD.CORE.NEG.Helpers;
 using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;

@@ -45,13 +45,13 @@ namespace HARD.CORE.API.Controllers.V2
         /// </summary>
         /// <param name="login">The login credentials provided by the user.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing a <c>WebResultModel&lt;string&gt;</c> object with the result of the authentication process.
+        /// An <see cref="IActionResult"/> containing a <c>ResultModel&lt;string&gt;</c> object with the result of the authentication process.
         /// If authentication is successful, returns a JWT token; otherwise, returns error messages indicating the reason for failure.
         /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var webResult = new WebResultModel<string>();
+            var webResult = new ResultModel<string>();
             webResult.Success = false;
             webResult.Message = "Error de autenticación";
 

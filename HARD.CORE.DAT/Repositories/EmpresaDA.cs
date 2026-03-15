@@ -1,9 +1,8 @@
 ﻿using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.OBJ;
+using HARD.CORE.OBJ.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,20 +32,25 @@ namespace HARD.CORE.DAT.Repositories
             return empresa;
         }
 
-        public async Task<IEnumerable<Empresa>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<PagedResult<Empresa>> GetAllAsync(BaseFilter filterClass)
         {
-            var query = _context.Empresas.AsQueryable();
-            if (pagedFilter.Filters?.Activo.HasValue == true)
-            {
-                query = query.Where(e => e.Activo == pagedFilter.Filters.Activo.Value);
-            }
-            var empresas = await query
+            var query = _context.Empresas.Where(u => (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+                && (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+            );
+
+            var result = await query
                 .OrderBy(e => e.Id)
-                .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
-                .Take(pagedFilter.PageSize)
+                .Skip((filterClass.PageIndex - 1) * filterClass.PageSize)
+                .Take(filterClass.PageSize)
                 .ToListAsync();
 
-            return empresas.AsEnumerable();
+            return new PagedResult<Empresa>
+            {
+                Data = result,
+                PageIndex = filterClass.PageIndex,
+                PageSize = filterClass.PageSize,
+                TotalCount = await query.CountAsync()
+            };
         }
 
         public async Task<int> AddAsync(Empresa entity)
@@ -74,9 +78,6 @@ namespace HARD.CORE.DAT.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
-        #region Cambio_en_Base
-        #endregion
 
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HARD.CORE.OBJ.Models
 {
-    public class WebResultModel<T>
+    public class ResultModel<T>
     {
 
         private List<string> _erros;

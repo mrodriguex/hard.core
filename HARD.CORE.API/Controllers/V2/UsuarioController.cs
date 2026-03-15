@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.NEG.Services;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -20,15 +20,17 @@ namespace HARD.CORE.API.Controllers.V2
     public class UsuarioController : BaseController
     {
 
-        private readonly UsuarioService _usuarioService;
-
+        private readonly IUsuarioService _usuarioService;
+        private readonly IAuthService _authService;
         /// <summary>
         /// Initializes a new instance of the <see cref="UsuarioController"/> class.
         /// </summary>
         /// <param name="usuarioService">The user service layer.</param>
-        public UsuarioController(UsuarioService usuarioService)
+        /// <param name="authService">The authentication service layer.</param>
+        public UsuarioController(IUsuarioService usuarioService, IAuthService authService)
         {
             _usuarioService = usuarioService;
+            _authService = authService;
         }
         /// <summary>
         /// Gets user information by user key.
@@ -53,9 +55,16 @@ namespace HARD.CORE.API.Controllers.V2
         ///     A list of all users if found; otherwise, an error message.
         /// </returns>
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int pageIndex = 1, int pageSize = int.MaxValue)
         {
-            var webResult = await _usuarioService.GetAllAsync(activo, pageIndex, pageSize);
+            BaseFilter filter = new BaseFilter()
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Activo = activo
+            };
+
+            var webResult = await _usuarioService.GetAllAsync(filter);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -116,7 +125,7 @@ namespace HARD.CORE.API.Controllers.V2
         [HttpPost("AuthenticateUser")]
         public async Task<IActionResult> AuthenticateUser([FromBody] LoginModel login)
         {
-            var webResult = await _usuarioService.AuthenticateUserAsync(login, IdUsuarioAutenticado);
+            var webResult = await _authService.AuthenticateUserAsync(login, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
@@ -131,7 +140,7 @@ namespace HARD.CORE.API.Controllers.V2
         [HttpPut("UpdatePassword")]
         public async Task<IActionResult> UpdatePassword([FromBody] LoginModel login)
         {
-            var webResult = await _usuarioService.UpdatePasswordAsync(login, IdUsuarioAutenticado);
+            var webResult = await _authService.UpdatePasswordAsync(login, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

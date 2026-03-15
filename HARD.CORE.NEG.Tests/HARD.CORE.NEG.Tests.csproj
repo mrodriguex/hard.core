@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HARD.CORE.NEG\HARD.CORE.NEG.csproj" />
+    <ProjectReference Include="..\HARD.CORE.OBJ\HARD.CORE.OBJ.csproj" />
   </ItemGroup>
 
 </Project>

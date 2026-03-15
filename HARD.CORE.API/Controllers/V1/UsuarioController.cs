@@ -21,14 +21,16 @@ namespace HARD.CORE.API.Controllers.V1
     {
 
         private readonly IUsuarioService _usuarioService;
+        private readonly IAuthService _authService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsuarioController"/> class.
         /// </summary>
         /// <param name="usuarioService">The user service layer.</param>
-        public UsuarioController(IUsuarioService usuarioService)
+        public UsuarioController(IUsuarioService usuarioService, IAuthService authService)
         {
             _usuarioService = usuarioService;
+            _authService = authService;
         }
         /// <summary>
         /// Gets user information by user key.
@@ -53,16 +55,22 @@ namespace HARD.CORE.API.Controllers.V1
         ///     A list of all users if found; otherwise, an error message.
         /// </returns>
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int pageIndex = 1, int pageSize = int.MaxValue)
         {
-            var webResult = await _usuarioService.GetAllAsync(activo, pageIndex, pageSize);
+            BaseFilter baseFilter = new BaseFilter()
+            {
+                Activo = activo,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+            var webResult = await _usuarioService.GetAllAsync(baseFilter);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 
         /// <summary>
         /// Checks if a user exists in the system.
         /// </summary>
-        /// <param name="claveUsuario">
+        /// <param name="idUsuario">
         ///     The unique identifier of the user.
         /// </param>
         /// <returns>
@@ -114,20 +122,6 @@ namespace HARD.CORE.API.Controllers.V1
         }
 
         /// <summary>
-        /// Authenticates a user.
-        /// </summary>
-        /// <param name="login">The login information.</param>
-        /// <returns>
-        ///     True if the user is authenticated; otherwise, false.
-        /// </returns>
-        [HttpPost("AuthenticateUser")]
-        public async Task<IActionResult> AuthenticateUser([FromBody] LoginModel login)
-        {
-            var webResult = await _usuarioService.AuthenticateUserAsync(login, IdUsuarioAutenticado);
-            return webResult.Success ? Ok(webResult) : BadRequest(webResult);
-        }
-
-        /// <summary>
         /// Updates the user's password.
         /// </summary>
         /// <param name="login">The login information.</param>
@@ -138,7 +132,7 @@ namespace HARD.CORE.API.Controllers.V1
         [HttpPut("UpdatePassword")]
         public async Task<IActionResult> UpdatePassword([FromBody] LoginModel login)
         {
-            var webResult = await _usuarioService.UpdatePasswordAsync(login, IdUsuarioAutenticado);
+            var webResult = await _authService.UpdatePasswordAsync(login, IdUsuarioAutenticado);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

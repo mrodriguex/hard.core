@@ -1,14 +1,13 @@
 ﻿
 using HARD.CORE.OBJ;
-using System;
 using System.Data;
 
 using HARD.CORE.DAT.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using HARD.CORE.OBJ.Models;
 
 namespace HARD.CORE.DAT.Repositories
 {
@@ -36,17 +35,26 @@ namespace HARD.CORE.DAT.Repositories
             return usuario;
         }
 
-        public async Task<IEnumerable<Usuario>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<PagedResult<Usuario>> GetAllAsync(BaseFilter filterClass)
         {
-            var usuarios = await _context.Usuarios
-                .Where(u => (!pagedFilter.Filters.Activo.HasValue || u.Estatus ==
-                            pagedFilter.Filters.Activo.Value)
-                            && (string.IsNullOrEmpty(pagedFilter.Filters.Nombre) || u.ClaveUsuario.Contains(pagedFilter.Filters.Nombre)))
+            var query = _context.Usuarios.Where(u => (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+                && (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+                && (string.IsNullOrEmpty(filterClass.Nombre) || u.ClaveUsuario.Contains(filterClass.Nombre))
+            );
+
+            var result = await query
                 .OrderBy(u => u.Id)
-                .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
-                .Take(pagedFilter.PageSize)
+                .Skip((filterClass.PageIndex - 1) * filterClass.PageSize)
+                .Take(filterClass.PageSize)
                 .ToListAsync();
-            return usuarios.AsEnumerable();
+
+            return new PagedResult<Usuario>
+            {
+                Data = result,
+                PageIndex = filterClass.PageIndex,
+                PageSize = filterClass.PageSize,
+                TotalCount = await query.CountAsync()
+            };
         }
 
         public async Task<int> AddAsync(Usuario entity)

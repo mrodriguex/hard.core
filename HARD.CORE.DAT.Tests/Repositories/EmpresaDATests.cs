@@ -33,7 +33,7 @@ public class EmpresaDATests
 
         var repository = new EmpresaDA(context, TestDataFactory.Logger<EmpresaDA>());
 
-        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: false))).ToList();
+        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: false))).Data.ToList();
 
         Assert.Single(result);
         Assert.False(result[0].Activo);

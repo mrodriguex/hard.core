@@ -8,8 +8,6 @@ namespace HARD.CORE.NEG.Interfaces
 {
     public interface IPerfilService : IServiceBase<Perfil, Perfil, BaseFilter, int>
     {
-        Task<WebResultModel<IEnumerable<Perfil>>> GetAllAsync(bool? activo = null, int? pageIndex = null, int? pageSize = null);
-
         /// <summary>
         /// Obtains the profiles associated with a specific user.
         /// </summary>
@@ -17,7 +15,7 @@ namespace HARD.CORE.NEG.Interfaces
         /// <returns>A list of profiles associated with the specified user.</returns>
         /// <remarks>This method retrieves the user based on the provided unique key and then returns the list of profiles associated with that user. If the user does not exist, it returns an empty list.</remarks>
         /// <exception cref="ArgumentException">Thrown when the provided user key is invalid.</exception>
-        Task<WebResultModel<IEnumerable<Perfil>>> GetUserProfilesAsync(int idUsuario);
+        Task<ResultModel<IEnumerable<Perfil>>> GetUserProfilesAsync(int idUsuario);
 
         /// <summary>
         /// Assigns a profile to a user.
@@ -25,7 +23,7 @@ namespace HARD.CORE.NEG.Interfaces
         /// <param name="idUsuario">The unique key identifying the user.</param>
         /// <param name="idPerfil">The unique key identifying the profile.</param>
         /// <returns>True if the profile was successfully assigned to the user; otherwise, false.</returns>
-        Task<WebResultModel<bool>> AssignProfileToUserAsync(int idUsuario, int idPerfil);
+        Task<ResultModel<bool>> AssignProfileToUserAsync(int idUsuario, int idPerfil);
 
         /// <summary>
         /// Removes a profile from a user.
@@ -33,7 +31,7 @@ namespace HARD.CORE.NEG.Interfaces
         /// <param name="idUsuario">The unique key identifying the user.</param>
         /// <param name="idPerfil">The unique key identifying the profile.</param>
         /// <returns>True if the profile was successfully removed from the user; otherwise, false.</returns>
-        Task<WebResultModel<bool>> RemoveProfileFromUserAsync(int idUsuario, int idPerfil);
+        Task<ResultModel<bool>> RemoveProfileFromUserAsync(int idUsuario, int idPerfil);
 
     }
 }

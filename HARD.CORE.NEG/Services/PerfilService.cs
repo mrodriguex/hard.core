@@ -16,7 +16,7 @@ namespace HARD.CORE.NEG.Services
         private readonly IRepositoryBase<Perfil, BaseFilter, int> _perfilRepository;
 
         private readonly IRepositoryBase<Usuario, BaseFilter, int> _usuarioRepository;
-        private readonly ILogger<PerfilService> _logger;        
+        private readonly ILogger<PerfilService> _logger;
 
         public PerfilService(ILogger<PerfilService> logger,
         IRepositoryBase<Perfil, BaseFilter, int> perfilRepository,
@@ -30,9 +30,9 @@ namespace HARD.CORE.NEG.Services
 
         #region Implementation od IServiceBase
 
-        public async Task<WebResultModel<Perfil>> GetByIdAsync(int idPerfil)
+        public async Task<ResultModel<Perfil>> GetByIdAsync(int idPerfil)
         {
-            var webResult = new WebResultModel<Perfil>();
+            var webResult = new ResultModel<Perfil>();
             try
             {
                 webResult.Data = await _perfilRepository.GetByIdAsync(idPerfil);
@@ -48,12 +48,12 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<IEnumerable<Perfil>>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<ResultModel<PagedResult<Perfil>>> GetAllAsync(BaseFilter filterClass)
         {
-            var webResult = new WebResultModel<IEnumerable<Perfil>>();
+            var webResult = new ResultModel<PagedResult<Perfil>>();
             try
             {
-                webResult.Data = (await _perfilRepository.GetAllAsync(pagedFilter)).ToList();
+                webResult.Data = await _perfilRepository.GetAllAsync(filterClass);
                 webResult.Message = "Información obtenida exitosamente.";
                 webResult.Success = true;
             }
@@ -66,9 +66,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<int>> AddAsync(Perfil perfil, int idUsuarioAuenticado)
+        public async Task<ResultModel<int>> AddAsync(Perfil perfil, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<int>();
+            var webResult = new ResultModel<int>();
             try
             {
                 perfil.IdUsuarioCreacion = idUsuarioAuenticado;
@@ -88,9 +88,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> UpdateAsync(Perfil perfil, int idUsuarioAuenticado)
+        public async Task<ResultModel<bool>> UpdateAsync(Perfil perfil, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 perfil.IdUsuarioModificacion = idUsuarioAuenticado;
@@ -108,9 +108,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> DeleteAsync(int idPerfil, int idUsuarioAuenticado)
+        public async Task<ResultModel<bool>> DeleteAsync(int idPerfil, int idUsuarioAuenticado)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 webResult.Data = await _perfilRepository.DeleteAsync(idPerfil);
@@ -129,34 +129,9 @@ namespace HARD.CORE.NEG.Services
         #endregion
 
         #region Implementation of IPerfilService
-        public async Task<WebResultModel<IEnumerable<Perfil>>> GetAllAsync(bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<ResultModel<IEnumerable<Perfil>>> GetUserProfilesAsync(int idUsuario)
         {
-            var webResult = new WebResultModel<IEnumerable<Perfil>>();
-            try
-            {
-                PagedFilter<BaseFilter> pagedFilter = new PagedFilter<BaseFilter>
-                {
-                    PageIndex = pageIndex ?? 1,
-                    PageSize = pageSize ?? int.MaxValue,
-                    Filters = new BaseFilter
-                    {
-                        Activo = activo
-                    }
-                };
-                webResult = await GetAllAsync(pagedFilter);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener la información de los perfiles");
-                webResult.Message = "Error al obtener la información de los perfiles.";
-                webResult.Errors.Add(ex.Message);
-            }
-            return webResult;
-        }
-
-        public async Task<WebResultModel<IEnumerable<Perfil>>> GetUserProfilesAsync(int idUsuario)
-        {
-            var webResult = new WebResultModel<IEnumerable<Perfil>>();
+            var webResult = new ResultModel<IEnumerable<Perfil>>();
             try
             {
                 List<Perfil> perfiles = new List<Perfil>();
@@ -181,9 +156,9 @@ namespace HARD.CORE.NEG.Services
         }
 
 
-        public async Task<WebResultModel<bool>> AssignProfileToUserAsync(int idUsuario, int idPerfil)
+        public async Task<ResultModel<bool>> AssignProfileToUserAsync(int idUsuario, int idPerfil)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);
@@ -220,9 +195,9 @@ namespace HARD.CORE.NEG.Services
             return webResult;
         }
 
-        public async Task<WebResultModel<bool>> RemoveProfileFromUserAsync(int idUsuario, int idPerfil)
+        public async Task<ResultModel<bool>> RemoveProfileFromUserAsync(int idUsuario, int idPerfil)
         {
-            var webResult = new WebResultModel<bool>();
+            var webResult = new ResultModel<bool>();
             try
             {
                 Usuario usuario = await _usuarioRepository.GetByIdAsync(idUsuario);

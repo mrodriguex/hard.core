@@ -15,9 +15,9 @@ public class ConfigService
         _logger = logger;
     }
 
-    public WebResultModel<bool> UpdateAppSetting(string key, string newValue)
+    public ResultModel<bool> UpdateAppSetting(string key, string newValue)
     {
-        WebResultModel<bool> webResult = new WebResultModel<bool>();
+        ResultModel<bool> webResult = new ResultModel<bool>();
         try
         {
             // Leer el archivo appsettings.json
@@ -60,9 +60,9 @@ public class ConfigService
         return webResult;
     }
 
-    public WebResultModel<string> GetAppSetting(string key)
+    public ResultModel<string> GetAppSetting(string key)
     {
-        var webResult = new WebResultModel<string>();
+        var webResult = new ResultModel<string>();
         try
         {
             // Leer el archivo appsettings.json

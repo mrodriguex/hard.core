@@ -63,22 +63,24 @@ namespace HARD.CORE.NEG.Tests.Services
         public async Task GetAll_WhenMenusExist_ReturnsSuccess()
         {
             var menus = new List<Menu> { CreateMenu(1), CreateMenu(2) };
+            var filter = new BaseFilter { Activo = true, PageIndex = 2, PageSize = 50 };
+
             _menuRepositoryMock
-                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+                .Setup(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                     f.PageIndex == 2 &&
                     f.PageSize == 50 &&
-                    f.Filters.Activo == true)))
-                .ReturnsAsync(menus);
+                    f.Activo == true)))
+                .ReturnsAsync(new HARD.CORE.OBJ.Models.PagedResult<Menu> { Data = menus, TotalCount = 2, PageIndex = 2, PageSize = 50 });
 
-            var result = await _service.GetAllAsync(true, 2, 50);
+            var result = await _service.GetAllAsync(filter);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.Count());
+            Assert.Equal(2, result.Data.Data.Count());
             Assert.Equal("Información obtenida exitosamente.", result.Message);
-            _menuRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _menuRepositoryMock.Verify(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                 f.PageIndex == 2 &&
                 f.PageSize == 50 &&
-                f.Filters.Activo == true)), Times.Once);
+                f.Activo == true)), Times.Once);
             _menuRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Menu>()), Times.Never);
         }
 
@@ -86,16 +88,17 @@ namespace HARD.CORE.NEG.Tests.Services
         public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
             _menuRepositoryMock
-                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
+                .Setup(x => x.GetAllAsync(It.IsAny<BaseFilter>()))
                 .ThrowsAsync(new Exception("list error"));
 
-            var result = await _service.GetAllAsync(false, 1, 5);
+            var filter = new BaseFilter { Activo = false, PageIndex = 1, PageSize = 5 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los menues.", result.Message);
             Assert.Contains("list error", result.Errors);
-            _menuRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _menuRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<BaseFilter>()), Times.Once);
         }
 
         [Fact]

@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HARD.CORE.API.Helpers

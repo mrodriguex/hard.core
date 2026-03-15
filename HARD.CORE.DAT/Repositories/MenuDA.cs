@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.OBJ;
+using HARD.CORE.OBJ.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -27,17 +28,26 @@ namespace HARD.CORE.DAT.Repositories
             return menu;
         }
 
-        public async Task<IEnumerable<Menu>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<PagedResult<Menu>> GetAllAsync(BaseFilter filterClass)
         {
-            var menus = await _context.Menus
-                .Where(m => (!pagedFilter.Filters.Activo.HasValue || m.Activo == pagedFilter.Filters.Activo.Value)
-                    && (string.IsNullOrEmpty(pagedFilter.Filters.Nombre) || m.Nombre.Contains(pagedFilter.Filters.Nombre)))
-                .OrderBy(m => m.Id)
-                .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
-                .Take(pagedFilter.PageSize)
+            var query = _context.Menus.Where(u =>
+                (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+                && (string.IsNullOrEmpty(filterClass.Nombre) || u.Nombre.Contains(filterClass.Nombre))
+            );
+
+            var result = await query
+                .OrderBy(e => e.Id)
+                .Skip((filterClass.PageIndex - 1) * filterClass.PageSize)
+                .Take(filterClass.PageSize)
                 .ToListAsync();
 
-            return menus.AsEnumerable();
+            return new PagedResult<Menu>
+            {
+                Data = result,
+                PageIndex = filterClass.PageIndex,
+                PageSize = filterClass.PageSize,
+                TotalCount = await query.CountAsync()
+            };
         }
 
         public async Task<int> AddAsync(Menu entity)

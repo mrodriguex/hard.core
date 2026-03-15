@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -13,18 +9,14 @@ namespace HARD.CORE.NEG.Tests.Services
     public class UsuarioServiceTests
     {
         private readonly Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Usuario, BaseFilter, int>> _usuarioRepositoryMock;
-        private readonly Mock<HARD.CORE.NEG.Interfaces.ICryptographerB> _cryptographerMock;
         private readonly Mock<ILogger<UsuarioService>> _loggerMock;
-        private readonly Mock<IConfiguration> _configurationMock;
         private readonly UsuarioService _service;
 
         public UsuarioServiceTests()
         {
             _usuarioRepositoryMock = new Mock<HARD.CORE.DAT.Interfaces.IRepositoryBase<Usuario, BaseFilter, int>>();
-            _cryptographerMock = new Mock<HARD.CORE.NEG.Interfaces.ICryptographerB>();
             _loggerMock = new Mock<ILogger<UsuarioService>>();
-            _configurationMock = new Mock<IConfiguration>();
-            _service = new UsuarioService(_loggerMock.Object, _usuarioRepositoryMock.Object, _cryptographerMock.Object, _configurationMock.Object);
+            _service = new UsuarioService(_loggerMock.Object, _usuarioRepositoryMock.Object);
         }
 
         [Fact]
@@ -66,21 +58,22 @@ namespace HARD.CORE.NEG.Tests.Services
             var usuarios = new List<Usuario> { CreateUsuario(1), CreateUsuario(2) };
 
             _usuarioRepositoryMock
-                .Setup(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+                .Setup(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                     f.PageIndex == 2 &&
                     f.PageSize == 5 &&
-                    f.Filters.Activo == true)))
-                .ReturnsAsync(usuarios);
+                    f.Activo == true)))
+                .ReturnsAsync(new HARD.CORE.OBJ.Models.PagedResult<Usuario> { Data = usuarios, TotalCount = 2, PageIndex = 2, PageSize = 5 });
 
-            var result = await _service.GetAllAsync(true, 2, 5);
+            var filter = new BaseFilter { Activo = true, PageIndex = 2, PageSize = 5 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.True(result.Success);
-            Assert.Equal(2, result.Data.ToList().Count);
+            Assert.Equal(2, result.Data.Data.Count());
             Assert.Equal("Información obtenida exitosamente.", result.Message);
-            _usuarioRepositoryMock.Verify(x => x.GetAllAsync(It.Is<global::PagedFilter<BaseFilter>>(f =>
+            _usuarioRepositoryMock.Verify(x => x.GetAllAsync(It.Is<BaseFilter>(f =>
                 f.PageIndex == 2 &&
                 f.PageSize == 5 &&
-                f.Filters.Activo == true)), Times.Once);
+                f.Activo == true)), Times.Once);
             _usuarioRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Usuario>()), Times.Never);
         }
 
@@ -88,16 +81,17 @@ namespace HARD.CORE.NEG.Tests.Services
         public async Task GetAll_WhenBusinessThrows_ReturnsFailure()
         {
             _usuarioRepositoryMock
-                .Setup(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()))
+                .Setup(x => x.GetAllAsync(It.IsAny<BaseFilter>()))
                 .Throws(new Exception("query failed"));
 
-            var result = await _service.GetAllAsync(false, 1, 20);
+            var filter = new BaseFilter { Activo = false, PageIndex = 1, PageSize = 20 };
+            var result = await _service.GetAllAsync(filter);
 
             Assert.False(result.Success);
             Assert.Null(result.Data);
             Assert.Equal("Error al obtener la información de los usuarios.", result.Message);
             Assert.Contains("query failed", result.Errors);
-            _usuarioRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<global::PagedFilter<BaseFilter>>()), Times.Once);
+            _usuarioRepositoryMock.Verify(x => x.GetAllAsync(It.IsAny<BaseFilter>()), Times.Once);
         }
 
         [Fact]

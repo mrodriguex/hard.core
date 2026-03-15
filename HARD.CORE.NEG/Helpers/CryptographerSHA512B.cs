@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using HARD.CORE.NEG.Interfaces;
 
-namespace HARD.CORE.NEG
+namespace HARD.CORE.NEG.Helpers
 {
     public class CryptographerSHA512B : ICryptographerB
     {

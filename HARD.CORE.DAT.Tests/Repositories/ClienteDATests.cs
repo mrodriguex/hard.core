@@ -34,7 +34,7 @@ public class ClienteDATests
 
         var repository = new ClienteDA(context, TestDataFactory.Logger<ClienteDA>());
 
-        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: true, pageIndex: 1, pageSize: 1))).ToList();
+        var result = (await repository.GetAllAsync(TestDataFactory.Paged(activo: true, pageIndex: 1, pageSize: 1))).Data.ToList();
 
         Assert.Single(result);
         Assert.True(result[0].Activo);

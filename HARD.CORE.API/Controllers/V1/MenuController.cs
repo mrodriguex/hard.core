@@ -31,9 +31,16 @@ namespace HARD.CORE.API.Controllers.V1
         }
 
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int? pageIndex = null, int? pageSize = null)
+        public async Task<IActionResult> GetAll([FromQuery] bool? activo = null, int pageIndex = 1, int pageSize = int.MaxValue)
         {
-            var webResult = await _menuService.GetAllAsync(activo, pageIndex, pageSize);
+            BaseFilter filter = new BaseFilter
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Activo = activo
+            };
+
+            var webResult = await _menuService.GetAllAsync(filter);
             return webResult.Success ? Ok(webResult) : BadRequest(webResult);
         }
 

@@ -1,6 +1,6 @@
 ﻿using HARD.CORE.DAT.Interfaces;
 using HARD.CORE.OBJ;
-
+using HARD.CORE.OBJ.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -34,16 +34,25 @@ namespace HARD.CORE.DAT.Repositories
             return perfil;
         }
 
-        public async Task<IEnumerable<Perfil>> GetAllAsync(PagedFilter<BaseFilter> pagedFilter)
+        public async Task<PagedResult<Perfil>> GetAllAsync(BaseFilter filterClass)
         {
-            var perfiles = await _context.Perfiles
-                .Where(p => (!pagedFilter.Filters.Activo.HasValue || p.Activo == pagedFilter.Filters.Activo.Value)
-                            && (string.IsNullOrEmpty(pagedFilter.Filters.Nombre) || p.Nombre.Contains(pagedFilter.Filters.Nombre)))
-                .OrderBy(p => p.Id)
-                .Skip((pagedFilter.PageIndex - 1) * pagedFilter.PageSize)
-                .Take(pagedFilter.PageSize)
+            var query = _context.Perfiles.Where(u => (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+                && (!filterClass.Activo.HasValue || u.Activo == filterClass.Activo.Value)
+            );
+
+            var result = await query
+                .OrderBy(e => e.Id)
+                .Skip((filterClass.PageIndex - 1) * filterClass.PageSize)
+                .Take(filterClass.PageSize)
                 .ToListAsync();
-            return perfiles.AsEnumerable();
+
+            return new PagedResult<Perfil>
+            {
+                Data = result,
+                PageIndex = filterClass.PageIndex,
+                PageSize = filterClass.PageSize,
+                TotalCount = await query.CountAsync()
+            };
         }
 
         public async Task<int> AddAsync(Perfil entity)
