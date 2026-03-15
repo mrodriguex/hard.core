@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.NEG.Services;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 
 using Microsoft.AspNetCore.Authorization;
@@ -16,9 +16,9 @@ namespace HARD.CORE.API.Controllers.V1
     [Route("api/v{version:apiVersion}/[controller]")] // Version in the URL path
     public class ClienteController : BaseController
     {
-        private readonly ClienteService _clienteService;
+        private readonly IClienteService _clienteService;
 
-        public ClienteController(ClienteService clienteService)
+        public ClienteController(IClienteService clienteService)
         {
             _clienteService = clienteService;
         }

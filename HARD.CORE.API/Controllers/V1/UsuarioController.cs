@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.NEG.Services;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 using HARD.CORE.OBJ.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -21,13 +20,13 @@ namespace HARD.CORE.API.Controllers.V1
     public class UsuarioController : BaseController
     {
 
-        private readonly UsuarioService _usuarioService;
+        private readonly IUsuarioService _usuarioService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsuarioController"/> class.
         /// </summary>
         /// <param name="usuarioService">The user service layer.</param>
-        public UsuarioController(UsuarioService usuarioService)
+        public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }

@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
 using HARD.CORE.NEG.Interfaces;
-using HARD.CORE.NEG.Services;
 using HARD.CORE.OBJ;
 
 using Microsoft.AspNetCore.Authorization;
@@ -17,9 +16,9 @@ namespace HARD.CORE.API.Controllers.V1
     [ApiController]
     public class MenuController : BaseController
     {
-        private readonly MenuService _menuService;
+        private readonly IMenuService _menuService;
 
-        public MenuController(IConfiguration config, MenuService menuService)
+        public MenuController(IMenuService menuService)
         {
             _menuService = menuService;
         }

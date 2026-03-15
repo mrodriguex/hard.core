@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.NEG.Services;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +23,7 @@ namespace HARD.CORE.API.Controllers.V1
     public class EmpresaController : BaseController
     {
 
-        private readonly EmpresaService _empresaService;
+        private readonly IEmpresaService _empresaService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmpresaController"/> class.
@@ -31,7 +31,7 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="empresaService">
         /// The company service.
         /// </param>
-        public EmpresaController(EmpresaService empresaService)
+        public EmpresaController(IEmpresaService empresaService)
         {
             _empresaService = empresaService;
         }

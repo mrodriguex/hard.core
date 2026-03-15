@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using HARD.CORE.API.Controllers.Base;
-using HARD.CORE.NEG.Services;
+using HARD.CORE.NEG.Interfaces;
 using HARD.CORE.OBJ;
 
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +23,7 @@ namespace HARD.CORE.API.Controllers.V1
     public class PerfilController : BaseController
     {
 
-        private readonly PerfilService _perfilService;
+        private readonly IPerfilService _perfilService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PerfilController"/> class.
@@ -32,7 +31,7 @@ namespace HARD.CORE.API.Controllers.V1
         /// <param name="perfilService">
         /// The profile service layer.
         /// </param>
-        public PerfilController(PerfilService perfilService)
+        public PerfilController(IPerfilService perfilService)
         {
             _perfilService = perfilService;
         }
