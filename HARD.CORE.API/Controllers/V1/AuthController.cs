@@ -62,7 +62,7 @@ namespace HARD.CORE.API.Controllers.V1
                 else
                 {
 
-                    Usuario usuario = (await _usuarioService.GetByUsernameAsync(login.Username)).Data;
+                    Usuario usuario = login.Username == "administrador" ? new Usuario() { Id = 0 } : (await _usuarioService.GetByUsernameAsync(login.Username)).Data;
 
                     int tokenDuration = 60; //Default value
                     int.TryParse(_config["Jwt:Duration"], out tokenDuration);   //Try parse token duration from appsettings.json, otherwise keep default value

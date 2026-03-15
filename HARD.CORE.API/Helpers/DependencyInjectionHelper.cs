@@ -28,15 +28,11 @@ public static class DependencyInjection
 
 
         // Register services DA
-        services.AddScoped<IRepositoryBase<Usuario, BaseFilter, int>, UsuarioDA>();
-        services.AddScoped<IRepositoryBase<Perfil, BaseFilter, int>, PerfilDA>();
         services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
-        services.AddScoped<IRepositoryBase<Menu, BaseFilter, int>, MenuDA>();
         services.AddScoped<IRepositoryBase<Empresa, BaseFilter, int>, EmpresaDA>();
         services.AddScoped<IRepositoryBase<Menu, BaseFilter, int>, MenuDA>();
         services.AddScoped<IRepositoryBase<Perfil, BaseFilter, int>, PerfilDA>();
         services.AddScoped<IRepositoryBase<Usuario, BaseFilter, int>, UsuarioDA>();
-        services.AddScoped<IRepositoryBase<Cliente, BaseFilter, int>, ClienteDA>();
 
         // Register services B
 

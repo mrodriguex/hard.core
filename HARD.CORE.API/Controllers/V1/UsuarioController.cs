@@ -21,7 +21,7 @@ namespace HARD.CORE.API.Controllers.V1
     public class UsuarioController : BaseController
     {
 
-         private readonly UsuarioService _usuarioService;
+        private readonly UsuarioService _usuarioService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsuarioController"/> class.
