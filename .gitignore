@@ -1,6 +1,6 @@
 obj/
 bin/
-packages/
+**/packages/
 *.user
 *.vs/
 *.vscode/
@@ -16,3 +16,7 @@ packages/
 *.backup
 limpiarBinarios.bat
 UNIT_TESTS_SUMMARY.md
+# Ignore ALL bin and obj folders in ALL projects
+**/bin/
+**/obj/
+packages/
